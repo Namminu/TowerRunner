@@ -1,5 +1,11 @@
 # This .gitignore file should be placed at the root of your Unity project directory
-#
+# Git Push 전체 무시
+Assets/**
+# Git Push 등록 파일 - Push 할 파일만 명시하여 무시 파일에서 예외처리리
+!Assets/Scripts/
+!Assets/Scripts/**
+!Assets/Scripts/**/*.meta
+
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 .utmp/
