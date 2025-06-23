@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour, IDamageable, IDamageDealer
 {
 	public static Player Instance {  get; private set; }
 	public PlayerMover Mover { get; private set; }
@@ -59,6 +59,11 @@ public class Player : MonoBehaviour, IDamageable
 		playerCurHealth -= amount;
 		if (playerCurHealth <= 0)
 			Death();
+	}
+
+	public void DealDamage(IDamageable target)
+	{
+		
 	}
 
 

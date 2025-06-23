@@ -1,14 +1,9 @@
 using UnityEngine;
 
-public interface IAttackPattern
-{
-	void Attack();
-}
-
 public abstract class BaseMonster : BaseEnemy
 {
 	[SerializeField]
-	protected IAttackPattern attackPattern;
+	protected AttackPattern attackPattern;
 	[SerializeField]
 	protected float damage;
 
