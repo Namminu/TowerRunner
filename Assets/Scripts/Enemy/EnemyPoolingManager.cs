@@ -83,9 +83,22 @@ public class EnemyPoolingManager : MonoBehaviour
 		}
 	}
 
+	private void HandleOutofBounds(EnemyMover mover)
+	{
+		mover.OnOutofBounds -= HandleOutofBounds;
+		Despawn(mover.GetComponent<BaseEnemy>());
+	}
+
+
 	public BaseEnemy Spawn(BaseEnemy prefab, Vector3 pos, Quaternion rot)
-		=> lookup[prefab].Spawn(pos, rot);
+	{
+		var enemy = lookup[prefab].Spawn(pos, rot);
+		var mover = enemy.GetComponent<EnemyMover>();
+		mover.OnOutofBounds += HandleOutofBounds;
+		return enemy;
+	}
 
 	public void Despawn(BaseEnemy instance)
 		=> lookup[instance.Prefab].Despawn(instance);
+
 }
