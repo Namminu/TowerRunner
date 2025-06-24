@@ -16,7 +16,7 @@ public interface IPoolable
 	void OnDespawn();
 }
 
-public class ObjectPool<T> where T : Component, IPoolable
+public class ObjectPool<T> where T : BaseEnemy, IPoolable
 {
 	private T prefab;
 	private Queue<T> pool = new Queue<T>();

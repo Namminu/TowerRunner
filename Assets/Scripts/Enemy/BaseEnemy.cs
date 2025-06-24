@@ -22,7 +22,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 	protected int enemyMaxHealth;
 	protected int enemyCurHealth;
 
-	public BaseEnemy Prefab { get; protected set; }
+	public BaseEnemy Prefab { get; internal set; }
 
 	protected virtual void Awake()
 	{
@@ -40,13 +40,16 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 	{
 		enemyCurHealth = enemyMaxHealth;
 		enabled = true;
-		GetComponent<Collider2D>.enable = true;
-		GetComponent<Animator>?.Play("Idle");
+		if (GetComponent<Collider2D>() is Collider2D col)
+			col.enabled = true;
+		if (GetComponent<Animator>() is Animator ani)
+			ani.Play("Idle");
 	}
 	public virtual void OnDespawn()
 	{
 		enabled = false;
 		StopAllCoroutines();
-		GetComponent<Collider2D>.enable = false;
+		if (GetComponent<Collider2D>() is Collider2D col)
+			col.enabled = false;
 	}
 }
