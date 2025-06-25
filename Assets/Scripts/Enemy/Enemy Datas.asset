@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 297eafd224df8de4dbcfd6f4f3139a47, type: 3}
-  m_Name: EnemyConfig
+  m_Name: Enemy Datas
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
-  poolSize: 0
-  interval: 3
+  entries:
+  - prefab: {fileID: 0}
+    poolSize: 0
+    spawnInterval: 0
   moveDownSpeed: 2

@@ -60,26 +60,17 @@ public class EnemyPoolingManager : MonoBehaviour
 {
 	public static EnemyPoolingManager Instance { get; private set; }
 
-	[Serializable]
-	struct PoolInfo
-	{
-		public BaseEnemy prefab;
-		public int initialSize;
-	}
-
 	[SerializeField]
-	PoolInfo[] pools;
-
-	private Dictionary<BaseEnemy, ObjectPool<BaseEnemy>> lookup;
+	EnemyData enemyData;
+	Dictionary<BaseEnemy, ObjectPool<BaseEnemy>> pools;
 
 	private void Awake()
 	{
-		Instance = this;
-		lookup = new Dictionary<BaseEnemy, ObjectPool<BaseEnemy>>();
-		foreach(var pi in pools)
+		pools = new Dictionary<BaseEnemy, ObjectPool<BaseEnemy>>();
+		foreach(var entry in enemyData.entries)
 		{
-			lookup[pi.prefab] =
-				new ObjectPool<BaseEnemy>(pi.prefab, pi.initialSize, transform);
+			pools[entry.prefab] = 
+				new ObjectPool<BaseEnemy>(entry.prefab, entry.poolSize, transform);
 		}
 	}
 
@@ -92,13 +83,13 @@ public class EnemyPoolingManager : MonoBehaviour
 
 	public BaseEnemy Spawn(BaseEnemy prefab, Vector3 pos, Quaternion rot)
 	{
-		var enemy = lookup[prefab].Spawn(pos, rot);
+		var enemy = pools[prefab].Spawn(pos, rot);
 		var mover = enemy.GetComponent<EnemyMover>();
 		mover.OnOutofBounds += HandleOutofBounds;
 		return enemy;
 	}
 
 	public void Despawn(BaseEnemy instance)
-		=> lookup[instance.Prefab].Despawn(instance);
+		=> pools[instance.Prefab].Despawn(instance);
 
 }

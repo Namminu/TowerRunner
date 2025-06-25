@@ -21,8 +21,8 @@ public class EnemyManager : MonoBehaviour
 	{
 		while(true)
 		{
-			// float speedMul = GameSpeedManager.Instance.SpeedMultiplier;
-			float waitTime = entry.spawnInterval/* / speedMul*/;
+			float speedMul = GameSpeedManager.Instance.SpeedMultiplier;
+			float waitTime = entry.spawnInterval * speedMul;
 			yield return new WaitForSeconds(waitTime);
 
 			Spawn(entry.prefab);
