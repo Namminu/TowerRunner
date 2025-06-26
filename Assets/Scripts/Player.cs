@@ -2,16 +2,33 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable, IDamageDealer
 {
-	public static Player Instance {  get; private set; }
+	public static Player Instance { get; private set; }
 	public PlayerMover Mover { get; private set; }
 
 	#region ---- Members ----
-	[SerializeField, Tooltip("플레이어 이동 속도"), Range(50, 100)]
+	[Header("Player State Stats")]
+	[SerializeField, Tooltip("Player SideMove Speed"), Range(50, 100)]
 	private float playerSpeed = 50f;
 
-	[SerializeField, Tooltip("플레이어 최대 체력")]
-	private float playerMaxHealth = 100f;
-	private float playerCurHealth;
+	[SerializeField, Tooltip("Player Max Health")]
+	private float _maxHealth;
+	public float PlayerMaxHealth => _maxHealth;
+	
+	private float _curHealth;
+	public float PlayerCurHealth
+	{
+		get => _curHealth;
+		set
+		{
+			_curHealth = Mathf.Clamp(value, 0f, PlayerMaxHealth);
+		}
+	}
+
+	[Header("Player Power Stats")]
+	[SerializeField, Tooltip("Player Fatal Attack Rate"), Range(0, 100)]
+	private int playerFatalRate = 0;
+	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
+	private float playerPower = 1f;
 	#endregion
 
 
@@ -32,13 +49,22 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		{
 			Mover.SetSpeed(playerSpeed);
 		}
-
-		playerCurHealth = playerMaxHealth;
+		_maxHealth = 100f;
+		_curHealth = _maxHealth;
 	}
 
 	private void Attack()
 	{
-		Debug.Log("Player Attack!");
+		if(Random.Range(0, 100) < playerFatalRate) /* Fatal Attack Called */
+		{
+			Debug.Log("Player Fatal Attack!");
+
+		}
+		else								       /* Normal Attack Called */
+		{
+			Debug.Log("Player Attack!");
+
+		}
 	}
 
 	private void Death()
@@ -56,8 +82,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	public void TakeDamage(int amount)
 	{
-		playerCurHealth -= amount;
-		if (playerCurHealth <= 0)
+		_curHealth -= amount;
+		if (_curHealth <= 0)
 			Death();
 	}
 
@@ -66,6 +92,11 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		
 	}
 
+	public void Heal(float amount)
+	{
+		Debug.Log("Player Heal! " + amount);
+		_curHealth += amount;
+	}
 
 	#endregion
 }

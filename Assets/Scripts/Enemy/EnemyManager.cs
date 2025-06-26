@@ -7,9 +7,7 @@ public class EnemyManager : MonoBehaviour
 	[SerializeField]
 	EnemyData enemyData;
 
-	Dictionary<BaseEnemy, float> timers = new Dictionary<BaseEnemy, float>();
-
-
+	// Dictionary<BaseEnemy, float> timers = new Dictionary<BaseEnemy, float>();
 
 	private void Start()
 	{
