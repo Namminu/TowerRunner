@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Item Database
-  m_EditorClassIdentifier: Assembly-CSharp::ItemDatabase
-  allItems: []
+  m_Script: {fileID: 11500000, guid: 2231c9dffcc86fd478677eb36f90d0da, type: 3}
+  m_Name: Gold
+  m_EditorClassIdentifier: 
+  id: 0
+  itemName: 
+  itemIcon: {fileID: 0}

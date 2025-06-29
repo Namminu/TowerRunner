@@ -29,6 +29,20 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	private int playerFatalRate = 0;
 	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
 	private float playerPower = 1f;
+
+	[Header("Player Finances")]
+	[SerializeField, Tooltip("Player Gold Count")]
+	private int _gold;
+	public int PlayerGold
+	{
+		get => _gold;
+		set
+		{
+			_gold += value;
+		}
+	}
+
+	private bool isPlayerInvincible;
 	#endregion
 
 
@@ -51,6 +65,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 		_maxHealth = 100f;
 		_curHealth = _maxHealth;
+		isPlayerInvincible = false;
 	}
 
 	private void Attack()
@@ -82,6 +97,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	public void TakeDamage(int amount)
 	{
+		if (isPlayerInvincible) return;
+
 		_curHealth -= amount;
 		if (_curHealth <= 0)
 			Death();
@@ -96,6 +113,16 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	{
 		Debug.Log("Player Heal! " + amount);
 		_curHealth += amount;
+	}
+
+	public void ApplyBattleBooster(float duration)
+	{
+		isPlayerInvincible = true;
+	}
+
+	public void RemoveBattleBooster()
+	{
+		isPlayerInvincible = false;
 	}
 
 	#endregion
