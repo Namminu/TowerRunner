@@ -4,6 +4,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 {
 	public static Player Instance { get; private set; }
 	public PlayerMover Mover { get; private set; }
+	public PlayerItemChecker ItemChecker { get; private set; }
 
 	#region ---- Members ----
 	[Header("Player State Stats")]
@@ -43,6 +44,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	}
 
 	private bool isPlayerInvincible;
+	private bool isPlayerHasShield;
 	#endregion
 
 
@@ -63,23 +65,14 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		{
 			Mover.SetSpeed(playerSpeed);
 		}
+		ItemChecker = GetComponent<PlayerItemChecker>();
+		
+
 		_maxHealth = 100f;
 		_curHealth = _maxHealth;
+
 		isPlayerInvincible = false;
-	}
-
-	private void Attack()
-	{
-		if(Random.Range(0, 100) < playerFatalRate) /* Fatal Attack Called */
-		{
-			Debug.Log("Player Fatal Attack!");
-
-		}
-		else								       /* Normal Attack Called */
-		{
-			Debug.Log("Player Attack!");
-
-		}
+		isPlayerHasShield = false;
 	}
 
 	private void Death()
@@ -92,12 +85,18 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	#region ---- Public Method ----
 	public void OnTap(Vector2 pos)
 	{
-		Attack();
+		//Attack();
 	}
 
-	public void TakeDamage(int amount)
+	public void TakeDamage(float amount)
 	{
 		if (isPlayerInvincible) return;
+
+		if(isPlayerHasShield)
+		{
+			isPlayerHasShield = false;
+			return;
+		}
 
 		_curHealth -= amount;
 		if (_curHealth <= 0)
@@ -106,7 +105,18 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	public void DealDamage(IDamageable target)
 	{
-		
+		float damage = playerPower;
+		if (Random.Range(0, 100) < playerFatalRate) /* Fatal Attack Called */
+		{
+			Debug.Log("Player Fatal Attack!");
+			damage *= 2;
+			target.TakeDamage(damage);
+		}
+		else                                       /* Normal Attack Called */
+		{
+			Debug.Log("Player Attack!");
+			target.TakeDamage(damage);
+		}
 	}
 
 	public void Heal(float amount)
@@ -115,14 +125,34 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_curHealth += amount;
 	}
 
-	public void ApplyBattleBooster(float duration)
+	public void ApplyBattleBooster()
 	{
 		isPlayerInvincible = true;
+		/* Booster Effect On */
 	}
 
 	public void RemoveBattleBooster()
 	{
 		isPlayerInvincible = false;
+		/* Booster Effect Off */
+	}
+
+	public void GetShield()
+	{
+		isPlayerHasShield = true;
+		/* Shield Effect On */
+	}
+
+	public void ApplyFatalElixir(int inhance)
+	{
+		playerFatalRate += inhance;
+		/* Elixir Effect On */
+	}
+
+	public void RemoveFatalElixir(int inhance)
+	{
+		playerFatalRate -= inhance;
+		/* Elixir Effect Off */
 	}
 
 	#endregion

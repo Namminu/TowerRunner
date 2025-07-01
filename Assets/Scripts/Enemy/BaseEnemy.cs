@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public interface IDamageable
 {
-	void TakeDamage(int amount);
+	void TakeDamage(float amount);
 }
 
 /// <summary>
@@ -28,7 +28,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 	{
 		enemyCurHealth = enemyMaxHealth;
 	}
-	public virtual void TakeDamage(int amount)
+	public virtual void TakeDamage(float amount)
 	{
 
 	}

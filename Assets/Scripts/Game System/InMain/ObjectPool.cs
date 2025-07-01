@@ -64,16 +64,3 @@ public class ObjectPool<T> where T : MonoBehaviour, IPoolable
 		pool.Enqueue(item);
 	}
 }
-
-public class EnemyPool : ObjectPool<BaseEnemy>
-{
-	public EnemyPool(BaseEnemy prefab, int size, Transform parent = null)
-		: base(prefab, size, parent) { }
-
-	protected override BaseEnemy CreateNew()
-	{
-		var inst = base.CreateNew();
-		inst.Prefab = prefab;
-		return inst;
-	}
-}
