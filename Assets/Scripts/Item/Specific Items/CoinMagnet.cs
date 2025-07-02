@@ -10,6 +10,11 @@ public class CoinMagnet : ItemData
 
 	public override void Apply(Player player)
 	{
+		player.ItemChecker.ApplyCoinMagnet(range);
 
+		TimerUIManager.Instance.StartTimer(itemIcon, duration, () =>
+		{
+			player.ItemChecker.RemoveCoinMagnet();
+		});
 	}
 }

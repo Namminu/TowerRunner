@@ -7,11 +7,11 @@ public class BattleBooster : ItemData
 
 	public override void Apply(Player player)
 	{
-		player.ApplyBattleBooster();
+		player.ItemChecker.ApplyBattleBooster();
 
 		TimerUIManager.Instance.StartTimer(itemIcon, duration, () =>
 		{
-			player.RemoveBattleBooster();
+			player.ItemChecker.RemoveBattleBooster();
 		});
 	}
 }

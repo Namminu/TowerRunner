@@ -8,7 +8,7 @@ public class Gold : ItemData
 
 	public override void Apply(Player player)
 	{
-		player.PlayerGold += GetRandomCoin();
+		player.ItemChecker.GetCoin(GetRandomCoin());
 	}
 
 	private int GetRandomCoin()

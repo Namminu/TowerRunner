@@ -10,11 +10,11 @@ public class FatalElixir : ItemData
 
 	public override void Apply(Player player)
 	{
-		player.ApplyFatalElixir(maxRange);
+		player.ItemChecker.ApplyFatalElixir(maxRange);
 
 		TimerUIManager.Instance.StartTimer(itemIcon, duration, () =>
 		{
-			player.RemoveFatalElixir(maxRange);
+			player.ItemChecker.RemoveFatalElixir(maxRange);
 		});
 	}
 }

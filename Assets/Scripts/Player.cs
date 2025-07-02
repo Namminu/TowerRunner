@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable, IDamageDealer
@@ -27,7 +28,16 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	[Header("Player Power Stats")]
 	[SerializeField, Tooltip("Player Fatal Attack Rate"), Range(0, 100)]
-	private int playerFatalRate = 0;
+	private int _fatalRate;
+	public int PlayerFatalRate
+	{
+		get => _fatalRate;
+		set
+		{
+			_fatalRate = Mathf.Clamp(value, 0, 100);
+		}
+	}
+
 	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
 	private float playerPower = 1f;
 
@@ -43,8 +53,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 	}
 
-	private bool isPlayerInvincible;
-	private bool isPlayerHasShield;
+	private bool _isInvincible;
+	private bool _isShield;
+	public bool IsPlayerInvincible => _isInvincible;
+	public bool IsPLayerShield => _isShield;
+
+	public event Action OnShieldConsumed;
 	#endregion
 
 
@@ -65,14 +79,13 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		{
 			Mover.SetSpeed(playerSpeed);
 		}
-		ItemChecker = GetComponent<PlayerItemChecker>();
-		
+		ItemChecker = GetComponent<PlayerItemChecker>();		
 
 		_maxHealth = 100f;
 		_curHealth = _maxHealth;
 
-		isPlayerInvincible = false;
-		isPlayerHasShield = false;
+		_isInvincible = false;
+		_isShield = false;
 	}
 
 	private void Death()
@@ -90,11 +103,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	public void TakeDamage(float amount)
 	{
-		if (isPlayerInvincible) return;
+		if (_isInvincible) return;
 
-		if(isPlayerHasShield)
+		if(_isShield)
 		{
-			isPlayerHasShield = false;
+			_isShield = false;
+			OnShieldConsumed?.Invoke();
 			return;
 		}
 
@@ -106,7 +120,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	public void DealDamage(IDamageable target)
 	{
 		float damage = playerPower;
-		if (Random.Range(0, 100) < playerFatalRate) /* Fatal Attack Called */
+		if (UnityEngine.Random.Range(0, 100) < _fatalRate) /* Fatal Attack Called */
 		{
 			Debug.Log("Player Fatal Attack!");
 			damage *= 2;
@@ -118,42 +132,10 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			target.TakeDamage(damage);
 		}
 	}
+	#endregion
 
-	public void Heal(float amount)
-	{
-		Debug.Log("Player Heal! " + amount);
-		_curHealth += amount;
-	}
-
-	public void ApplyBattleBooster()
-	{
-		isPlayerInvincible = true;
-		/* Booster Effect On */
-	}
-
-	public void RemoveBattleBooster()
-	{
-		isPlayerInvincible = false;
-		/* Booster Effect Off */
-	}
-
-	public void GetShield()
-	{
-		isPlayerHasShield = true;
-		/* Shield Effect On */
-	}
-
-	public void ApplyFatalElixir(int inhance)
-	{
-		playerFatalRate += inhance;
-		/* Elixir Effect On */
-	}
-
-	public void RemoveFatalElixir(int inhance)
-	{
-		playerFatalRate -= inhance;
-		/* Elixir Effect Off */
-	}
-
+	#region ---- Setter ----
+	internal void SetInvincible(bool on) => _isInvincible = on;
+	internal void SetShieldOn() => _isShield = true;
 	#endregion
 }
