@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemPickup : MonoBehaviour, IPoolable
 {
 	[SerializeField]
-	private ItemData data;
+	public ItemData Data { get;}
 
 	private Collider2D col;
 	private SpriteRenderer sprite;
@@ -20,7 +20,7 @@ public class ItemPickup : MonoBehaviour, IPoolable
 	{
 		if(other.CompareTag("PLAYER"))
 		{
-			data.Apply(other.GetComponent<Player>());
+			Data.Apply(other.GetComponent<Player>());
 			/* Item Pooling Manager to Despawn this Item */
 		}
 	}

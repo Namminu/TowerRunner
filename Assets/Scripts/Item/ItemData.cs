@@ -7,5 +7,8 @@ public abstract class ItemData : ScriptableObject
     public string itemName;
     public Sprite itemIcon;
 
+    [Tooltip("Item Prefab has PickUp Component for Spawn on Scene in Runtime")]
+    public ItemPickup pickupPrefab;
+
     public abstract void Apply(Player player);
 }

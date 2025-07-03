@@ -14,9 +14,13 @@ public class EnemyPoolingManager : MonoBehaviour
 	private void Awake()
 	{
 		pools = new Dictionary<BaseEnemy, EnemyPool>();
-		foreach(var entry in enemyData.entries)
+	}
+
+	private void Start()
+	{
+		foreach (var entry in enemyData.entries)
 		{
-			pools[entry.prefab] = 
+			pools[entry.prefab] =
 				new EnemyPool(entry.prefab, entry.poolSize, transform);
 		}
 	}

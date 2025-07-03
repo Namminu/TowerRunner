@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Gold
   m_EditorClassIdentifier: 
   id: 1
-  itemName: "\uCF54\uC778"
+  itemName: "\uACE8\uB4DC"
   itemIcon: {fileID: 21300000, guid: 9fc843f07dadf6248909105cefddbdfc, type: 3}
-  maxRange: 0
+  pickupPrefab: {fileID: 0}
+  maxRange: 100
