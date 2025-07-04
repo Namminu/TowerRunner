@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "ItemData/Fatal Elixir")]
 public class FatalElixir : ItemData
 {
 	[SerializeField, Tooltip("Player Fatal Hit Chance Weighting"), Range(10, 30)]

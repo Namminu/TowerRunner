@@ -19,8 +19,8 @@ public interface IDamageDealer
 public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPoolable
 {
 	[SerializeField]
-	protected int enemyMaxHealth;
-	protected int enemyCurHealth;
+	protected float enemyMaxHealth;
+	protected float enemyCurHealth;
 
 	public BaseEnemy Prefab { get; internal set; }
 
@@ -28,14 +28,24 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 	{
 		enemyCurHealth = enemyMaxHealth;
 	}
+
+	protected virtual void Death()
+	{
+		EnemyPoolingManager.Instance.Despawn(this);
+	}
+
 	public virtual void TakeDamage(float amount)
 	{
-
+		enemyCurHealth -= amount;
+		if (enemyCurHealth <= 0f)
+			Death();
 	}
+
 	public void DealDamage(IDamageable target)
 	{
-	
+		
 	}
+
 	public virtual void OnSpawn()
 	{
 		enemyCurHealth = enemyMaxHealth;
@@ -45,6 +55,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 		if (GetComponent<Animator>() is Animator ani)
 			ani.Play("Idle");
 	}
+
 	public virtual void OnDespawn()
 	{
 		enabled = false;

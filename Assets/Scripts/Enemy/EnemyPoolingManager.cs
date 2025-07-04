@@ -25,7 +25,7 @@ public class EnemyPoolingManager : MonoBehaviour
 		}
 	}
 
-	private void HandleOutofBounds(EnemyMover mover)
+	private void HandleOutofBounds(ObjectMover mover)
 	{
 		mover.OnOutofBounds -= HandleOutofBounds;
 		Despawn(mover.GetComponent<BaseEnemy>());
@@ -35,7 +35,7 @@ public class EnemyPoolingManager : MonoBehaviour
 	public BaseEnemy Spawn(BaseEnemy prefab, Vector3 pos, Quaternion rot)
 	{
 		var enemy = pools[prefab].Spawn(pos, rot);
-		var mover = enemy.GetComponent<EnemyMover>();
+		var mover = enemy.GetComponent<ObjectMover>();
 		mover.OnOutofBounds += HandleOutofBounds;
 		return enemy;
 	}

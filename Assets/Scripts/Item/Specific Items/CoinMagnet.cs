@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "ItemData/Coin Magnet")]
 public class CoinMagnet : ItemData
 {
 	[SerializeField, Range(10f, 30f)]

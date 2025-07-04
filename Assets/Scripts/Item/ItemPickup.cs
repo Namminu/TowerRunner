@@ -21,7 +21,7 @@ public class ItemPickup : MonoBehaviour, IPoolable
 		if(other.CompareTag("PLAYER"))
 		{
 			Data.Apply(other.GetComponent<Player>());
-			/* Item Pooling Manager to Despawn this Item */
+			ItemPoolingManager.Instance.Despawn(this);
 		}
 	}
 

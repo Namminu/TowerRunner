@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   itemName: "\uACE8\uB4DC"
+  itemDescription: "\uC774 \uC138\uACC4\uC758 \uD654\uD3D0\uC785\uB2C8\uB2E4. \uB3C8\uC73C\uB85C
+    \uC548\uB418\uB294 \uAC83\uC740 \uC5C6\uC8E0."
   itemIcon: {fileID: 21300000, guid: 9fc843f07dadf6248909105cefddbdfc, type: 3}
   pickupPrefab: {fileID: 0}
   maxRange: 100

@@ -8,4 +8,10 @@ public abstract class BaseMonster : BaseEnemy
 	protected float damage;
 
 	public float Damage => damage;
+
+	protected override void Death()
+	{
+		base.Death();
+
+	}
 }

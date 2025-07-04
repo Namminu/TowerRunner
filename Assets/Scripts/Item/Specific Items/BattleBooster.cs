@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "ItemData/Battle Booster")]
 public class BattleBooster : ItemData
 {
 	[SerializeField, Range(10f, 30f)]

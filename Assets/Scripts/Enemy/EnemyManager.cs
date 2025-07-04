@@ -20,7 +20,7 @@ public class EnemyManager : MonoBehaviour
 		while(true)
 		{
 			float speedMul = GameSpeedManager.Instance.SpeedMultiplier;
-			float waitTime = entry.spawnInterval * speedMul;
+			float waitTime = entry.spawnInterval / speedMul;
 			yield return new WaitForSeconds(waitTime);
 
 			Spawn(entry.prefab);
@@ -38,7 +38,7 @@ public class EnemyManager : MonoBehaviour
 		float z = Mathf.Abs(Camera.main.transform.position.z);
 		var leftTop = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, z));
 		var rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, z));
-		Vector3 pos = new Vector3(Random.Range(leftTop.x, rightTop.x), leftTop.y + 1f, 0);
+		Vector3 pos = new(Random.Range(leftTop.x, rightTop.x), leftTop.y + 1f, 0);
 
 		return pos;
 	}

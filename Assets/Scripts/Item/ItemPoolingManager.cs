@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class ItemPoolingManager : MonoBehaviour
 {
@@ -19,16 +19,25 @@ public class ItemPoolingManager : MonoBehaviour
 
 	private void Start()
 	{
-		foreach (var data in itemDB.allItems)
+		foreach (var data in itemDB.entries)
 		{
-			var prefab = data.pickupPrefab;
-			itemPools[data] = new ObjectPool<ItemPickup>(prefab, initialSize : 10, transform);
+			var prefab = data.data.pickupPrefab;
+			itemPools[data.data] = new ObjectPool<ItemPickup>(prefab, data.poolSize, transform);
 		}
+	}
+
+	private void HandleOutofBounds(ObjectMover mover)
+	{
+		mover.OnOutofBounds -= HandleOutofBounds;
+		Despawn(mover.GetComponent<ItemPickup>());
 	}
 
 	public ItemPickup Spawn(ItemData data, Vector3 pos)
 	{
-		return itemPools[data].Spawn(pos, Quaternion.identity);
+		var item = itemPools[data].Spawn(pos, Quaternion.identity);
+		var mover = data.GetComponent<ObjectMover>();
+		mover.OnOutofBounds += HandleOutofBounds;
+		return item;
 	}
 
 	public void Despawn(ItemPickup pickUp)

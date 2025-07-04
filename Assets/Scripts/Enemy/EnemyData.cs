@@ -19,8 +19,4 @@ public class EnemyData : ScriptableObject
 	[Header("Prefab & Pooling")]
 	[Tooltip("All Enemy Object Pooling Datas")]
 	public List<EnemyEntry> entries = new List<EnemyEntry>();
-
-    [Header("Object moveDown Speed")]
-    [Tooltip("Object Speed to Fall DownSide"), Range(1, 10)]                   
-	public float moveDownSpeed = 2f;
 }
