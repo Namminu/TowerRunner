@@ -7,8 +7,6 @@ public class EnemyManager : MonoBehaviour
 	[SerializeField]
 	EnemyData enemyData;
 
-	// Dictionary<BaseEnemy, float> timers = new Dictionary<BaseEnemy, float>();
-
 	private void Start()
 	{
 		foreach (var entry in enemyData.entries)

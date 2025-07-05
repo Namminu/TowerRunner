@@ -3,15 +3,20 @@ using UnityEngine;
 public abstract class BaseMonster : BaseEnemy
 {
 	[SerializeField]
-	protected AttackPattern attackPattern;
-	[SerializeField]
-	protected float damage;
+	protected float _attackDamage;
+	public float AttackDamage => _attackDamage;
 
-	public float Damage => damage;
+	[SerializeField]
+	protected AttackPattern attackPattern;
 
 	protected override void Death()
 	{
 		base.Death();
+		ItemData dropItem = ItemDatabase.GetRandomDrop();
+		if (dropItem != null)
+		{
+			ItemPoolingManager.Instance.Spawn(dropItem,transform.position);
+		}
 
 	}
 }

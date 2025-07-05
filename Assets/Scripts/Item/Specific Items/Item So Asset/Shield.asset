@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f29079a22f58874483f9d452d0b4492, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: 
-  id: 5
+  id: 1
   itemName: "\uBC29\uC5B4\uB9C9"
   itemDescription: "\uD53C\uACA9\uC744 1\uD68C \uB9C9\uC544\uC904 \uC218 \uC788\uB294
     \uBC29\uC5B4\uB9C9\uC785\uB2C8\uB2E4."

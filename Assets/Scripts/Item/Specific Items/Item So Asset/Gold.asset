@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2231c9dffcc86fd478677eb36f90d0da, type: 3}
   m_Name: Gold
   m_EditorClassIdentifier: 
-  id: 1
+  id: 5
   itemName: "\uACE8\uB4DC"
   itemDescription: "\uC774 \uC138\uACC4\uC758 \uD654\uD3D0\uC785\uB2C8\uB2E4. \uB3C8\uC73C\uB85C
     \uC548\uB418\uB294 \uAC83\uC740 \uC5C6\uC8E0."

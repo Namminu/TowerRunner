@@ -19,6 +19,10 @@ public interface IDamageDealer
 public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPoolable
 {
 	[SerializeField]
+	private float _hitDamage;
+	public float HitDamage => _hitDamage;
+
+	[SerializeField]
 	protected float enemyMaxHealth;
 	protected float enemyCurHealth;
 
@@ -43,7 +47,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 
 	public void DealDamage(IDamageable target)
 	{
-		
+		target.TakeDamage(_hitDamage);
 	}
 
 	public virtual void OnSpawn()
@@ -62,5 +66,13 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 		StopAllCoroutines();
 		if (GetComponent<Collider2D>() is Collider2D col)
 			col.enabled = false;
+	}
+
+	protected void OnTriggerEnter2D(Collider2D col)
+	{
+		if (!col.CompareTag("PLAYER")) return;
+	
+		if(col.TryGetComponent<Player>(out var player))
+			DealDamage(player);
 	}
 }

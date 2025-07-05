@@ -13,27 +13,27 @@ MonoBehaviour:
   m_Name: Item Database
   m_EditorClassIdentifier: 
   entries:
-  - data: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-    dropChance: 0
-  - data: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-    dropChance: 0
-  - data: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-    dropChance: 0
-  - data: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-    dropChance: 0
-  - data: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-    dropChance: 0
-  - data: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-    dropChance: 0
+  - data: {fileID: 11400000, guid: 6e82eb6b2958a564ab5d62670f81c471, type: 2}
+    poolSize: 5
+    spawnInterval: 10
+    dropChance: 25
+  - data: {fileID: 11400000, guid: 513193ebbafe3974ebba2947bb3a15d5, type: 2}
+    poolSize: 5
+    spawnInterval: 12
+    dropChance: 15
+  - data: {fileID: 11400000, guid: 9fb8d8a9ff1bf8248985b22931b1e751, type: 2}
+    poolSize: 5
+    spawnInterval: 15
+    dropChance: 10
+  - data: {fileID: 11400000, guid: f9a495f8adcbe4948a5e669f84a691c3, type: 2}
+    poolSize: 5
+    spawnInterval: 10
+    dropChance: 15
+  - data: {fileID: 11400000, guid: ffc95b766c93c644cac0a36067aff54b, type: 2}
+    poolSize: 5
+    spawnInterval: 20
+    dropChance: 5
+  - data: {fileID: 11400000, guid: adc6e079c164a43498313b115b726171, type: 2}
+    poolSize: 5
+    spawnInterval: 8
+    dropChance: 30
