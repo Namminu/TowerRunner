@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class BaseMonster : BaseEnemy
+public abstract class BaseMonster : BaseEnemy, IDamageable
 {
 	[SerializeField]
 	protected float _attackDamage;
@@ -9,14 +9,30 @@ public abstract class BaseMonster : BaseEnemy
 	[SerializeField]
 	protected AttackPattern attackPattern;
 
-	protected override void Death()
+	[SerializeField]
+	protected float enemyMaxHealth;
+	protected float enemyCurHealth;
+
+
+	protected virtual void Awake()
 	{
-		base.Death();
+		enemyCurHealth = enemyMaxHealth;
+	}
+
+	protected void Death()
+	{
 		ItemData dropItem = ItemDatabase.GetRandomDrop();
 		if (dropItem != null)
 		{
 			ItemPoolingManager.Instance.Spawn(dropItem,transform.position);
 		}
+		EnemyPoolingManager.Instance.Despawn(this);
+	}
 
+	public virtual void TakeDamage(float amount)
+	{
+		enemyCurHealth -= amount;
+		if (enemyCurHealth <= 0f)
+			Death();
 	}
 }

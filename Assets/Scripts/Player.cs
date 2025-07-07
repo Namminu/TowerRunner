@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable, IDamageDealer
@@ -25,6 +26,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			_curHealth = Mathf.Clamp(value, 0f, PlayerMaxHealth);
 		}
 	}
+
+	[SerializeField, Tooltip("Invincible Time for Take Damage")]
+	private float damagedInvincibleTime;
+	[SerializeField, Tooltip("Blink Effect Time for Take Damage")]
+	private float blinkInterval;
+	private SpriteRenderer _spriteRenderer;
 
 	[Header("Player Power Stats")]
 	[SerializeField, Tooltip("Player Fatal Attack Rate"), Range(0, 100)]
@@ -55,8 +62,11 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	private bool _isInvincible;
 	private bool _isShield;
+	private bool _isDamageCoolDown;
+
 	public bool IsPlayerInvincible => _isInvincible;
 	public bool IsPLayerShield => _isShield;
+	public bool IsDamageCoolDown => _isDamageCoolDown;
 
 	public event Action OnShieldConsumed;
 	#endregion
@@ -79,18 +89,40 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		{
 			Mover.SetSpeed(playerSpeed);
 		}
-		ItemChecker = GetComponent<PlayerItemChecker>();		
+
+		ItemChecker = GetComponent<PlayerItemChecker>();
+		_spriteRenderer = GetComponent<SpriteRenderer>();
 
 		_maxHealth = 100f;
 		_curHealth = _maxHealth;
 
 		_isInvincible = false;
 		_isShield = false;
+		_isDamageCoolDown = false;
 	}
 
 	private void Death()
 	{
 		Debug.Log("Player Death. Game Over");
+	}
+
+	private IEnumerator DamagedInvincible()
+	{
+		_isDamageCoolDown = true;
+
+		float elapsed = 0f;
+		bool visible = true;
+
+		while(elapsed < damagedInvincibleTime)
+		{
+			visible = !visible;
+			_spriteRenderer.enabled = visible;
+			yield return new WaitForSeconds(blinkInterval);
+			elapsed += blinkInterval;
+		}
+
+		_spriteRenderer.enabled = true;
+		_isDamageCoolDown = false;
 	}
 
 	#endregion
@@ -103,7 +135,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	public void TakeDamage(float amount)
 	{
-		if (_isInvincible) return;
+		if (_isInvincible || _isDamageCoolDown) return;
 
 		if(_isShield)
 		{
@@ -114,7 +146,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 		_curHealth -= amount;
 		if (_curHealth <= 0)
+		{
 			Death();
+			return;
+		}		
+
+		StartCoroutine(DamagedInvincible());
 	}
 
 	public void DealDamage(IDamageable target)
@@ -131,6 +168,14 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			Debug.Log("Player Attack!");
 			target.TakeDamage(damage);
 		}
+	}
+
+	public void ImmediateDeath()
+	{
+		if (_isInvincible || _isDamageCoolDown) return;
+
+		_curHealth = 0;
+		Death();
 	}
 	#endregion
 

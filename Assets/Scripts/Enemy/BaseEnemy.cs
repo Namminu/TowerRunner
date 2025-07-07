@@ -16,34 +16,13 @@ public interface IDamageDealer
 	void DealDamage(IDamageable target);
 }
 
-public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPoolable
+public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 {
 	[SerializeField]
 	private float _hitDamage;
 	public float HitDamage => _hitDamage;
 
-	[SerializeField]
-	protected float enemyMaxHealth;
-	protected float enemyCurHealth;
-
 	public BaseEnemy Prefab { get; internal set; }
-
-	protected virtual void Awake()
-	{
-		enemyCurHealth = enemyMaxHealth;
-	}
-
-	protected virtual void Death()
-	{
-		EnemyPoolingManager.Instance.Despawn(this);
-	}
-
-	public virtual void TakeDamage(float amount)
-	{
-		enemyCurHealth -= amount;
-		if (enemyCurHealth <= 0f)
-			Death();
-	}
 
 	public void DealDamage(IDamageable target)
 	{
@@ -52,7 +31,6 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 
 	public virtual void OnSpawn()
 	{
-		enemyCurHealth = enemyMaxHealth;
 		enabled = true;
 		if (GetComponent<Collider2D>() is Collider2D col)
 			col.enabled = true;
@@ -68,7 +46,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IDamageDealer, IPo
 			col.enabled = false;
 	}
 
-	protected void OnTriggerEnter2D(Collider2D col)
+	protected virtual void OnTriggerEnter2D(Collider2D col)
 	{
 		if (!col.CompareTag("PLAYER")) return;
 	
