@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// 데미지를 받을 수 있는 객체 속성
@@ -18,11 +19,13 @@ public interface IDamageDealer
 
 public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 {
+	public AssetReferenceGameObject PrefabRef { get; internal set; }
+
 	[SerializeField]
 	private float _hitDamage;
 	public float HitDamage => _hitDamage;
 
-	public BaseEnemy Prefab { get; internal set; }
+	//public BaseEnemy Prefab { get; internal set; }
 
 	public void DealDamage(IDamageable target)
 	{

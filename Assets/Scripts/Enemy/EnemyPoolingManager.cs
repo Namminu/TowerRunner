@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class EnemyPoolingManager : MonoBehaviour
 {
@@ -9,19 +11,20 @@ public class EnemyPoolingManager : MonoBehaviour
 
 	[SerializeField]
 	EnemyData enemyData;
-	Dictionary<BaseEnemy, EnemyPool> pools;
+	Dictionary<AssetReferenceGameObject, EnemyPool> pools;
 
 	private void Awake()
 	{
-		pools = new Dictionary<BaseEnemy, EnemyPool>();
+		Instance = this;
+		pools = new Dictionary<AssetReferenceGameObject, EnemyPool>();
 	}
 
 	private void Start()
 	{
 		foreach (var entry in enemyData.entries)
 		{
-			pools[entry.prefab] =
-				new EnemyPool(entry.prefab, entry.poolSize, transform);
+			pools[entry.prefabRef] =
+				new EnemyPool(entry.prefabRef, entry.poolSize, transform);
 		}
 	}
 
@@ -32,15 +35,18 @@ public class EnemyPoolingManager : MonoBehaviour
 	}
 
 
-	public BaseEnemy Spawn(BaseEnemy prefab, Vector3 pos, Quaternion rot)
+	public BaseEnemy Spawn(AssetReferenceGameObject prefabRef, Vector3 pos, Quaternion rot)
 	{
-		var enemy = pools[prefab].Spawn(pos, rot);
-		var mover = enemy.GetComponent<ObjectMover>();
-		mover.OnOutofBounds += HandleOutofBounds;
+		var enemy = pools[prefabRef].Spawn(pos, rot);
+		if(enemy != null)
+		{
+			var mover = enemy.GetComponent<ObjectMover>();
+			mover.OnOutofBounds += HandleOutofBounds;
+		}
 		return enemy;
 	}
 
 	public void Despawn(BaseEnemy instance)
-		=> pools[instance.Prefab].Despawn(instance);
+		=> pools[instance.PrefabRef].Despawn(instance);
 
 }

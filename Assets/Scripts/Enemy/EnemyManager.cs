@@ -21,15 +21,23 @@ public class EnemyManager : MonoBehaviour
 			float waitTime = entry.spawnInterval / speedMul;
 			yield return new WaitForSeconds(waitTime);
 
-			Spawn(entry.prefab);
+			var handle = entry.prefabRef.InstantiateAsync(
+				GetSpawnPosition(),
+				Quaternion.identity,
+				transform);
+			yield return handle;
+
+			var enemyGo = handle.Result;
+			var enemy = enemyGo.GetComponent<BaseEnemy>();
+			enemy.OnSpawn();
 		}
 	}
 
-	private void Spawn(BaseEnemy prefab)
-	{
-		Vector3 pos = GetSpawnPosition();
-		EnemyPoolingManager.Instance.Spawn(prefab, pos, Quaternion.identity);
-	}
+	//private void Spawn(BaseEnemy prefab)
+	//{
+	//	Vector3 pos = GetSpawnPosition();
+	//	EnemyPoolingManager.Instance.Spawn(prefab, pos, Quaternion.identity);
+	//}
 
 	private Vector3 GetSpawnPosition()
 	{

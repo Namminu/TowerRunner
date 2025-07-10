@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - PLAYER
+  - ITEM
+  - MONSTER
+  - OBSTACLE
   layers:
   - Default
   - TransparentFX
@@ -11,10 +15,10 @@ TagManager:
   - 
   - Water
   - UI
-  - Player
-  - 
-  - 
-  - 
+  - PLAYER
+  - ITEM
+  - MONSTER
+  - OBSTACLE
   - 
   - 
   - 

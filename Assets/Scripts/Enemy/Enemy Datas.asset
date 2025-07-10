@@ -13,7 +13,35 @@ MonoBehaviour:
   m_Name: Enemy Datas
   m_EditorClassIdentifier: 
   entries:
-  - prefab: {fileID: 0}
-    poolSize: 0
-    spawnInterval: 0
-  moveDownSpeed: 2
+  - prefabRef:
+      m_AssetGUID: 0668d334ff88e8e4389b09a4fe9b48ee
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    poolSize: 5
+    spawnInterval: 20
+  - prefabRef:
+      m_AssetGUID: 6bda030f2b4ec564389cf4e83936c9f2
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    poolSize: 5
+    spawnInterval: 25
+  - prefabRef:
+      m_AssetGUID: 911bb2433f5d7eb48bd15307ab9e387d
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    poolSize: 5
+    spawnInterval: 10
+  - prefabRef:
+      m_AssetGUID: 9927e5a653189914c821c55329f28467
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
+    poolSize: 5
+    spawnInterval: 15

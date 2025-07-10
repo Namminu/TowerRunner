@@ -1,14 +1,49 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class EnemyPool : ObjectPool<BaseEnemy>
+public class EnemyPool
 {
-	public EnemyPool(BaseEnemy prefab, int size, Transform parent = null)
-		: base(prefab, size, parent) { }
+	readonly AssetReferenceGameObject prefabRef;
+	readonly Transform parent;
+	readonly int initialSize;
 
-	protected override BaseEnemy CreateNew()
+	private ObjectPool<BaseEnemy> innerPool;
+	private bool isReady = false;
+
+	public EnemyPool(AssetReferenceGameObject prefabRef, 
+		int initialSize, Transform parent = null)
 	{
-		var inst = base.CreateNew();
-		inst.Prefab = prefab;
-		return inst;
+		this.prefabRef = prefabRef;
+		this.initialSize = initialSize;
+		this.parent = parent;
+
+		prefabRef.LoadAssetAsync<GameObject>().Completed += OnPrefabLoaded;
+	}
+
+	private void OnPrefabLoaded(AsyncOperationHandle<GameObject> handle)
+	{
+		var prefabGo = handle.Result;
+		var prefab = prefabGo.GetComponent<BaseEnemy>();
+		innerPool = new ObjectPool<BaseEnemy>(prefab, initialSize, parent);
+		isReady = true;
+	}
+
+	public BaseEnemy Spawn(Vector3 pos, Quaternion rot)
+	{
+		if(!isReady)
+		{
+			Debug.LogWarning($"Pool for {prefabRef.RuntimeKey} Not Ready");
+		}
+
+		var enemy = innerPool.Spawn(pos, rot);
+		enemy.PrefabRef = prefabRef;
+		return enemy;
+	}
+
+	public void Despawn(BaseEnemy inst)
+	{
+		if (!isReady) return;
+		innerPool.Despawn(inst);
 	}
 }

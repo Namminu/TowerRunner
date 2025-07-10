@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(menuName = "Scriptable Objects/EnemyData")]
 public class EnemyData : ScriptableObject
@@ -9,7 +10,7 @@ public class EnemyData : ScriptableObject
 	public struct EnemyEntry
     {
 		[Tooltip("Enemy Object Prefab")] 
-		public BaseEnemy prefab;
+		public AssetReferenceGameObject prefabRef;
 		[Tooltip("Object Pool Size")] 
 		public int poolSize;
 		[Tooltip("Spawn Interval")] 
@@ -18,5 +19,5 @@ public class EnemyData : ScriptableObject
 
 	[Header("Prefab & Pooling")]
 	[Tooltip("All Enemy Object Pooling Datas")]
-	public List<EnemyEntry> entries = new List<EnemyEntry>();
+	public List<EnemyEntry> entries = new List<EnemyEntry>(); 
 }
