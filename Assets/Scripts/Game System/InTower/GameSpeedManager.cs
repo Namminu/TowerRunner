@@ -19,4 +19,9 @@ public class GameSpeedManager : MonoBehaviour
 	{
 		SpeedMultiplier = 1f + Time.timeSinceLevelLoad * speedAccelrator;
 	}
+
+	public void Init()
+	{
+
+	}
 }

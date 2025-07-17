@@ -41,4 +41,9 @@ public class InputManger : MonoBehaviour
 		}
 		#endregion
 	}
+
+	public void Init()
+	{
+
+	}
 }

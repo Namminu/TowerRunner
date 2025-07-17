@@ -3,8 +3,15 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
+	public static ItemManager Instance { get; private set; }
+
 	[SerializeField]
 	private ItemDatabase itemDB;
+
+	private void Awake()
+	{
+		Instance = this;
+	}
 
 	private void Start()
 	{
@@ -36,5 +43,10 @@ public class ItemManager : MonoBehaviour
 		Vector3 pos = new(Random.Range(leftTop.x, rightTop.x), leftTop.y + 1f, 0);
 
 		return pos;
+	}
+
+	public void Init()
+	{
+
 	}
 }

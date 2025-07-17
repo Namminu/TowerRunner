@@ -1,15 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class EnemyManager : MonoBehaviour
 {
-	[SerializeField]
-	EnemyData enemyData;
+	public static EnemyManager Instance { get; private set; }
 
-	private void Start()
+	//[SerializeField]
+	//EnemyData enemyData;
+	List<EnemyData.EnemyEntry> entries;
+
+	private void Awake()
 	{
-		foreach (var entry in enemyData.entries)
+		Instance = this;
+		AddressablesInitManager.OnInitialized += (enemyData, _) => SetData(enemyData);
+	}
+
+	public void SetData(EnemyData data)
+	{
+		entries = data.entries;
+		foreach (var entry in entries)
 			StartCoroutine(SpawnLoop(entry));
 	}
 
@@ -17,35 +28,25 @@ public class EnemyManager : MonoBehaviour
 	{
 		while(true)
 		{
-			float speedMul = GameSpeedManager.Instance.SpeedMultiplier;
-			float waitTime = entry.spawnInterval / speedMul;
+			float waitTime = entry.spawnInterval / GameSpeedManager.Instance.SpeedMultiplier;
 			yield return new WaitForSeconds(waitTime);
 
-			var handle = entry.prefabRef.InstantiateAsync(
-				GetSpawnPosition(),
-				Quaternion.identity,
-				transform);
-			yield return handle;
-
-			var enemyGo = handle.Result;
-			var enemy = enemyGo.GetComponent<BaseEnemy>();
-			enemy.OnSpawn();
+			EnemyPoolingManager.Instance.Spawn(entry.prefabRef, GetSpawnPosition(), Quaternion.identity);
 		}
 	}
-
-	//private void Spawn(BaseEnemy prefab)
-	//{
-	//	Vector3 pos = GetSpawnPosition();
-	//	EnemyPoolingManager.Instance.Spawn(prefab, pos, Quaternion.identity);
-	//}
 
 	private Vector3 GetSpawnPosition()
 	{
 		float z = Mathf.Abs(Camera.main.transform.position.z);
-		var leftTop = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, z));
-		var rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, z));
+		var leftTop = Camera.main.ViewportToWorldPoint(new Vector3(0, 5, z));
+		var rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1, 5, z));
 		Vector3 pos = new(Random.Range(leftTop.x, rightTop.x), leftTop.y + 1f, 0);
 
 		return pos;
+	}
+
+	public void Init()
+	{
+
 	}
 }

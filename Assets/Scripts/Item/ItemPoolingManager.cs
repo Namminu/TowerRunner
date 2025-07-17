@@ -44,4 +44,9 @@ public class ItemPoolingManager : MonoBehaviour
 	{
 		itemPools[pickUp.Data].Despawn(pickUp);
 	}
+
+	public void Init()
+	{
+		
+	}
 }

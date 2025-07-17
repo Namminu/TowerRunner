@@ -26,4 +26,9 @@ public class UIManager : MonoBehaviour
 		// UI 에서의 DragEnd 는 동작하지 않음
 		return;
 	}
+
+	public void Init()
+	{
+		
+	}
 }
