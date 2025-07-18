@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -32,7 +33,11 @@ public class BootSceneController : MonoBehaviour
 	[SerializeField] private AssetReferenceT<ItemDatabase> itemDBRef;
 	[SerializeField] private Scenes nextSceneName;
 
-	[Header("Manager Prefab Refs")]
+	[Header("Each Scenes Manager Prefab Refs")]
+	[SerializeField] private AssetReferenceGameObject MainManagerRef;
+	[SerializeField] private AssetReferenceGameObject TownManagerRef;
+	[SerializeField] private AssetReferenceGameObject TowerManagerRef;
+
 	[SerializeField] private AssetReferenceGameObject inputManagerRef;
 	[SerializeField] private AssetReferenceGameObject gameSpeedManagerRef;
 	[SerializeField] private AssetReferenceGameObject poolingManagerRef;
@@ -72,22 +77,29 @@ public class BootSceneController : MonoBehaviour
 		progressBar.value = 0f;
 		initStateText.text = "Boot Start...";
 
-		yield return InitializeManager(inputManagerRef, go => 
-			go.GetComponent<InputManger>()?.Init(), "InputManager Init Failed");
-		yield return InitializeManager(gameSpeedManagerRef, go => 
-			go.GetComponent<GameSpeedManager>()?.Init(), "GameSpeedManager Init Failed");
-		yield return InitializeManager(poolingManagerRef, go => {
-			go.GetComponentInChildren<EnemyPoolingManager>()?.Init();
-			go.GetComponentInChildren<ItemPoolingManager>()?.Init();
-		}, "PoolingManager Init Failed");
-		yield return InitializeManager(objectManagerRef, go => {
-			go.GetComponentInChildren<EnemyManager>()?.Init();
-			go.GetComponentInChildren<ItemManager>()?.Init();
-		}, "ObjectManager Init Failed");
-		//yield return InitializeManager(audioManagerRef, go =>
-		//	go.GetComponent<AudioManager>()?.Init(), "AudioManager Init Failed");
-		yield return InitializeManager(uiManagerRef, go => 
-			go.GetComponent<UIManager>()?.Init(), "UIManager Init Failed");
+		yield return InitializeManager(GetManagersRefFor(nextSceneName), root =>
+		{
+			foreach (var init in root.GetComponentsInChildren<IInitializable>(true))
+				init.Init();
+		}, "Managers Init Failed");
+
+
+		//yield return InitializeManager(inputManagerRef, go => 
+		//	go.GetComponent<InputManger>()?.Init(), "InputManager Init Failed");
+		//yield return InitializeManager(gameSpeedManagerRef, go => 
+		//	go.GetComponent<GameSpeedManager>()?.Init(), "GameSpeedManager Init Failed");
+		//yield return InitializeManager(poolingManagerRef, go => {
+		//	go.GetComponentInChildren<EnemyPoolingManager>()?.Init();
+		//	go.GetComponentInChildren<ItemPoolingManager>()?.Init();
+		//}, "PoolingManager Init Failed");
+		//yield return InitializeManager(objectManagerRef, go => {
+		//	go.GetComponentInChildren<EnemyManager>()?.Init();
+		//	go.GetComponentInChildren<ItemManager>()?.Init();
+		//}, "ObjectManager Init Failed");
+		////yield return InitializeManager(audioManagerRef, go =>
+		////	go.GetComponent<AudioManager>()?.Init(), "AudioManager Init Failed");
+		//yield return InitializeManager(uiManagerRef, go => 
+		//	go.GetComponent<UIManager>()?.Init(), "UIManager Init Failed");
 
 		RegisterOperation(
 			Addressables.InitializeAsync(),
@@ -128,6 +140,17 @@ public class BootSceneController : MonoBehaviour
 		Addressables.LoadSceneAsync(nextSceneName.ToString());
 
 		Destroy(gameObject);
+	}
+
+	private AssetReferenceGameObject GetManagersRefFor(Scenes scene)
+	{
+		return scene switch
+		{
+			Scenes.Tower => TowerManagerRef,
+			Scenes.Main => MainManagerRef,
+			Scenes.Town => TownManagerRef,
+			_ => TowerManagerRef
+		};
 	}
 
 	private IEnumerator InitializeManager(

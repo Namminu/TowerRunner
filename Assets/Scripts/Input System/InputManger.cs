@@ -1,7 +1,9 @@
 using UnityEditor.TextCore.Text;
 using UnityEngine;
 
-public class InputManger : MonoBehaviour
+
+
+public class InputManger : MonoBehaviour, IInitializable
 {
 	private void Update()
 	{
