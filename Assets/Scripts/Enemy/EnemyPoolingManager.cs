@@ -17,7 +17,7 @@ public class EnemyPoolingManager : MonoBehaviour
 	{
 		Instance = this;
 		pools = new Dictionary<AssetReferenceGameObject, EnemyPool>();
-		AddressablesInitManager.OnInitialized += (enemyData, _) => DataInitialize(enemyData.entries);
+		//AddressablesInitManager.OnInitialized += (enemyData, _) => DataInitialize(enemyData.entries);
 	}
 
 	private void HandleOutofBounds(ObjectMover mover)

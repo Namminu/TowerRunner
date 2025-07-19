@@ -28,27 +28,20 @@ class Operation
 
 public class BootSceneController : MonoBehaviour
 {
+	[Header("Initializer")]
+	[SerializeField] private ManagersInitializer managersInitializer;
+
 	[Header("Addressables Refs")]
 	[SerializeField] private AssetReferenceT<EnemyData> enemyDataRef;
 	[SerializeField] private AssetReferenceT<ItemDatabase> itemDBRef;
-	[SerializeField] private Scenes nextSceneName;
-
-	[Header("Each Scenes Manager Prefab Refs")]
-	[SerializeField] private AssetReferenceGameObject MainManagerRef;
-	[SerializeField] private AssetReferenceGameObject TownManagerRef;
-	[SerializeField] private AssetReferenceGameObject TowerManagerRef;
-
-	[SerializeField] private AssetReferenceGameObject inputManagerRef;
-	[SerializeField] private AssetReferenceGameObject gameSpeedManagerRef;
-	[SerializeField] private AssetReferenceGameObject poolingManagerRef;
-	[SerializeField] private AssetReferenceGameObject objectManagerRef;
-	[SerializeField] private AssetReferenceGameObject audioManagerRef;
-	[SerializeField] private AssetReferenceGameObject uiManagerRef;
 
 	[Header("UI Components")]
 	[SerializeField] private Slider progressBar;
 	[SerializeField] private Text initStateText;
 	[SerializeField] private Button retryBtn;
+
+	[Header("Scene")]
+	[SerializeField] private Scenes nextSceneName;
 
 	private readonly List<Operation> _operations = new();
 
@@ -62,13 +55,14 @@ public class BootSceneController : MonoBehaviour
 
 	private void OnEnable()
 	{
-		retryBtn.gameObject.SetActive(false);
+		retryBtn.onClick.RemoveAllListeners();
 		retryBtn.onClick.AddListener(() =>
 		{
 			retryBtn.gameObject.SetActive(false);
 			StartCoroutine(BootRoutine());
 		});
 
+		retryBtn.gameObject.SetActive(false);
 		StartCoroutine(BootRoutine());
 	}
 
@@ -77,29 +71,8 @@ public class BootSceneController : MonoBehaviour
 		progressBar.value = 0f;
 		initStateText.text = "Boot Start...";
 
-		yield return InitializeManager(GetManagersRefFor(nextSceneName), root =>
-		{
-			foreach (var init in root.GetComponentsInChildren<IInitializable>(true))
-				init.Init();
-		}, "Managers Init Failed");
-
-
-		//yield return InitializeManager(inputManagerRef, go => 
-		//	go.GetComponent<InputManger>()?.Init(), "InputManager Init Failed");
-		//yield return InitializeManager(gameSpeedManagerRef, go => 
-		//	go.GetComponent<GameSpeedManager>()?.Init(), "GameSpeedManager Init Failed");
-		//yield return InitializeManager(poolingManagerRef, go => {
-		//	go.GetComponentInChildren<EnemyPoolingManager>()?.Init();
-		//	go.GetComponentInChildren<ItemPoolingManager>()?.Init();
-		//}, "PoolingManager Init Failed");
-		//yield return InitializeManager(objectManagerRef, go => {
-		//	go.GetComponentInChildren<EnemyManager>()?.Init();
-		//	go.GetComponentInChildren<ItemManager>()?.Init();
-		//}, "ObjectManager Init Failed");
-		////yield return InitializeManager(audioManagerRef, go =>
-		////	go.GetComponent<AudioManager>()?.Init(), "AudioManager Init Failed");
-		//yield return InitializeManager(uiManagerRef, go => 
-		//	go.GetComponent<UIManager>()?.Init(), "UIManager Init Failed");
+		initStateText.text = "Common Managers Initializing...";
+		yield return managersInitializer.InitializeCommonManagers();
 
 		RegisterOperation(
 			Addressables.InitializeAsync(),
@@ -137,46 +110,24 @@ public class BootSceneController : MonoBehaviour
 			Addressables.Release(op.Handle);
 		_operations.Clear();
 
-		Addressables.LoadSceneAsync(nextSceneName.ToString());
+		initStateText.text = $"Loading Next Scene to Game Start...";
+		var nextScene = Addressables.LoadSceneAsync(nextSceneName.ToString());
+		yield return nextScene;
+
+		if(nextScene.Status != AsyncOperationStatus.Succeeded)
+		{
+			HandleError($"Failed to Load Scene : {nextSceneName}");
+			yield break;
+		}
+		initStateText.text = $"Loading Next Scene to Game Start...";
+		yield return managersInitializer.InitializeSceneManagers(nextSceneName);
 
 		Destroy(gameObject);
 	}
 
-	private AssetReferenceGameObject GetManagersRefFor(Scenes scene)
-	{
-		return scene switch
-		{
-			Scenes.Tower => TowerManagerRef,
-			Scenes.Main => MainManagerRef,
-			Scenes.Town => TownManagerRef,
-			_ => TowerManagerRef
-		};
-	}
-
-	private IEnumerator InitializeManager(
-		AssetReferenceGameObject prefabRef,
-		Action<GameObject> initAction,
-		string errorMsg)
-	{
-		progressBar.value = 0f;
-		initStateText.text = $"Loading {prefabRef.AssetGUID}...";
-		var handle = prefabRef.InstantiateAsync();
-		_operations.Add(new Operation(handle, $"Instantiate {prefabRef.RuntimeKey}"));
-		handle.Completed += h =>
-		{
-			if (h.Status == AsyncOperationStatus.Succeeded)
-				initAction(h.Result);
-			else
-				HandleError(errorMsg);
-		};
-
-		yield return handle;
-	}
-
 	private void RegisterOperation(
 		AsyncOperationHandle handle,
-		string desc,
-		string errorMsg)
+		string desc, string errorMsg)
 	{
 		var op = new Operation(handle, desc);
 		_operations.Add(op);

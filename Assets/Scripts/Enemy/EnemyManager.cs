@@ -14,7 +14,7 @@ public class EnemyManager : MonoBehaviour
 	private void Awake()
 	{
 		Instance = this;
-		AddressablesInitManager.OnInitialized += (enemyData, _) => SetData(enemyData);
+		//AddressablesInitManager.OnInitialized += (enemyData, _) => SetData(enemyData);
 	}
 
 	public void SetData(EnemyData data)
