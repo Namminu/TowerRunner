@@ -13,6 +13,8 @@ public interface IInitializable
 
 public class ManagersInitializer : MonoBehaviour
 {
+	public static ManagersInitializer Instance { get; private set; }
+
 	[Header("Common Managers")]
 	[SerializeField] private List<AssetReferenceGameObject> commonManagerRefs;
 
@@ -26,6 +28,13 @@ public class ManagersInitializer : MonoBehaviour
 	private void Awake()
 	{
 		_isFirstInit = false;
+		if(Instance != null && Instance != this)
+		{
+			Destroy(gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(gameObject);
 	}
 
 	public IEnumerator InitializeCommonManagers()
@@ -39,7 +48,6 @@ public class ManagersInitializer : MonoBehaviour
 
 	public IEnumerator InitializeSceneManagers(Scenes scene)
 	{
-
 		var sceneRef = scene switch
 		{
 			Scenes.Main => MainManagerRef,
@@ -50,7 +58,7 @@ public class ManagersInitializer : MonoBehaviour
 		yield return LoadAndInitManager(sceneRef, persistent : false);
 	}
 
-	public IEnumerator LoadAndInitManager(
+	private IEnumerator LoadAndInitManager(
 		AssetReferenceGameObject managerRef, bool persistent)
 	{
 		var handle = managerRef.InstantiateAsync();

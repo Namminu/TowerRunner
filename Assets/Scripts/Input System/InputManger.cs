@@ -1,13 +1,11 @@
 using UnityEditor.TextCore.Text;
 using UnityEngine;
 
-
-
 public class InputManger : MonoBehaviour, IInitializable
 {
 	private void Update()
 	{
-		#region ---- 마우스 입력 감지 ----
+		#region ---- Detect Mouse Click Input ----
 		if (Input.touchCount == 0)
 		{
 			if(Input.GetMouseButtonDown(0))
@@ -18,7 +16,7 @@ public class InputManger : MonoBehaviour, IInitializable
 				TouchProcessor.Instance.ProcessTouchEnded(0, Input.mousePosition);
 		}
 		#endregion
-		#region ---- 모바일 터지 감지 ----
+		#region ---- Detect Mobile Touch Input ----
 		else
 		{
 			foreach(var t in Input.touches)

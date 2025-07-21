@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -15,137 +15,102 @@ public enum Scenes
 	Tower
 }
 
-class Operation
-{
-	public AsyncOperationHandle Handle;
-	public string Description;
-	public Operation(AsyncOperationHandle handle, string desc)
-	{
-		Handle = handle;
-		Description = desc;
-	}
-}
-
 public class BootSceneController : MonoBehaviour
 {
-	[Header("Initializer")]
-	[SerializeField] private ManagersInitializer managersInitializer;
+	public static BootSceneController Instance { get; private set; }
 
 	[Header("Addressables Refs")]
 	[SerializeField] private AssetReferenceT<EnemyData> enemyDataRef;
 	[SerializeField] private AssetReferenceT<ItemDatabase> itemDBRef;
 
-	[Header("UI Components")]
-	[SerializeField] private Slider progressBar;
-	[SerializeField] private Text initStateText;
-	[SerializeField] private Button retryBtn;
-
-	[Header("Scene")]
+	[Header("Scenes")]
+	[SerializeField] private SceneConfig sceneConfig;
 	[SerializeField] private Scenes nextSceneName;
 
-	private readonly List<Operation> _operations = new();
+	private BootSceneUI _sceneUI;
+
+	private readonly List<AsyncOperationHandle> _operations = new();
 
 	private void Awake()
 	{
+		Instance = this;
+
 		Application.targetFrameRate = 60;
 		Screen.orientation = ScreenOrientation.Portrait;
 		QualitySettings.SetQualityLevel(2);
 		Time.fixedDeltaTime = 1f / 50f;
 	}
 
-	private void OnEnable()
+	private void Start()
 	{
-		retryBtn.onClick.RemoveAllListeners();
-		retryBtn.onClick.AddListener(() =>
-		{
-			retryBtn.gameObject.SetActive(false);
-			StartCoroutine(BootRoutine());
-		});
-
-		retryBtn.gameObject.SetActive(false);
 		StartCoroutine(BootRoutine());
 	}
 
 	private IEnumerator BootRoutine()
 	{
-		progressBar.value = 0f;
-		initStateText.text = "Boot Start...";
+		yield return ManagersInitializer.Instance.InitializeCommonManagers();
 
-		initStateText.text = "Common Managers Initializing...";
-		yield return managersInitializer.InitializeCommonManagers();
+		yield return SceneUIManager.Instance.LoadUIForScene(Scenes.BootScene);
 
-		RegisterOperation(
-			Addressables.InitializeAsync(),
-			"Addressables Initializing...",
-			"Addressables Init Failed"
-		);
-		RegisterOperation(
-			enemyDataRef.LoadAssetAsync(),
-			"EnemyData Loading...",
-			"EnemyData Load Failed"
-		);
-		RegisterOperation(
-			itemDBRef.LoadAssetAsync(),
-			"ItemDatabase Loading...",
-			"ItemDatabase Load Failed"
-		);
+		var curUI = SceneUIManager.Instance.CurrentUI;
+		if(curUI is not BootSceneUI bootUI) 
+		{
+			Debug.LogError($"curUI's Type : {curUI.GetType().Name} - Type Miss Erorr to 'BootSceneUI' ");
+			yield break;
+		}
+		_sceneUI = bootUI;
 
-		while (!_operations.TrueForAll(op => op.Handle.IsDone))
+		_sceneUI.UpdateText("Booting Start...");
+		_sceneUI.UpdateProgress(0f);
+
+		_operations.Clear();
+		_operations.Add(Addressables.InitializeAsync());
+		_operations.Add(enemyDataRef.LoadAssetAsync());
+		_operations.Add(itemDBRef.LoadAssetAsync());
+
+		foreach(var op in _operations)
+		{
+			op.Completed += h =>
+			{
+				if (h.Status != AsyncOperationStatus.Succeeded)
+					HandleError($"{h.DebugName} Data Load Failed");
+			};
+		}
+
+		while(!_operations.TrueForAll(o => o.IsDone))
 		{
 			float sum = 0f;
-			foreach (var op in _operations) sum += op.Handle.PercentComplete;
+			_operations.ForEach(o => sum += o.PercentComplete);
 			float progress = sum / _operations.Count;
-			progressBar.value = progress;
-
-			var current = _operations.Find(op => !op.Handle.IsDone);
-			initStateText.text = $"{(int)progress * 100f}% : {current.Description}";
-
+			_sceneUI.UpdateProgress(progress);
+			_sceneUI.UpdateText($"{(int)(progress * 100)}% : Loading...");
 			yield return null;
 		}
 
-		progressBar.value = 1f;
-		initStateText.text = "Init Complete";
+		_sceneUI.UpdateProgress(1f);
+		_sceneUI.UpdateText($"Init Complite");
 
-		foreach (var op in _operations)
-			Addressables.Release(op.Handle);
+		_operations.ForEach(o => Addressables.Release(o));
 		_operations.Clear();
 
-		initStateText.text = $"Loading Next Scene to Game Start...";
-		var nextScene = Addressables.LoadSceneAsync(nextSceneName.ToString());
-		yield return nextScene;
-
-		if(nextScene.Status != AsyncOperationStatus.Succeeded)
-		{
-			HandleError($"Failed to Load Scene : {nextSceneName}");
-			yield break;
-		}
-		initStateText.text = $"Loading Next Scene to Game Start...";
-		yield return managersInitializer.InitializeSceneManagers(nextSceneName);
+		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
+		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
+		yield return SceneUIManager.Instance.LoadUIForScene(nextSceneName);
 
 		Destroy(gameObject);
-	}
-
-	private void RegisterOperation(
-		AsyncOperationHandle handle,
-		string desc, string errorMsg)
-	{
-		var op = new Operation(handle, desc);
-		_operations.Add(op);
-		handle.Completed += h =>
-		{
-			if (h.Status != AsyncOperationStatus.Succeeded)
-				HandleError(errorMsg);
-		};
 	}
 
 	private void HandleError(string msg)
 	{
 		StopAllCoroutines();
-		initStateText.text = msg;
-		retryBtn.gameObject.SetActive(true);
+		_sceneUI.UpdateText(msg);
 
-		foreach (var op in _operations)
-			Addressables.Release(op.Handle);
-		_operations.Clear();
+		if (_sceneUI is BootSceneUI bootUI)
+			bootUI.ShowRetryBtn();
+	}
+
+	public  void RestartBootRoutine()
+	{
+		StartCoroutine(BootRoutine());
 	}
 }
