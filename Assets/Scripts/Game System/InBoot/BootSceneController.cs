@@ -50,9 +50,13 @@ public class BootSceneController : MonoBehaviour
 	{
 		yield return ManagersInitializer.Instance.InitializeCommonManagers();
 
-		yield return SceneUIManager.Instance.LoadUIForScene(Scenes.BootScene);
-
-		var curUI = SceneUIManager.Instance.CurrentUI;
+		yield return UIManager.Instance.LoadUIForScene(Scenes.BootScene);
+		var curUI = UIManager.Instance.CurrentUI;
+		if(curUI == null)
+		{
+			Debug.LogError($"BootSceneController : curUI NULL Error");
+			yield break;
+		}
 		if(curUI is not BootSceneUI bootUI) 
 		{
 			Debug.LogError($"curUI's Type : {curUI.GetType().Name} - Type Miss Erorr to 'BootSceneUI' ");
@@ -94,7 +98,6 @@ public class BootSceneController : MonoBehaviour
 		_operations.Clear();
 
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
-		yield return SceneUIManager.Instance.LoadUIForScene(nextSceneName);
 		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
 
 		Destroy(gameObject);

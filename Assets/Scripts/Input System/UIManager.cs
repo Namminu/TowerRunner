@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour, IInitializable
@@ -7,8 +9,13 @@ public class UIManager : MonoBehaviour, IInitializable
 	public static UIManager Instance { get; private set; }
 
 	[SerializeField]
-	private SceneUIConfig uiConfig;
-	private GameObject currentUI;
+	private SceneUIConfig sceneConfig;
+	[SerializeField]
+	private string canvasTag = "UIRoot";
+
+	private GameObject currentUIGroup;
+	private ISceneUI currentUI;
+	public ISceneUI CurrentUI => currentUI;
 
 	private void Awake()
 	{
@@ -23,15 +30,22 @@ public class UIManager : MonoBehaviour, IInitializable
 
 	private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 	{
-		if(currentUI != null) Destroy(currentUI);
+		if (currentUIGroup != null) 
+			Destroy(currentUIGroup);
+		currentUI = null;
 
-		var prefabRef = uiConfig.GetUIFor((Scenes)Enum.Parse(typeof(Scenes), scene.name));
-		var handle = prefabRef.InstantiateAsync();
-		handle.Completed += h =>
+		if(!Enum.TryParse(scene.name, out Scenes sceneEnum))
 		{
-			currentUI = h.Result;
-			currentUI.transform.SetParent(transform, worldPositionStays: false);
-		};
+			Debug.LogError($"UI Manager : There's no {scene.name} in Scenes enum");
+			return;
+		}
+
+		StartCoroutine(LoadUIForScene(sceneEnum));
+	}
+
+	private void OnDestroy()
+	{
+		SceneManager.sceneLoaded -= OnSceneLoaded;
 	}
 
 	public void Init()
@@ -55,5 +69,29 @@ public class UIManager : MonoBehaviour, IInitializable
 	{
 		// UI 에서의 DragEnd 는 동작하지 않음
 		return;
+	}
+
+	public IEnumerator LoadUIForScene(Scenes scene)
+	{
+		var handle = sceneConfig.GetUIFor(scene).InstantiateAsync();
+		yield return handle;
+
+		if(handle.Status != AsyncOperationStatus.Succeeded)
+		{
+			Debug.LogError($"UI Manager : Failed to Load UI Group : {handle.DebugName}");
+			yield break;
+		}
+
+		currentUIGroup = handle.Result;
+		currentUIGroup.transform.SetParent(
+			GameObject.FindWithTag(canvasTag).transform, 
+			worldPositionStays : false);
+
+		if (!currentUIGroup.TryGetComponent(out currentUI))
+		{
+			Debug.LogError($"UI Manager : There's no ISceneUI Object");
+			yield break;
+		}
+		currentUI.InitUI();
 	}
 }

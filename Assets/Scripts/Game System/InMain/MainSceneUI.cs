@@ -27,16 +27,17 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 
 	private IEnumerator LinkStartBtn()
 	{
-		Debug.Log("MainScene Start Btn Clicked");
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
-		yield return SceneUIManager.Instance.LoadUIForScene(nextSceneName);
 		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
 	}
 
 	private void LinkExitBtn()
 	{
-		Debug.Log("MainScene Exit Btn Clicked");
+#if UNITY_EDITOR
+		UnityEditor.EditorApplication.isPlaying = false;
+#else
 		Application.Quit();
+#endif
 	}
 
 	private void OnDisable()
