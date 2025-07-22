@@ -1,21 +1,47 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainSceneUI : MonoBehaviour, ISceneUI
 {
+	[Header("UI")]
+	[SerializeField]
+	private Button startBtn;
+	[SerializeField] 
+	private Button exitBtn;
+
+	[Header("Scene Controll")]
+	[SerializeField]
+	private SceneConfig sceneConfig;
+	[SerializeField]
+	private Scenes nextSceneName;
+
 	public void InitUI()
 	{
-		throw new System.NotImplementedException();
+		startBtn.onClick.RemoveAllListeners();
+		exitBtn.onClick.RemoveAllListeners();
+
+		startBtn.onClick.AddListener(() => StartCoroutine(LinkStartBtn()));
+		exitBtn.onClick.AddListener(() => LinkExitBtn());
 	}
 
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
-	void Start()
-    {
-        
-    }
+	private IEnumerator LinkStartBtn()
+	{
+		Debug.Log("MainScene Start Btn Clicked");
+		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
+		yield return SceneUIManager.Instance.LoadUIForScene(nextSceneName);
+		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void LinkExitBtn()
+	{
+		Debug.Log("MainScene Exit Btn Clicked");
+		Application.Quit();
+	}
+
+	private void OnDisable()
+	{
+		startBtn.onClick.RemoveAllListeners();
+		exitBtn.onClick.RemoveAllListeners();
+	}
 }

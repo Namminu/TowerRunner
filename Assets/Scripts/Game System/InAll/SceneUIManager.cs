@@ -25,7 +25,7 @@ public class SceneUIManager : MonoBehaviour, IInitializable
 	{
 		
 	}
-
+	
 	public IEnumerator LoadUIForScene(Scenes scene)
 	{
 		if (currentUIGroup != null) { Destroy(currentUIGroup); }
@@ -51,6 +51,6 @@ public class SceneUIManager : MonoBehaviour, IInitializable
 		if (!currentUIGroup.TryGetComponent(out currentUI))
 			Debug.LogError($"There's no ISceneUI Object In Scene : {scene}");
 
-		currentUI?.InitUI();
+		currentUI.InitUI();
 	}
 }

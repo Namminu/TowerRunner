@@ -2,9 +2,30 @@ using UnityEngine;
 
 public class PlayerEffectChecker : MonoBehaviour
 {
+	#region --- Player Attack Effect ---
+	public void AttackSwing()
+	{
 
+	}
 
+	public void HitNormalAttack()
+	{
 
+	}
+
+	public void HitFatalAttack()
+	{
+
+	}
+
+	public void PlayerHitted()
+	{
+
+	}
+
+	#endregion
+
+	#region --- Item Effect ---
 	public void ShieldEffect(bool isShieldOn)
 	{
 
@@ -34,4 +55,5 @@ public class PlayerEffectChecker : MonoBehaviour
 	{
 
 	}
+	#endregion
 }

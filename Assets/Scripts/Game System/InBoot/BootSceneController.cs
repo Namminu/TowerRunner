@@ -93,9 +93,9 @@ public class BootSceneController : MonoBehaviour
 		_operations.ForEach(o => Addressables.Release(o));
 		_operations.Clear();
 
-		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
 		yield return SceneUIManager.Instance.LoadUIForScene(nextSceneName);
+		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
 
 		Destroy(gameObject);
 	}

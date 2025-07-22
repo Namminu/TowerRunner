@@ -7,6 +7,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	public static Player Instance { get; private set; }
 	public PlayerMover Mover { get; private set; }
 	public PlayerItemChecker ItemChecker { get; private set; }
+	public PlayerEffectChecker EffectChecker { get; private set; }
 
 	#region ---- Members ----
 	[Header("Player State Stats")]
@@ -47,6 +48,15 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
 	private float playerPower = 1f;
+
+	[SerializeField, Tooltip("Player Attack Radius"), Range(0, 10)]
+	private float attackRadius = 1f;
+	[SerializeField, Tooltip("Player Attack Circle Angle"), Range(90f, 180f)]
+	private float attackAngle = 130f;
+	[SerializeField]
+	private Vector2 attackOffset = Vector2.zero;
+	[SerializeField]
+	private LayerMask attackTargetLayer;
 
 	[Header("Player Finances")]
 	[SerializeField, Tooltip("Player Gold Count")]
@@ -91,6 +101,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 
 		ItemChecker = GetComponent<PlayerItemChecker>();
+		EffectChecker = GetComponent<PlayerEffectChecker>();
 		_spriteRenderer = GetComponent<SpriteRenderer>();
 
 		_maxHealth = 100f;
@@ -125,12 +136,45 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isDamageCoolDown = false;
 	}
 
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.color = Color.red;
+		Vector3 center = (Vector2)transform.position + attackOffset;
+		Gizmos.DrawWireSphere(center, attackRadius);
+
+		float halfArc = attackAngle * 0.5f;
+		Vector3 fwd = transform.up * attackRadius;
+		Quaternion leftRot = Quaternion.Euler(0, 0, halfArc);
+		Quaternion rightRot = Quaternion.Euler(0, 0,-halfArc);
+		Gizmos.DrawLine(center, center + leftRot * fwd);
+		Gizmos.DrawLine(center, center + rightRot * fwd);
+	}
+
 	#endregion
 
 	#region ---- Public Method ----
 	public void OnTap(Vector2 pos)
 	{
-		//Attack();
+		EffectChecker.AttackSwing();
+
+		Vector2 center = (Vector2)transform.position + attackOffset;
+		Collider2D[] hits = Physics2D.OverlapCircleAll(center, attackRadius, attackTargetLayer);
+
+		float halfArc = attackAngle * 0.5f;
+		Vector2 forward = transform.up;
+
+		foreach(var col in hits)
+		{
+			Vector2 dir = (col.transform.position - (Vector3)center).normalized;
+			float angle = Vector2.Angle(forward, dir);
+			if(angle <= halfArc)
+			{
+				if(col.TryGetComponent<IDamageable>(out var target))
+				{
+					DealDamage(target);
+				}
+			}
+		}
 	}
 
 	public void TakeDamage(float amount)
@@ -145,6 +189,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 
 		_curHealth -= amount;
+		EffectChecker.PlayerHitted();
 		if (_curHealth <= 0)
 		{
 			Death();

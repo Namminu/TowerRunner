@@ -33,25 +33,25 @@ public class InputEventRouter : MonoBehaviour
 
 	private void HandleTap(int id, Vector2 pos)
 	{
-		if (IsPointerOverUI(pos))
-			UIManager.Instance.OnTap(pos);
-		else
-			// UI 터치 외 다른 터치 로직 - 플레이어 공격
-			Player.Instance.OnTap(pos);
+		if (IsPointerOverUI(pos)) return;
+		if (Player.Instance == null) return;
+
+		// UI 터치 외 다른 터치 로직 - 플레이어 공격
+		Player.Instance.OnTap(pos);
 	}
 
 	private void HandleDrag(int id, Vector2 delta, Vector2 pos)
 	{
-		if (IsPointerOverUI(pos))
-			UIManager.Instance.OnDrag(delta);
-		else
-			Player.Instance.Mover.OnDrag(delta);
+		if (IsPointerOverUI(pos)) return;
+		if (Player.Instance == null) return;
+
+		Player.Instance.Mover.OnDrag(delta);
 	}
 	private void HandleDragEnd(int id, Vector2 pos)
 	{
-		if (IsPointerOverUI(pos))
-			UIManager.Instance.OnDragEnd(pos);
-		else
-			Player.Instance.Mover.OnDragEnd(pos);
+		if (IsPointerOverUI(pos)) return;
+		if (Player.Instance == null) return;
+
+		Player.Instance.Mover.OnDragEnd(pos);
 	}
 }

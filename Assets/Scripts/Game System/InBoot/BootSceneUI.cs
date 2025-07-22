@@ -11,6 +11,7 @@ public interface ISceneUI
 
 public class BootSceneUI : MonoBehaviour, ISceneUI
 {
+	[Header("UI")]
 	[SerializeField] private Slider progressBar;
 	[SerializeField] private Text initStateText;
 	[SerializeField] private Button retryBtn;
