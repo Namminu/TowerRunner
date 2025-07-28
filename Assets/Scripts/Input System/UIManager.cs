@@ -16,7 +16,6 @@ public class UIManager : MonoBehaviour, IInitializable
 	private GameObject currentUIGroup;
 	private ISceneUI currentUI;
 	public ISceneUI CurrentUI => currentUI;
-
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
