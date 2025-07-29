@@ -92,5 +92,6 @@ public class UIManager : MonoBehaviour, IInitializable
 			yield break;
 		}
 		currentUI.InitUI();
+		Debug.Log("Looad UI For Scene Complete");
 	}
 }

@@ -1,93 +1,104 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TownSceneUI : MonoBehaviour, ISceneUI
 {
-	[Header("Setting")]
-	[SerializeField] private Button settingBtn;
-	[SerializeField] private Image settingPopUI;
+	[Header("Scene&Setting")]
+	[SerializeField] private Scenes nextSceneName;
+	[SerializeField] private SceneConfig sceneConfig;
+	[SerializeField] private SetupManager setupManager;
 
-	[Header("Shop NPC")]
-	[SerializeField] private Button shopBtn;
-	[SerializeField] private Image shopScroll;
-	[SerializeField] private Button[] itemBtns; 
-
-	[Header("Enforce NPC")]
-	[SerializeField] private Button enforceBtn;
-	[SerializeField] private Image enforceScroll;
-
-	[Header("GameStart")]
+	[Header("Top Line")]
 	[SerializeField] private Button gameStartBtn;
 
-	[Header("Bottom Item List")]
-	[SerializeField] private Image ItemNo1;
-	[SerializeField] private Image ItemNo2;
-	[SerializeField] private Image ItemNo3;
-	private List<Image> ItemList = new();
+	[SerializeField] private Button settingBtn;
+	[SerializeField] private Image settingPanel;
 
-	[Header("PopUp UI")]
-	[SerializeField] private Image PopupUI;
+	[SerializeField] private Text goldAmount;
+	[SerializeField] private Text highScore;
+
+	[Header("Shopping")]
+	[SerializeField] private Button shopNpcBtn;
+	[SerializeField] private Image shopScroll;
+	[SerializeField] private ShopManager shopManager;
+
+	[Header("Enforcing")]
+	[SerializeField] private Button enforceNpcBtn;
+	[SerializeField] private Image enforceScroll;
+	[SerializeField] private EnforceManager enforceManager;
+
+	[Header("Item List")]
+	[SerializeField] private InvenManager inven;
+
+	private void Awake()
+	{
+		InitUI();
+	}
 
 	public void InitUI()
 	{
-		settingBtn.onClick.AddListener(() => SettingToggle());
-		shopBtn.onClick.AddListener(() => ShopToggle());
-		enforceBtn.onClick.AddListener(() => EnforceToggle());
+		Debug.Log("TownScene UI Init ");
+		gameStartBtn.onClick.RemoveAllListeners();
+		settingBtn.onClick.RemoveAllListeners();
+		shopNpcBtn.onClick.RemoveAllListeners();
+		enforceNpcBtn.onClick.RemoveAllListeners();
+
+		gameStartBtn.onClick.AddListener(() => StartCoroutine(GameStartBtn()));
+		settingBtn.onClick.AddListener(() => SettingUIToggle());
+		shopNpcBtn.onClick.AddListener(() => ShopUIToggle());
+		enforceNpcBtn.onClick.AddListener(() => EnforceUIToggle());
+
+		setupManager.Init();
+		shopManager.Init();
+		enforceManager.Init();
+		inven.Init();
 	}
 
-	#region --- Shop Initialize ---
-	private void ShopToggle()
+	private IEnumerator GameStartBtn()
 	{
-		if (shopScroll.IsActive())
+		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
+		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
+	}
+
+	private void ShopUIToggle()
+	{
+		if(shopScroll.IsActive())
 		{
 			shopScroll.gameObject.SetActive(false);
-			gameStartBtn.gameObject.SetActive(true);
 			return;
 		}
 
-		if (gameStartBtn.IsActive())
-			gameStartBtn.gameObject.SetActive(false);
-
+		gameStartBtn.gameObject.SetActive(false);
 		shopScroll.gameObject.SetActive(true);
 	}
 
-	private void ItemBtnClick()
-	{
-
-	}
-	#endregion
-
-	#region --- Enforce Initialize 
-	private void EnforceToggle()
+	private void EnforceUIToggle()
 	{
 		if (enforceScroll.IsActive())
 		{
 			enforceScroll.gameObject.SetActive(false);
-			gameStartBtn.gameObject.SetActive(true);
 			return;
 		}
 
-		if (gameStartBtn.IsActive())
-			gameStartBtn.gameObject.SetActive(false);
-
+		gameStartBtn.gameObject.SetActive(false);
 		enforceScroll.gameObject.SetActive(true);
 	}
-	#endregion
 
-	#region --- Setting Initialize ---
-	private void SettingToggle()
+	private void SettingUIToggle() 
+		=> settingPanel.gameObject.SetActive(true);
+
+	/// <summary>
+	/// Send Player's Left Gold Amount to Parameter
+	/// </summary>
+	public void UpdateGoldAmount(int amount)
 	{
-		if (settingPopUI.IsActive())
-		{
-			settingPopUI.gameObject.SetActive(false);
-			return;
-		}
-
-		settingPopUI.gameObject.SetActive(true);
+		string left = amount.ToString();
+		goldAmount.text = left;
 	}
-	#endregion
 }
  
