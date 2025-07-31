@@ -21,19 +21,12 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		startBtn.onClick.RemoveAllListeners();
 		exitBtn.onClick.RemoveAllListeners();
 
-		//startBtn.onClick.AddListener(() => StartCoroutine(LinkStartBtn()));
-		startBtn.onClick.AddListener(() => TempMethod());
+		startBtn.onClick.AddListener(() => StartCoroutine(LinkStartBtn()));
 		exitBtn.onClick.AddListener(() => LinkExitBtn());
 
 		Debug.Log("MainScene UI Inited");
 	}
 
-
-	private void TempMethod()
-	{
-		Debug.Log("Listener connect");
-		StartCoroutine(LinkStartBtn());
-			}
 	private IEnumerator LinkStartBtn()
 	{
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);

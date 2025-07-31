@@ -18,6 +18,8 @@ public class SceneConfig : ScriptableObject
     [Tooltip("Scene : Addressables Scene Ref Mapping")]
     public List<SceneEntry> entries = new List<SceneEntry>();
 
+    public static Scenes CurrentScene { get; private set; }
+
 
     /// <param name="scene">scene name in Scenes enum</param>
     /// <returns>Scene loaded in Addressables Assets</returns>
@@ -42,5 +44,6 @@ public class SceneConfig : ScriptableObject
 
         if (handle.Status != AsyncOperationStatus.Succeeded)
             Debug.LogError($"Scene Load Failed : {scene}");
+        else CurrentScene = scene;
     }
 }

@@ -86,12 +86,22 @@ public class UIManager : MonoBehaviour, IInitializable
 			GameObject.FindWithTag(canvasTag).transform, 
 			worldPositionStays : false);
 
-		if (!currentUIGroup.TryGetComponent(out currentUI))
+		//if (!currentUIGroup.TryGetComponent(out currentUI))
+		//{
+		//	Debug.LogError($"UI Manager : There's no ISceneUI Object");
+		//	yield break;
+		//}
+		//currentUI.InitUI();
+
+		var uiList = currentUIGroup.GetComponentsInChildren<ISceneUI>(true);
+		if(uiList.Length == 0)
 		{
-			Debug.LogError($"UI Manager : There's no ISceneUI Object");
+			Debug.LogError($"No ISceneUI found in {scene}");
 			yield break;
 		}
-		currentUI.InitUI();
+		foreach (var ui in uiList)
+			ui.InitUI();
+
 		Debug.Log("Looad UI For Scene Complete");
 	}
 }

@@ -32,9 +32,6 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 	[SerializeField] private Image enforceScroll;
 	[SerializeField] private EnforceManager enforceManager;
 
-	[Header("Item List")]
-	[SerializeField] private InvenManager inven;
-
 	private void Awake()
 	{
 		InitUI();
@@ -42,7 +39,6 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	public void InitUI()
 	{
-		Debug.Log("TownScene UI Init ");
 		gameStartBtn.onClick.RemoveAllListeners();
 		settingBtn.onClick.RemoveAllListeners();
 		shopNpcBtn.onClick.RemoveAllListeners();
@@ -56,7 +52,6 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		setupManager.Init();
 		shopManager.Init();
 		enforceManager.Init();
-		inven.Init();
 	}
 
 	private IEnumerator GameStartBtn()
