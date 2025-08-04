@@ -9,12 +9,14 @@ public static class GameEvents
 	public static void RaiseShopItemSeleted(ItemData item)
 		=> OnShopItemSeledted?.Invoke(item);
 
+
 	public static event Action<ItemData> OnItemBuyConfirmed;
 	/// <summary>
 	/// Called when an item purchase is confirmed in the Shop PopUp UI.
 	/// </summary>
 	public static void RaiseShopItemBuyConfirmed(ItemData item)
 		=> OnItemBuyConfirmed?.Invoke(item);
+
 
 	public static event Action OnInvenFull;
 	/// <summary>
@@ -23,12 +25,14 @@ public static class GameEvents
 	public static void RaiseInvenFull()
 		=> OnInvenFull?.Invoke();
 
+
 	public static event Action OnInventoryChanged;
 	/// <summary>
 	/// Called when a change occurs in the inventory
 	/// </summary>
 	public static void RaiseInventoryChanged()
 		=> OnInventoryChanged?.Invoke();
+
 
 	public static event Action OnShortageGold;
 	/// <summary>
@@ -38,10 +42,34 @@ public static class GameEvents
 	=> OnShortageGold?.Invoke();
 
 
+	public static event Action<int> OnScoreChanged;
+	/// <summary>
+	/// Called when the current play score changes
+	/// </summary>
+	public static void RaiseScoreChanged(int num)
+		=> OnScoreChanged?.Invoke(num);
 
 
+	public static event Action<int> OnHighScoreChanged;
+	/// <summary>
+	/// Called when the highest score in the game is updated
+	/// </summary>
+	public static void RaiseHighScoreChanged(int num)
+		=> OnHighScoreChanged?.Invoke(num);
 
 
+	public static event Action OnBattleStarted;
+	/// <summary>
+	/// Called when battle starts
+	/// </summary>
+	public static void RaiseBattleStart()
+		=> OnBattleStarted?.Invoke();
 
+	/// <summary>
+	/// Call at the end of the battle
+	/// </summary>
+	public static event Action OnBattleEnded;
+	public static void RaiseBattleEnd()
+		=> OnBattleEnded?.Invoke();
 
 }
