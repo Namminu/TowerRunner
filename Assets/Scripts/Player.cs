@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable, IDamageDealer
@@ -36,7 +37,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	[Header("Player Power Stats")]
 	[SerializeField, Tooltip("Player Fatal Attack Rate"), Range(0, 100)]
-	private int _fatalRate;
+	private int _fatalRate = 25;
 	public int PlayerFatalRate
 	{
 		get => _fatalRate;
@@ -46,10 +47,21 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 	}
 
+	[SerializeField, Tooltip("Player Fatal Attack Damage"), Range(0, 400)]
+	private float _fatalIncreaseDamage = 10f;
+	public float PlayerFatalDamage
+	{
+		get => _fatalIncreaseDamage;
+		set
+		{
+			_fatalIncreaseDamage = Mathf.Clamp(value, 0f, 400f);
+		}
+	}
+
 	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
 	private float playerPower = 1f;
 
-	[SerializeField, Tooltip("Player Attack Radius"), Range(0, 10)]
+	[SerializeField, Tooltip("Player Attack Radius"), Range(1, 5)]
 	private float attackRadius = 1f;
 	[SerializeField, Tooltip("Player Attack Circle Angle"), Range(90f, 180f)]
 	private float attackAngle = 130f;
@@ -67,8 +79,11 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		set
 		{
 			_gold += value;
+			GameEvents.RaiseGoldChanged(_gold);
 		}
 	}
+
+	private List<int> enforceLevels = new List<int>();
 
 	private bool _isInvincible;
 	private bool _isShield;
@@ -110,6 +125,11 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isInvincible = false;
 		_isShield = false;
 		_isDamageCoolDown = false;
+	}
+
+	private void Start()
+	{
+		GameEvents.RaiseGoldChanged(_gold);
 	}
 
 	private void Death()
@@ -205,7 +225,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		if (UnityEngine.Random.Range(0, 100) < _fatalRate) /* Fatal Attack Called */
 		{
 			Debug.Log("Player Fatal Attack!");
-			damage *= 2;
+			damage += _fatalIncreaseDamage;
 			target.TakeDamage(damage);
 		}
 		else                                       /* Normal Attack Called */
@@ -222,6 +242,46 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_curHealth = 0;
 		Death();
 	}
+	#endregion
+
+	#region ---- Enforcing ----
+	public int GetEnforceLevel(int idx)
+	{
+		return enforceLevels[idx];
+	}
+
+	public void SetEnforceLevel(int idx, int level)
+	{
+		enforceLevels[idx] = level;
+	}
+
+	public bool SpendGold(int amount)
+	{
+		if (_gold < amount) return false;
+		PlayerGold = -amount;
+		return true;
+	}
+
+	public void SetMaxHealth(float value)
+	{
+		_maxHealth = value;
+	}
+
+	public void SetFatal(float value)
+	{
+		PlayerFatalDamage = value;
+	}
+
+	public void SetAttackRange(float value)
+	{
+		attackRadius = value;
+	}
+
+	public void SetAttackPower(float value)
+	{
+		playerPower = value;
+	}
+
 	#endregion
 
 	#region ---- Setter ----

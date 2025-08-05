@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class SetupManager : MonoBehaviour
+public class SetupManager : MonoBehaviour, ISceneUI
 {
-	public void Init()
+	public void InitUI()
 	{
 
 	}

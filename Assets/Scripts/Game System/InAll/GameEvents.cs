@@ -42,6 +42,13 @@ public static class GameEvents
 	=> OnShortageGold?.Invoke();
 
 
+	public static event Action<int> OnGoldChanged;
+	/// <summary>
+	/// Called when the player's gold amount changed
+	/// </summary>
+	public static void RaiseGoldChanged(int num)
+		=> OnGoldChanged?.Invoke(num);
+
 	public static event Action<int> OnScoreChanged;
 	/// <summary>
 	/// Called when the current play score changes

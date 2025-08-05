@@ -56,6 +56,13 @@ public class ScoreManager : MonoBehaviour, IInitializable
 		}
 		Instance = this;
 		DontDestroyOnLoad(gameObject);
+
+		highScore = 0;
+	}
+
+	private void Start()
+	{
+		GameEvents.RaiseHighScoreChanged(0);
 	}
 
 	private void StartSession()

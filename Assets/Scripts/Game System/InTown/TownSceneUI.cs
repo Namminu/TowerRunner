@@ -48,10 +48,6 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		settingBtn.onClick.AddListener(() => SettingUIToggle());
 		shopNpcBtn.onClick.AddListener(() => ShopUIToggle());
 		enforceNpcBtn.onClick.AddListener(() => EnforceUIToggle());
-
-		setupManager.Init();
-		shopManager.Init();
-		enforceManager.Init();
 	}
 
 	private IEnumerator GameStartBtn()
@@ -62,9 +58,9 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void ShopUIToggle()
 	{
-		if(shopScroll.IsActive())
+		if(enforceScroll.IsActive())
 		{
-			shopScroll.gameObject.SetActive(false);
+			enforceScroll.gameObject.SetActive(false);
 			return;
 		}
 
@@ -74,9 +70,9 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void EnforceUIToggle()
 	{
-		if (enforceScroll.IsActive())
+		if (shopScroll.IsActive())
 		{
-			enforceScroll.gameObject.SetActive(false);
+			shopScroll.gameObject.SetActive(false);
 			return;
 		}
 

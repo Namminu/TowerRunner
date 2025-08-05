@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class ShopManager : MonoBehaviour
+public class ShopManager : MonoBehaviour, ISceneUI
 {
 	[SerializeField] private AssetReference itemSlotPrefab;
 	[SerializeField] private Transform itemList;
@@ -14,7 +14,7 @@ public class ShopManager : MonoBehaviour
 	private AsyncOperationHandle<GameObject> preloadHandle;
 	private List<ShopItemSlot> slotPool = new();
 
-	public void Init()
+	public void InitUI()
 	{
 		preloadHandle = itemSlotPrefab.LoadAssetAsync<GameObject>();
 	}
