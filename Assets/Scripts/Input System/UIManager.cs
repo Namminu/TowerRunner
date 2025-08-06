@@ -86,12 +86,12 @@ public class UIManager : MonoBehaviour, IInitializable
 			GameObject.FindWithTag(canvasTag).transform, 
 			worldPositionStays : false);
 
-		//if (!currentUIGroup.TryGetComponent(out currentUI))
-		//{
-		//	Debug.LogError($"UI Manager : There's no ISceneUI Object");
-		//	yield break;
-		//}
-		//currentUI.InitUI();
+		if (!currentUIGroup.TryGetComponent(out currentUI))
+		{
+			Debug.LogError($"UI Manager : There's no ISceneUI Object");
+			yield break;
+		}
+		currentUI.InitUI();
 
 		var uiList = currentUIGroup.GetComponentsInChildren<ISceneUI>(true);
 		if(uiList.Length == 0)
