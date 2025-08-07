@@ -33,8 +33,9 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
 	}
 
-	private void LinkExitBtn()
+	private async void LinkExitBtn()
 	{
+		await SaveService.SaveAllAsync();
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
 #else

@@ -45,5 +45,5 @@ public class SceneConfig : ScriptableObject
         if (handle.Status != AsyncOperationStatus.Succeeded)
             Debug.LogError($"Scene Load Failed : {scene}");
         else CurrentScene = scene;
-    }
+	}
 }

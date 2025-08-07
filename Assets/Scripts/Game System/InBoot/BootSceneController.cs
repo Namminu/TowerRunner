@@ -22,6 +22,7 @@ public class BootSceneController : MonoBehaviour
 	[Header("Addressables Refs")]
 	[SerializeField] private AssetReferenceT<EnemyData> enemyDataRef;
 	[SerializeField] private AssetReferenceT<ItemDatabase> itemDBRef;
+	[SerializeField] private AssetReferenceT<EnforceDatabase> enforceDBRef;
 
 	[Header("Scenes")]
 	[SerializeField] private SceneConfig sceneConfig;
@@ -46,10 +47,38 @@ public class BootSceneController : MonoBehaviour
 		StartCoroutine(BootRoutine());
 	}
 
+	private IEnumerator RunInitializeDataRoutine()
+	{
+		var handle = enforceDBRef.LoadAssetAsync();
+		yield return handle;
+		if(handle.Status == AsyncOperationStatus.Succeeded)
+		{
+			EnforceService.Initialize(handle.Result);
+		}
+		else
+		{
+			Debug.LogError($"Enforce DB Load Failed : {handle.OperationException}");
+			yield break;
+		}
+
+		var task = SaveService.InitializeAsync();
+		while (!task.IsCompleted)
+			yield return null;
+
+		if (task.IsFaulted)
+		{
+			Debug.LogError($"Data Init Failed : {task.Exception}");
+			yield break;
+		}
+	}
+
 	private IEnumerator BootRoutine()
 	{
+		/* Prefs&GameData Load */
+		yield return RunInitializeDataRoutine();
+		/* Managers Load */
 		yield return ManagersInitializer.Instance.InitializeCommonManagers();
-
+		/* UI Assets Load */
 		yield return UIManager.Instance.LoadUIForScene(Scenes.BootScene);
 		var curUI = UIManager.Instance.CurrentUI;
 		if(curUI == null)
@@ -112,7 +141,7 @@ public class BootSceneController : MonoBehaviour
 			bootUI.ShowRetryBtn();
 	}
 
-	public  void RestartBootRoutine()
+	public void RestartBootRoutine()
 	{
 		StartCoroutine(BootRoutine());
 	}

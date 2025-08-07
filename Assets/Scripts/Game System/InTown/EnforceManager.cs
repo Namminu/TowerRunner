@@ -66,11 +66,9 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 
 	private void OnEnforceClicked()
 	{
-		var data = enforceDB.enforceDB[selectedIndex];
 		int level = Player.Instance.GetEnforceLevel(selectedIndex);
 
-		float costF = data.initCost * Mathf.Pow(data.costMultiplier, level - data.initLevel);
-		int cost = Mathf.CeilToInt(costF);
+		int cost = EnforceService.GetCost(selectedIndex, level);
 
 		if(!Player.Instance.SpendGold(cost))
 		{
@@ -81,34 +79,9 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		int newLevel = level + 1;
 		Player.Instance.SetEnforceLevel(selectedIndex, newLevel);
 
-		float newValue = data.initValue + data.valueIncrement * (newLevel - data.initLevel);
-		ApplyUpgrade(selectedIndex, newValue);
+		float newValue = EnforceService.GetValue(selectedIndex, newLevel);
+		Player.Instance.ApplyUpgrade((EnforceType)selectedIndex, newValue);
 
-		ShowPage(selectedIndex);
-		
-	}
-
-	private void ApplyUpgrade(int idx, float value)
-	{
-		switch(idx)
-		{
-			case 0:
-				Player.Instance.SetMaxHealth(value);
-				break;
-
-			case 1:
-				Player.Instance.SetFatal(value);
-				break;
-
-			case 2:
-				Player.Instance.SetAttackPower(value);
-				break;
-
-			case 3:
-				Player.Instance.SetAttackRange(value);
-				break;
-
-			default: break;
-		}
+		ShowPage(selectedIndex);	
 	}
 }

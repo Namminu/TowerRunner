@@ -3,6 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnforceType
+{
+	Health = 0,
+	Fatal = 1,
+	Power = 2,
+	Range = 3
+}
+
 public class Player : MonoBehaviour, IDamageable, IDamageDealer
 {
 	public static Player Instance { get; private set; }
@@ -129,7 +137,22 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	private void Start()
 	{
+		ApplySavedPlayerData();
+	}
+
+	private void ApplySavedPlayerData()
+	{
+		_gold = SaveService.Current.gold;
 		GameEvents.RaiseGoldChanged(_gold);
+
+		for(int idx = 0; idx < SaveService.Current.upgrades.Count; idx++) 
+		{
+			var u = SaveService.Current.upgrades[idx];
+			float value = EnforceService.GetValue(idx, u.level);
+			ApplyUpgrade((EnforceType)idx, value);
+			enforceLevels[idx] = u.level;
+		}
+		_curHealth = Mathf.Min(_curHealth, _maxHealth);
 	}
 
 	private void Death()
@@ -262,24 +285,22 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		return true;
 	}
 
-	public void SetMaxHealth(float value)
+	public void ApplyUpgrade(EnforceType type, float value)
 	{
-		_maxHealth = value;
-	}
-
-	public void SetFatal(float value)
-	{
-		PlayerFatalDamage = value;
-	}
-
-	public void SetAttackRange(float value)
-	{
-		attackRadius = value;
-	}
-
-	public void SetAttackPower(float value)
-	{
-		playerPower = value;
+		switch (type)
+		{
+			case EnforceType.Health:
+				_maxHealth = value;			break;
+			case EnforceType.Fatal:
+				PlayerFatalDamage = value;	break;
+			case EnforceType.Power:
+				playerPower = value;		break;
+			case EnforceType.Range:
+				attackRadius = value;		break;
+			default:
+				Debug.LogWarning($"Unknown Upgrade Type : {type}");
+				break;
+		}
 	}
 
 	#endregion

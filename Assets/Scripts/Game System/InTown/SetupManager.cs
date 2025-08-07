@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SetupManager : MonoBehaviour, ISceneUI
@@ -14,6 +17,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 	[Header("Reset Zone")]
 	[SerializeField] private Button resetBtn;
+	[SerializeField] private SceneConfig sceneConfig;
 
 	[Header("Exit Zone")]
 	[SerializeField] private Button exitBtn;
@@ -31,11 +35,11 @@ public class SetupManager : MonoBehaviour, ISceneUI
 		exitBtn.onClick.RemoveAllListeners();
 
 		/* About Volume */
-		volumeSlider.value = AudioManager.Instance.MasterVolume;
+		volumeSlider.value = Prefs.MasterVolume;
 		volumeSlider.onValueChanged.AddListener(OnVolumeSliderChanged);
 
 		/* About Display */
-		displaySlider.value = 0f;
+		displaySlider.value = Prefs.DisplayBrightness;
 		displaySlider.onValueChanged.AddListener(OnDisPlaySliderChanged);
 
 		/* About Review */
@@ -83,7 +87,15 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	{
 		popup.Show(
 			"게임 데이터를 초기화하시겠습니까?",
-			onYes: null);
+			onYes: () => StartCoroutine(ResetRoutine())
+			);
+	}
+
+	private IEnumerator ResetRoutine()
+	{
+		SaveService.ResetAll();
+		yield return ManagersInitializer.Instance.InitializeSceneManagers(Scenes.BootScene);
+		yield return sceneConfig.LoadSceneRoutine(Scenes.BootScene);
 	}
 	#endregion
 
@@ -92,8 +104,9 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	{
 		popup.Show(
 			"게임을 종료합니다",
-			onYes: () =>
+			onYes: async () =>
 			{
+				await SaveService.SaveAllAsync();
 #if UNITY_EDITOR
 				UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -105,9 +118,6 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 	private void OnDisable()
 	{
-
-
-		SaveVolumeSetting();
 		volumeSlider.onValueChanged.RemoveListener(OnVolumeSliderChanged);
 		displaySlider.onValueChanged.RemoveListener(OnDisPlaySliderChanged);
 		reviewBtn.onClick.RemoveListener(OnReviewBtnClicked);

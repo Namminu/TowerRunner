@@ -38,7 +38,6 @@ public class UIManager : MonoBehaviour, IInitializable
 			Debug.LogError($"UI Manager : There's no {scene.name} in Scenes enum");
 			return;
 		}
-
 		StartCoroutine(LoadUIForScene(sceneEnum));
 	}
 
