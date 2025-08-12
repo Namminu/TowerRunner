@@ -10,6 +10,8 @@ public class InvenItemSlot : MonoBehaviour
 
 	public void SetData(ItemData item)
 	{
+		if (item == null) return;
+
 		itemIcon.sprite = item.itemIcon;
 		itemIcon.gameObject.SetActive(true);
 		slotButton.interactable = true;

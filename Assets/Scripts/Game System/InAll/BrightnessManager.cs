@@ -19,10 +19,35 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 		DontDestroyOnLoad(gameObject);
 	}
 
+	private void ApplyDisplayBrightness(float value)
+	{
+		if (overlayImage == null) return;
+
+		float alpha = (1f - Mathf.Clamp01(value)) * MaxAlphaByte / 255f;
+		Color c = overlayImage.color;
+		c.a = alpha;
+		overlayImage.color = c;
+	}
+
+	public void RegisterOverlay(Image image)
+	{
+		overlayImage = image;
+		if(overlayImage != null)
+		{
+			overlayImage.raycastTarget = false;
+			ApplyDisplayBrightness(Prefs.DisplayBrightness);
+		}
+	}
+
+	public void UnregisterOverlay(Image image)
+	{
+		if (overlayImage == image)
+			overlayImage = null;
+	}
+
 	public void Init()
 	{
-		float savedValue = 0f;
-		ApplyDisplayBrightness(savedValue);
+		ApplyDisplayBrightness(Prefs.DisplayBrightness);
 	}
 
 	public void SetBrightness(float value)
@@ -30,11 +55,5 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 		ApplyDisplayBrightness(value);
 	}
 
-	private void ApplyDisplayBrightness(float value)
-	{
-		float alpha = (1f - Mathf.Clamp01(value)) * MaxAlphaByte / 255f;
-		Color c = overlayImage.color;
-		c.a = alpha;
-		overlayImage.color = c;
-	}
+
 }

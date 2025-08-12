@@ -11,9 +11,6 @@ public static class SaveService
 	public static async Task InitializeAsync()
     {
         Current = await SaveSystem.LoadAsync();
-
-        AudioManager.Instance.SetMasterVolume(Prefs.MasterVolume);
-        BrightnessManager.Instance.SetBrightness(Prefs.DisplayBrightness);
     }
 
 	/// <summary>

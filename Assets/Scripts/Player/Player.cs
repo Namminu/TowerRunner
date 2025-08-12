@@ -78,20 +78,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	[SerializeField]
 	private LayerMask attackTargetLayer;
 
-	[Header("Player Finances")]
-	[SerializeField, Tooltip("Player Gold Count")]
-	private int _gold;
-	public int PlayerGold
-	{
-		get => _gold;
-		set
-		{
-			_gold += value;
-			GameEvents.RaiseGoldChanged(_gold);
-		}
-	}
-
-	private List<int> enforceLevels = new List<int>();
+	public int PlayerGold => EconomyService.Gold;
 
 	private bool _isInvincible;
 	private bool _isShield;
@@ -142,15 +129,10 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	private void ApplySavedPlayerData()
 	{
-		_gold = SaveService.Current.gold;
-		GameEvents.RaiseGoldChanged(_gold);
-
 		for(int idx = 0; idx < SaveService.Current.upgrades.Count; idx++) 
 		{
-			var u = SaveService.Current.upgrades[idx];
-			float value = EnforceService.GetValue(idx, u.level);
-			ApplyUpgrade((EnforceType)idx, value);
-			enforceLevels[idx] = u.level;
+			int level = UpgradeService.GetLevel(idx);
+			UpgradeService.SetLevel(idx, level, applyToPlayer:true);
 		}
 		_curHealth = Mathf.Min(_curHealth, _maxHealth);
 	}
@@ -270,20 +252,19 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	#region ---- Enforcing ----
 	public int GetEnforceLevel(int idx)
 	{
-		return enforceLevels[idx];
+		return UpgradeService.GetLevel(idx);
 	}
 
 	public void SetEnforceLevel(int idx, int level)
 	{
-		enforceLevels[idx] = level;
+		UpgradeService.SetLevel(idx, level);
 	}
 
 	public bool SpendGold(int amount)
-	{
-		if (_gold < amount) return false;
-		PlayerGold = -amount;
-		return true;
-	}
+		=> EconomyService.TrySpendGold(amount);
+
+	public void AddGold(int amount)
+		=> EconomyService.AddGold(amount);
 
 	public void ApplyUpgrade(EnforceType type, float value)
 	{

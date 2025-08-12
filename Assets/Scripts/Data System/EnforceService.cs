@@ -27,4 +27,14 @@ public static class EnforceService
         float cost = d.initCost * Mathf.Pow(d.costMultiplier, level - d.initLevel);
         return Mathf.CeilToInt(cost);
     }
+
+    public static int GetInitLevel(int idx)
+    {
+        return _db.enforceDB[idx].initLevel;
+    }
+
+    public static EnforceDatabase.EnforceData GetData(int idx)
+    {
+        return _db.enforceDB[idx];
+    }
 }

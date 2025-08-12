@@ -23,6 +23,11 @@ public class ShopPopup : MonoBehaviour
 
 	private ItemData currentItem;
 
+	private void Awake()
+	{
+		gameObject.SetActive(false);
+	}
+
 	private void OnEnable()
 	{
 		BasicUI.SetActive(true);

@@ -62,7 +62,7 @@ public class PlayerItemChecker : MonoBehaviour
 	public void GetCoin(int amount)
 	{
 		Debug.Log("Player Get Coin! : " + amount);
-		player.PlayerGold += amount;
+		player.AddGold(amount);
 		effectChecker.DropCoinEffect();
 	}
 	#endregion

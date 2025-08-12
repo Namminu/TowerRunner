@@ -32,11 +32,6 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 	[SerializeField] private Image enforceScroll;
 	[SerializeField] private EnforceManager enforceManager;
 
-	private void Awake()
-	{
-		InitUI();
-	}
-
 	public void InitUI()
 	{
 		gameStartBtn.onClick.RemoveAllListeners();
@@ -48,6 +43,10 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		settingBtn.onClick.AddListener(() => SettingUIToggle());
 		shopNpcBtn.onClick.AddListener(() => ShopUIToggle());
 		enforceNpcBtn.onClick.AddListener(() => EnforceUIToggle());
+
+		gameStartBtn.gameObject.SetActive(true);
+		shopScroll.gameObject.SetActive(false);
+		enforceScroll.gameObject.SetActive(false);
 	}
 
 	private IEnumerator GameStartBtn()
@@ -58,10 +57,15 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void ShopUIToggle()
 	{
+		if(shopScroll.IsActive())
+		{
+			shopScroll.gameObject.SetActive(false);
+			return;
+		}
+
 		if(enforceScroll.IsActive())
 		{
 			enforceScroll.gameObject.SetActive(false);
-			return;
 		}
 
 		gameStartBtn.gameObject.SetActive(false);
@@ -70,10 +74,15 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void EnforceUIToggle()
 	{
+		if(enforceScroll.IsActive())
+		{
+			enforceScroll.gameObject.SetActive(false);
+			return;
+		}
+
 		if (shopScroll.IsActive())
 		{
 			shopScroll.gameObject.SetActive(false);
-			return;
 		}
 
 		gameStartBtn.gameObject.SetActive(false);

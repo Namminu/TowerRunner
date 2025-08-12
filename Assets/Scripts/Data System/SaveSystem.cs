@@ -23,7 +23,7 @@ public static class SaveSystem
         return data;
 	}
 
-    public static async Task SaveAsync(GameData data)
+    public static async Task SaveAsync(GameData data) 
     {
         data.version = CURRENT_VERSION;
         string json = JsonUtility.ToJson(data, prettyPrint: true);

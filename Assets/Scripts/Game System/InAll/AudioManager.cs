@@ -28,6 +28,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 
 	public void Init()
     {
+		SetMasterVolume(Prefs.MasterVolume);
 		ApplyVolume();
 	}
 

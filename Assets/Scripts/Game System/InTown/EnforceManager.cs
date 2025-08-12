@@ -47,41 +47,48 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 	private void ShowPage(int idx)
 	{
 		selectedIndex = idx;
-		var data = enforceDB.enforceDB[idx];
+		var data = EnforceService.GetData(idx);
 
 		titleText.text = data.displayName;
 		descText.text = data.description;
 
-		int level = Player.Instance.GetEnforceLevel(idx);
+		int level = UpgradeService.GetLevel(idx);
 		enforceLevel.text = level.ToString();
 
-		float cost = data.initCost * Mathf.Pow(data.costMultiplier, level - data.initLevel);
-		int costInt = Mathf.CeilToInt(cost);
+		int costInt = EnforceService.GetCost(idx, level);
 		costText.text = costInt.ToString();
 
-		bool canUpgrade = level < data.maxLevel
-						&& Player.Instance.PlayerGold >= costInt;
+		bool canUpgrade = level < data.maxLevel && EconomyService.Gold >= costInt;
 		enforceBtn.interactable = canUpgrade;
 	}
 
 	private void OnEnforceClicked()
 	{
-		int level = Player.Instance.GetEnforceLevel(selectedIndex);
+		int level = UpgradeService.GetLevel(selectedIndex);
 
 		int cost = EnforceService.GetCost(selectedIndex, level);
 
-		if(!Player.Instance.SpendGold(cost))
+		if(!EconomyService.TrySpendGold(cost))
 		{
 			warningUI.SetActive(true);
 			return;
 		}
 
 		int newLevel = level + 1;
-		Player.Instance.SetEnforceLevel(selectedIndex, newLevel);
+		UpgradeService.SetLevel(selectedIndex, newLevel);
 
 		float newValue = EnforceService.GetValue(selectedIndex, newLevel);
-		Player.Instance.ApplyUpgrade((EnforceType)selectedIndex, newValue);
+		Player.Instance?.ApplyUpgrade((EnforceType)selectedIndex, newValue);
 
 		ShowPage(selectedIndex);	
+	}
+
+	private void OnEnable()
+	{
+		GameEvents.OnGoldChanged += _ => ShowPage(selectedIndex);
+	}
+	private void OnDisable()
+	{
+		GameEvents.OnGoldChanged -= _ => ShowPage(selectedIndex);
 	}
 }
