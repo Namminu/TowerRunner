@@ -47,9 +47,12 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void OnBuyConfirmed(ItemData item)
 	{
+		Debug.Log("Shop Manager : OnButConfirmed Called");
+
 		// If Inven hasn't Enough Slot
 		if (!InvenManager.Instance.HasFreeSlot())
 		{
+			Debug.Log("Shop Manager : Inven Full");
 			GameEvents.RaiseInvenFull();
 			return;
 		}
@@ -57,14 +60,17 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		// If Player hans't Enough Gold
 		if (EconomyService.Gold < item.itemPrice)
 		{
+			Debug.Log("Shop Manager : Not Enough Money");
 			GameEvents.RaiseShortageGold();
 			return;
 		}
-		 
+
 		EconomyService.TrySpendGold(item.itemPrice);
 		/* 인벤에 아이템 추가 메서드 */
 		var slot = slotPool.First(s => s.Data == item);
 		slot.MarkPurchased();
+		InvenManager.Instance.TryAddItem(item);
+		Debug.Log("Shop Manager : All Clear, Item Purchased");
 	}
 
 	private void PopulateSlots()

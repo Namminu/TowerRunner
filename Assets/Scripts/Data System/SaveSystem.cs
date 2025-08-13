@@ -10,7 +10,9 @@ public static class SaveSystem
 
     public static async Task<GameData> LoadAsync()
     {
-        if (!File.Exists(FilePath))
+		Debug.Log(File.ReadAllText(FilePath));
+
+		if (!File.Exists(FilePath))
             return new GameData();
 
         string cipher = await File.ReadAllTextAsync(FilePath);

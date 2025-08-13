@@ -25,14 +25,9 @@ public class InvenManager : MonoBehaviour, IInitializable
 		DontDestroyOnLoad(gameObject);
 	}
 
-	private void OnDestroy()
+	public void TryAddItem(ItemData item)
 	{
-		GameEvents.OnItemBuyConfirmed -= TryAddItem;
-	}
-
-	private void TryAddItem(ItemData item)
-	{
-		if(!HasFreeSlot())
+		if (!HasFreeSlot())
 		{
 			GameEvents.RaiseInvenFull();
 			return;
@@ -47,10 +42,10 @@ public class InvenManager : MonoBehaviour, IInitializable
 			GameEvents.RaiseInventoryChanged();
 	}
 
+	public bool HasFreeSlot() => items.Count < maxSlots;
+
 	public void Init()
 	{
-		GameEvents.OnItemBuyConfirmed += TryAddItem;
-	}
 
-	public bool HasFreeSlot() => items.Count < maxSlots;
+	}
 }

@@ -47,6 +47,25 @@ public class BootSceneController : MonoBehaviour
 		StartCoroutine(BootRoutine());
 	}
 
+	private void AddOp(AsyncOperationHandle op)
+	{
+		if (op.IsValid())
+			_operations.Add(op);
+		else
+			Debug.LogError($"[Boot] Invalied handle : {op.DebugName} (Skip)");
+	}
+
+	private void AddLoadOp<T>(AssetReferenceT<T> aref) where T : UnityEngine.Object
+	{
+		if(aref == null || !aref.RuntimeKeyIsValid())
+		{
+			Debug.LogError($"[Boot] Missing or Invalid Addressable reference : {aref}");
+			return;
+		}
+		var h = aref.LoadAssetAsync();
+		_operations.Add(h);
+	}
+
 	private IEnumerator RunInitializeDataRoutine()
 	{
 		var handle = enforceDBRef.LoadAssetAsync();
@@ -76,54 +95,65 @@ public class BootSceneController : MonoBehaviour
 	{
 		/* Prefs&GameData Load */
 		yield return RunInitializeDataRoutine();
+
 		/* Managers Load */
 		yield return ManagersInitializer.Instance.InitializeCommonManagers();
+
 		/* UI Assets Load */
 		yield return UIManager.Instance.LoadUIForScene(Scenes.BootScene);
 		var curUI = UIManager.Instance.CurrentUI;
-		if(curUI == null)
-		{
-			Debug.LogError($"BootSceneController : curUI NULL Error");
-			yield break;
-		}
-		if(curUI is not BootSceneUI bootUI) 
+		if(curUI is not BootSceneUI bootUI || curUI == null) 
 		{
 			Debug.LogError($"curUI's Type : {curUI.GetType().Name} - Type Miss Erorr to 'BootSceneUI' ");
 			yield break;
 		}
 		_sceneUI = bootUI;
-
 		_sceneUI.UpdateText("Booting Start...");
 		_sceneUI.UpdateProgress(0f);
 
 		_operations.Clear();
-		_operations.Add(Addressables.InitializeAsync());
-		_operations.Add(enemyDataRef.LoadAssetAsync());
-		_operations.Add(itemDBRef.LoadAssetAsync());
+		AddOp(Addressables.InitializeAsync());
+		AddLoadOp(enemyDataRef);
+		AddLoadOp(itemDBRef);
 
 		foreach(var op in _operations)
 		{
+			if (!op.IsValid()) continue;
 			op.Completed += h =>
 			{
+				if (!h.IsValid()) return;
 				if (h.Status != AsyncOperationStatus.Succeeded)
 					HandleError($"{h.DebugName} Data Load Failed");
 			};
 		}
 
-		while(!_operations.TrueForAll(o => o.IsDone))
+		while(true)
 		{
+			bool allDone = true;
 			float sum = 0f;
-			_operations.ForEach(o => sum += o.PercentComplete);
-			float progress = sum / _operations.Count;
+			int count = 0;
+
+			foreach(var o in _operations)
+			{
+				if (!o.IsValid()) continue;
+				if(!o.IsDone) allDone = false;
+				sum += o.PercentComplete;
+				count++;
+			}
+
+			float progress = (count > 0) ? (sum / count) : 1f;
 			_sceneUI.UpdateProgress(progress);
 			_sceneUI.UpdateText($"{(int)(progress * 100)}% : Loading...");
+
+			if (allDone) break;
 			yield return null;
 		}
 
 		_sceneUI.UpdateProgress(1f);
 		_sceneUI.UpdateText($"Init Complite");
 
-		_operations.ForEach(o => Addressables.Release(o));
+		foreach (var o in _operations)
+			if (o.IsValid()) Addressables.Release(o);
 		_operations.Clear();
 
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);

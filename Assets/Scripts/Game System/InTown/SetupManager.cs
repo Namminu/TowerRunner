@@ -116,8 +116,10 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	}
 	#endregion
 
-	private void OnDisable()
+	private void OnDestroy()
 	{
+		popup.gameObject.SetActive(false);
+
 		volumeSlider.onValueChanged.RemoveListener(OnVolumeSliderChanged);
 		displaySlider.onValueChanged.RemoveListener(OnDisPlaySliderChanged);
 		reviewBtn.onClick.RemoveListener(OnReviewBtnClicked);

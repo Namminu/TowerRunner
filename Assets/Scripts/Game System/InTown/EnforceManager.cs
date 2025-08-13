@@ -19,6 +19,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 
 	[Header("Warning UI")]
 	[SerializeField] private GameObject warningUI;
+	[SerializeField] private Text warningText;
 
 	private int selectedIndex;
 
@@ -58,7 +59,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		int costInt = EnforceService.GetCost(idx, level);
 		costText.text = costInt.ToString();
 
-		bool canUpgrade = level < data.maxLevel && EconomyService.Gold >= costInt;
+		bool canUpgrade = level < data.maxLevel /*&& EconomyService.Gold >= costInt*/;
 		enforceBtn.interactable = canUpgrade;
 	}
 
@@ -70,6 +71,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 
 		if(!EconomyService.TrySpendGold(cost))
 		{
+			warningText.text = "보유 골드가 충분하지 않습니다";
 			warningUI.SetActive(true);
 			return;
 		}

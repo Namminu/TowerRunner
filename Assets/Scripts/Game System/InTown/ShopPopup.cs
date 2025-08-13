@@ -5,11 +5,10 @@ using UnityEngine.UI;
 
 public class ShopPopup : MonoBehaviour
 {
-	[Header("Rooot Popup Panel")]
+	[Header("Root Popup Panel")]
 	[SerializeField] private GameObject popupRoot;
 
 	[Header("Basic Popup UI")]
-	[SerializeField] private GameObject BasicUI;
 	[SerializeField] private Image itemIcon;
 	[SerializeField] private Text itemName;
 	[SerializeField] private Text itemDescription;
@@ -25,24 +24,15 @@ public class ShopPopup : MonoBehaviour
 
 	private void Awake()
 	{
-		gameObject.SetActive(false);
-	}
-
-	private void OnEnable()
-	{
-		BasicUI.SetActive(true);
-		WarningUI.SetActive(false);
-
 		GameEvents.OnShopItemSeledted += ShowPopup;
 		GameEvents.OnInvenFull += OnInvenFull;
 		GameEvents.OnShortageGold += OnShortageGold;
+
+		gameObject.SetActive(false);
 	}
 
-	private void OnDisable()
+	private void OnDestroy()
 	{
-		BasicUI.SetActive(true);
-		WarningUI.SetActive(false);
-
 		GameEvents.OnShopItemSeledted -= ShowPopup;
 		GameEvents.OnInvenFull -= OnInvenFull;
 		GameEvents.OnShortageGold -= OnShortageGold;
@@ -50,6 +40,8 @@ public class ShopPopup : MonoBehaviour
 
 	private void ShowPopup(ItemData item)
 	{
+		Debug.Log($"{item.itemName} has called in Show Popup : [Shop Pupup.cs]");
+
 		currentItem = item;
 
 		itemIcon.sprite = item.itemIcon;
@@ -69,15 +61,15 @@ public class ShopPopup : MonoBehaviour
 
 	private void OnInvenFull()
 	{
-		BasicUI.SetActive(false);
 		warningText.text = "인벤토리에 남은 공간이 없습니다";
 		WarningUI.SetActive(true);
+		popupRoot.SetActive(false);
 	}
 
 	private void OnShortageGold()
 	{
-		BasicUI.SetActive(false);
 		warningText.text = "보유 골드가 충분하지 않습니다";
 		WarningUI.SetActive(true);
+		popupRoot.SetActive(false);
 	}
 }
