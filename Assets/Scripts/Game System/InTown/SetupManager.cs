@@ -94,6 +94,12 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	private IEnumerator ResetRoutine()
 	{
 		SaveService.ResetAll();
+
+		UIManager.Instance.UnLoadCurrentUI();
+		AddressablesTracker.ReleaseAll();
+
+		yield return null;
+
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(Scenes.BootScene);
 		yield return sceneConfig.LoadSceneRoutine(Scenes.BootScene);
 	}

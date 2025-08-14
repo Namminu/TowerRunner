@@ -10,6 +10,7 @@ public class GameData
     public int bestScore    = 0;
     public int gold         = 100;
     public List<UpgradeData> upgrades = new List<UpgradeData>();
+    public int[] inventory = new int[3] { -1, -1, -1};
 
     public static GameData CreateDefault()
     {
@@ -18,7 +19,8 @@ public class GameData
             version = DefaultVersion,
             bestScore = 0,
             gold = 100,
-            upgrades = new List<UpgradeData>()
+            upgrades = new List<UpgradeData>(),
+            inventory = new int[3] { -1, -1, -1}
         };
     }
 }

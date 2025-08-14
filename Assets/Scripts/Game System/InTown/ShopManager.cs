@@ -15,7 +15,9 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	public void InitUI()
 	{
-		if(!preloadHandle.IsValid())
+		GameEvents.OnItemBuyConfirmed += OnBuyConfirmed;
+
+		if (!preloadHandle.IsValid())
 		{
 			preloadHandle = itemSlotPrefab.LoadAssetAsync<GameObject>();
 			preloadHandle.Completed += _ =>
@@ -26,15 +28,8 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		}
 	}
 
-	private void OnEnable()
-	{
-		GameEvents.OnItemBuyConfirmed += OnBuyConfirmed;
-		PopulateSlots();
-	}
-
 	private void OnDisable()
 	{
-		GameEvents.OnItemBuyConfirmed -= OnBuyConfirmed;
 		foreach (var s in slotPool)
 			if(s)
 				s.gameObject.SetActive(false);
@@ -42,6 +37,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void OnDestroy()
 	{
+		GameEvents.OnItemBuyConfirmed -= OnBuyConfirmed;
 		Dispose();
 	}
 

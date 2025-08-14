@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,11 @@ public class UIManager : MonoBehaviour, IInitializable
 	private GameObject currentUIGroup;
 	private ISceneUI currentUI;
 	public ISceneUI CurrentUI => currentUI;
+
+	private AsyncOperationHandle<GameObject> _currentHandle;
+	private bool _hasHandle = false;
+	private Coroutine _loadingRoutine;
+
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
@@ -29,16 +35,15 @@ public class UIManager : MonoBehaviour, IInitializable
 
 	private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 	{
-		if (currentUIGroup != null) 
-			Destroy(currentUIGroup);
-		currentUI = null;
+		UnLoadCurrentUI();
 
 		if(!Enum.TryParse(scene.name, out Scenes sceneEnum))
 		{
 			Debug.LogError($"UI Manager : There's no {scene.name} in Scenes enum");
 			return;
 		}
-		StartCoroutine(LoadUIForScene(sceneEnum));
+		if (_loadingRoutine != null) StopCoroutine(_loadingRoutine);
+		_loadingRoutine = StartCoroutine(LoadUIForScene(sceneEnum));
 	}
 
 	private void OnDestroy()
@@ -71,36 +76,78 @@ public class UIManager : MonoBehaviour, IInitializable
 
 	public IEnumerator LoadUIForScene(Scenes scene)
 	{
-		var handle = sceneConfig.GetUIFor(scene).InstantiateAsync();
+		var root = GameObject.FindWithTag(canvasTag);
+		if (root == null) { yield return null; root = GameObject.FindWithTag(canvasTag); }
+		if (root == null)
+		{
+			Debug.LogError($"UIManager : Canvas with tag '{canvasTag}' not found.");
+			yield break;
+		}
+
+		var aref = sceneConfig.GetUIFor(scene);
+		var handle = aref.InstantiateAsync();
+		_currentHandle = handle;
+		_hasHandle = true;
+
 		yield return handle;
 
-		if(handle.Status != AsyncOperationStatus.Succeeded)
+		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
-			Debug.LogError($"UI Manager : Failed to Load UI Group : {handle.DebugName}");
+			Debug.LogError($"UIManager : Failed to Load UI Group : {handle.DebugName} / {handle.OperationException}");
+			_hasHandle = false; _currentHandle = default;
 			yield break;
 		}
 
 		currentUIGroup = handle.Result;
-		currentUIGroup.transform.SetParent(
-			GameObject.FindWithTag(canvasTag).transform, 
-			worldPositionStays : false);
-
-		if (!currentUIGroup.TryGetComponent(out currentUI))
+		if (currentUIGroup == null)
 		{
-			Debug.LogError($"UI Manager : There's no ISceneUI Object");
+			Debug.LogError("UIManager : Handle returned null GameObject");
 			yield break;
 		}
-		currentUI.InitUI();
+
+		currentUIGroup.transform.SetParent(root.transform, worldPositionStays: false);
 
 		var uiList = currentUIGroup.GetComponentsInChildren<ISceneUI>(true);
-		if(uiList.Length == 0)
+		if (uiList == null || uiList.Length == 0)
 		{
-			Debug.LogError($"No ISceneUI found in {scene}");
+			Debug.LogError($"UIManager : No ISceneUI found in {scene}");
 			yield break;
 		}
-		foreach (var ui in uiList)
-			ui.InitUI();
+		foreach (var ui in uiList) ui.InitUI();
 
-		Debug.Log("Looad UI For Scene Complete");
+		currentUIGroup.TryGetComponent(out currentUI);
+
+		_loadingRoutine = null;
+		Debug.Log("Load UI For Scene Complete");
+	}
+
+
+	public void UnLoadCurrentUI()
+	{
+		if(_loadingRoutine != null)
+		{
+			StopCoroutine(_loadingRoutine);
+			_loadingRoutine = null;
+		}
+
+		if(_hasHandle && _currentHandle.IsValid())
+		{
+			if(!_currentHandle.IsDone)
+			{
+				var h = _currentHandle;
+				h.Completed += _ => { if (h.IsValid()) Addressables.ReleaseInstance(h); };
+			}
+			else Addressables.ReleaseInstance(_currentHandle);
+		}
+		else
+		{
+			if (currentUIGroup != null)
+				Destroy(currentUIGroup);
+		}
+
+		_currentHandle = default;
+		_hasHandle = false;
+		currentUIGroup = null;
+		currentUI = null;
 	}
 }

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -47,5 +48,17 @@ public class InvenManager : MonoBehaviour, IInitializable
 	public void Init()
 	{
 
+	}
+
+	public void ReplaceAllFronmSave(IEnumerable<ItemData> newItems)
+	{
+		items.Clear();
+		foreach(var it in newItems)
+		{
+			if (it == null) continue;
+			if (items.Count >= maxSlots) break;
+			items.Add(it);
+		}
+		GameEvents.RaiseInventoryChanged();
 	}
 }
