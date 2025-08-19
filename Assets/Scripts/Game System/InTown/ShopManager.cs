@@ -15,6 +15,8 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	public void InitUI()
 	{
+		Debug.Log("Is ShopManager InitUI Called?");
+
 		GameEvents.OnItemBuyConfirmed += OnBuyConfirmed;
 
 		if (!preloadHandle.IsValid())
@@ -22,18 +24,18 @@ public class ShopManager : MonoBehaviour, ISceneUI
 			preloadHandle = itemSlotPrefab.LoadAssetAsync<GameObject>();
 			preloadHandle.Completed += _ =>
 			{
-				if (this != null && isActiveAndEnabled)
+				if (this != null)
 					PopulateSlots();
 			};
 		}
 	}
 
-	private void OnDisable()
-	{
-		foreach (var s in slotPool)
-			if(s)
-				s.gameObject.SetActive(false);
-	}
+	//private void OnDisable()
+	//{
+	//	foreach (var s in slotPool)
+	//		if (s)
+	//			s.gameObject.SetActive(false);
+	//}
 
 	private void OnDestroy()
 	{
@@ -43,8 +45,6 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void OnBuyConfirmed(ItemData item)
 	{
-		Debug.Log("Shop Manager : OnButConfirmed Called");
-
 		// If Inven hasn't Enough Slot
 		if (!InvenManager.Instance.HasFreeSlot())
 		{
@@ -71,7 +71,9 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void PopulateSlots()
 	{
-		if(slotPool.Count > 0)
+		Debug.Log("Is ShopManager PopulateSlots Called?");
+
+		if (slotPool.Count > 0)
 		{
 			foreach(var slot in slotPool)
 				slot.gameObject.SetActive(true);
@@ -104,6 +106,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void CreateSlotsFromPrefab(GameObject prefab)
 	{
+		Debug.Log("Is ShopManager CreateSlotsFromPrefab Called?");
 		foreach (var data in shopItems)
 		{
 			var go = Instantiate(prefab, itemList);
@@ -132,6 +135,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 				}
 			};
 		}
+		Debug.Log("Is ShopManager CreateByInstantiateAsync Called?");
 	}
 
 	public void Dispose()
