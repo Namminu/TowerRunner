@@ -54,6 +54,4 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 	{
 		ApplyDisplayBrightness(value);
 	}
-
-
 }

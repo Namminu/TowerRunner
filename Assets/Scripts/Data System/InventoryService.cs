@@ -8,7 +8,17 @@ public static class InventoryService
     private const int EMPTY = -1;
 
     private static bool _wired;
+    private static bool _quitting;
+
     private static ItemDatabase _db;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void DomainReset()
+    {
+        _wired = false;
+        _quitting = false;
+        _db = null;
+    }
 
     public static void Initialize(ItemDatabase db)
     {
@@ -20,12 +30,25 @@ public static class InventoryService
             _wired = true;
         }
 
-        if (SaveService.Current != null && InvenManager.Instance != null)
+        Application.quitting -= OnAppQuitting;
+		Application.quitting += OnAppQuitting;
+
+		if (SaveService.Current != null && InvenManager.Instance != null)
         {
             EnsureArraySized(ref SaveService.Current.inventory, InvenManager.Instance.MaxInvenSlots, EMPTY);
             LoadIntoRuntime();
         }
     }
+
+    public static void UnInitialize()
+    {
+        if(_wired)
+        {
+            GameEvents.OnInventoryChanged -= PersistSnapshot;
+            _wired = false;
+		}
+		Application.quitting -= OnAppQuitting;
+	}
 
     public static void SyncFromSave()
     {
@@ -39,7 +62,14 @@ public static class InventoryService
         LoadIntoRuntime();
     }
 
-    private static void LoadIntoRuntime()
+    private static void OnAppQuitting()
+    {
+        _quitting = true;
+        UnInitialize();
+    }
+
+
+	private static void LoadIntoRuntime()
     {
         var ids = SaveService.Current.inventory;
         var list = new List<ItemData>(InvenManager.Instance.MaxInvenSlots);
@@ -61,6 +91,8 @@ public static class InventoryService
 
     private static async void PersistSnapshot()
     {
+        if (_quitting) return;
+
         if (SaveService.Current == null || InvenManager.Instance == null) return;
 
         var mgr = InvenManager.Instance;

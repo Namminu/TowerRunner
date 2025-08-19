@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -43,6 +44,14 @@ public class BootSceneController : MonoBehaviour
 		StartCoroutine(BootRoutine());
 	}
 
+	private void Add(AsyncOperationHandle h)
+	{
+		if (!h.IsValid())
+			Debug.LogError($"[Boot] Invalid Handle {h.DebugName} Skipped");
+		_operations.Add(h);
+		AddressablesTracker.Track(h);
+	}
+
 	private void AddOp(AsyncOperationHandle op)
 	{
 		if (op.IsValid())
@@ -64,34 +73,21 @@ public class BootSceneController : MonoBehaviour
 
 	private IEnumerator RunInitializeDataRoutine()
 	{
-		var enforceH = config.enforceDBRef.LoadAssetAsync();
-		var itemDBH = config.itemDBRef.LoadAssetAsync();
-		yield return enforceH; yield return itemDBH;
-
-		if (enforceH.Status == AsyncOperationStatus.Succeeded)
-			EnforceService.Initialize(enforceH.Result);
-		else Debug.LogError("[Boot] Enforce DB Load Failed");
-
-		if (itemDBH.Status == AsyncOperationStatus.Succeeded)
-			InventoryService.Initialize(itemDBH.Result);
-		else Debug.LogError("[Boot] Item DB Load Failed");
-
 		var task = SaveService.InitializeAsync();
 		while (!task.IsCompleted) yield return null;
-
-		InventoryService.SyncFromSave();
-
-		AudioManager.Instance.SetMasterVolume(Prefs.MasterVolume);
-		BrightnessManager.Instance.SetBrightness(Prefs.DisplayBrightness);
-
-		AddressablesTracker.Track(enforceH);
-		AddressablesTracker.Track(itemDBH);
 	}
 
 	private IEnumerator BootRoutine()
 	{
-		/* Prefs&GameData Load */
+		/* Prefs & GameData Load */
 		yield return RunInitializeDataRoutine();
+
+		/* Required Reference Verification */
+		if(!ValidateConfig(out var reason))
+		{
+			Fail($"Essential Addressables Missing : {reason}");
+			yield break;
+		}
 
 		/* Managers Load */
 		yield return ManagersInitializer.Instance.InitializeCommonManagers();
@@ -104,28 +100,27 @@ public class BootSceneController : MonoBehaviour
 			Debug.LogError("Boot UI not Found");
 			yield break;
 		}
-		_sceneUI.UpdateText("Booting Start...");
-		_sceneUI.UpdateProgress(0f);
-
-		/* Required reference verification */
-		if (!ValidateConfig(out var reason))
-		{
-			Fail($"Essential Addressables Missing : {reason}");
-			yield break;
-		}
+		_sceneUI.UpdateText("Init Complete");
+		_sceneUI.UpdateProgress(1f);
 
 		/* Load with Once Self Recovery */
 		var success = false;
-		for(int attempt = 0; attempt <= 1&& !success; attempt++)
+		for (int attempt = 0; attempt <= 1 && !success; attempt++)
 		{
 			_operations.Clear();
-			Add(Addressables.InitializeAsync());
-			Add(config.enemyDataRef.LoadAssetAsync());
-			Add(config.itemDBRef.LoadAssetAsync());
-			Add(config.enforceDBRef.LoadAssetAsync());
+
+			var initH = AddressablesHub.Initialize();
+			var itemDBH = AddressablesHub.LoadOnce(config.itemDBRef, resident: true);
+			var enforceH = AddressablesHub.LoadOnce(config.enforceDBRef, resident: true);
+			var enemyH = AddressablesHub.LoadOnce(config.enemyDataRef, resident: false);
+
+			_operations.Add(initH);
+			_operations.Add(itemDBH);
+			_operations.Add(enforceH);
+			_operations.Add(enemyH);
 
 			/* Detect Failed Case */
-			foreach(var op in _operations)
+			foreach (var op in _operations)
 			{
 				if (!op.IsValid()) continue;
 				op.Completed += h =>
@@ -141,19 +136,33 @@ public class BootSceneController : MonoBehaviour
 			/* Result */
 			success = AllSucceeded();
 
-			foreach (var o in _operations)
-				if (o.IsValid()) Addressables.Release(o);
-			_operations.Clear();
+			/* Release Handle which Resident is True */
+			AddressablesHub.ReleaseTransients();
 
 			if (!success && attempt == 0)
 				yield return TrySelfHeal();
 		}
 
 		if (!success)
-		{ 
-			Fail("Boot Essential Data Load Failed"); 
-			yield break; 
+		{
+			Fail("Boot Essential Data Load Failed");
+			yield break;
 		}
+
+		/* Services Init After Load Success */
+		var itemDB = AddressablesHub.GetResultOrNull(config.itemDBRef);
+		var enforce = AddressablesHub.GetResultOrNull(config.enforceDBRef);
+
+		if(itemDB == null || enforce == null)
+		{
+			Fail("DB Resolve Failed");
+			yield break;
+		}
+
+		EnforceService.Initialize(enforce);
+		InventoryService.Initialize(itemDB);
+
+		InventoryService.SyncFromSave();
 
 		_sceneUI.UpdateText("Init Complete");
 		_sceneUI.UpdateProgress(1f);
@@ -162,14 +171,6 @@ public class BootSceneController : MonoBehaviour
 		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
 		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
 		Destroy(gameObject);
-	}
-
-	private void Add(AsyncOperationHandle h)
-	{
-		if (!h.IsValid())
-			Debug.LogError($"[Boot] Invalid Handle {h.DebugName} Skipped");
-		_operations.Add(h);
-		AddressablesTracker.Track(h);
 	}
 
 	private IEnumerator TrackProgress()
@@ -226,7 +227,7 @@ public class BootSceneController : MonoBehaviour
 	private IEnumerator TrySelfHeal()
 	{
 		var check = Addressables.CheckForCatalogUpdates(false);
-		yield return check;
+		yield return check; 
 
 		if(check.Status == AsyncOperationStatus.Succeeded && 
 			check.Result != null && 
