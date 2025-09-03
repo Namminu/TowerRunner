@@ -76,3 +76,4 @@ public class ManagersInitializer : MonoBehaviour
 			init.Init();
 	}
 }
+

@@ -77,7 +77,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	{
 		popup.Show(
 			"리뷰를 작성하러 이동합니다",
-			onYes: () => Application.OpenURL("")
+			onYes: () => Application.OpenURL("https://play.google.com/store/games?hl=ko")
 			);
 	}
 	#endregion

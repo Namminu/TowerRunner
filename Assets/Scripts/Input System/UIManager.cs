@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour, IInitializable
 {
@@ -21,6 +22,9 @@ public class UIManager : MonoBehaviour, IInitializable
 	private AsyncOperationHandle<GameObject> _currentHandle;
 	private bool _hasHandle = false;
 	private Coroutine _loadingRoutine;
+
+	[SerializeField] private Image overlayImage;
+	public Image OverlayImage => overlayImage;
 
 	private void Awake()
 	{

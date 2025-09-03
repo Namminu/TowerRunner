@@ -19,11 +19,22 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 		DontDestroyOnLoad(gameObject);
 	}
 
+	private void Start()
+	{
+		overlayImage = UIManager.Instance.OverlayImage;
+		if (overlayImage == null)
+			Debug.LogError("Cannot Find Overlay Image");
+	}
+
 	private void ApplyDisplayBrightness(float value)
 	{
-		if (overlayImage == null) return;
+		if (overlayImage == null)
+		{
+			Debug.Log("Overlay Image Null Reference Error");
+			return;
+		}
 
-		float alpha = (1f - Mathf.Clamp01(value)) * MaxAlphaByte / 255f;
+		float alpha = (1f - Mathf.Clamp01(value)) * (MaxAlphaByte / 255f);
 		Color c = overlayImage.color;
 		c.a = alpha;
 		overlayImage.color = c;
