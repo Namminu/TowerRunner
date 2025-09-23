@@ -102,7 +102,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			return;
 		}
 		Instance = this;
-		DontDestroyOnLoad(gameObject);
+		//DontDestroyOnLoad(gameObject);
 
 		Mover = GetComponent<PlayerMover>();
 		if(Mover != null)
