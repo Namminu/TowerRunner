@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -72,8 +73,10 @@ public class ManagersInitializer : MonoBehaviour
 		if(persistent)
 			DontDestroyOnLoad(root);
 
-		foreach(var init in root.GetComponentsInChildren<IInitializable>(true))
-			init.Init();
+		//foreach(var init in root.GetComponentsInChildren<IInitializable>(true))
+		//	init.Init();
+
+		root.GetComponent<IInitializable>()?.Init();
 	}
 }
 

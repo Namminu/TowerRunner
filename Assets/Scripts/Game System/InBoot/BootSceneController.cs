@@ -52,24 +52,24 @@ public class BootSceneController : MonoBehaviour
 		AddressablesTracker.Track(h);
 	}
 
-	private void AddOp(AsyncOperationHandle op)
-	{
-		if (op.IsValid())
-			_operations.Add(op);
-		else
-			Debug.LogError($"[Boot] Invalied handle : {op.DebugName} (Skip)");
-	}
+	//private void AddOp(AsyncOperationHandle op)
+	//{
+	//	if (op.IsValid())
+	//		_operations.Add(op);
+	//	else
+	//		Debug.LogError($"[Boot] Invalied handle : {op.DebugName} (Skip)");
+	//}
 
-	private void AddLoadOp<T>(AssetReferenceT<T> aref) where T : UnityEngine.Object
-	{
-		if(aref == null || !aref.RuntimeKeyIsValid())
-		{
-			Debug.LogError($"[Boot] Missing or Invalid Addressable reference : {aref}");
-			return;
-		}
-		var h = aref.LoadAssetAsync();
-		_operations.Add(h);
-	}
+	//private void AddLoadOp<T>(AssetReferenceT<T> aref) where T : UnityEngine.Object
+	//{
+	//	if(aref == null || !aref.RuntimeKeyIsValid())
+	//	{
+	//		Debug.LogError($"[Boot] Missing or Invalid Addressable reference : {aref}");
+	//		return;
+	//	}
+	//	var h = aref.LoadAssetAsync();
+	//	_operations.Add(h);
+	//}
 
 	private IEnumerator RunInitializeDataRoutine()
 	{

@@ -12,13 +12,19 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 
 	private void Awake()
 	{
-		// Temp
-		Init();
+		//// Temp
+		//Init();
 	}
 
 	public void Init()
 	{
-		StartCoroutine(MapInitRoutine());
+		StartCoroutine(InitRoutine());
+	}
+
+	private IEnumerator InitRoutine()
+	{
+		yield return StartCoroutine(MapInitRoutine());
+		GameBus.Publish(new SubsystemReady(SubsystemId.Map));
 	}
 
 	private IEnumerator MapInitRoutine()
