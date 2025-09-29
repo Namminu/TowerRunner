@@ -17,7 +17,6 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 	[Header("Reset Zone")]
 	[SerializeField] private Button resetBtn;
-	[SerializeField] private SceneConfig sceneConfig;
 
 	[Header("Exit Zone")]
 	[SerializeField] private Button exitBtn;
@@ -100,8 +99,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 		yield return null;
 
-		yield return ManagersInitializer.Instance.InitializeSceneManagers(Scenes.BootScene);
-		yield return sceneConfig.LoadSceneRoutine(Scenes.BootScene);
+		yield return ManagersInitializer.Instance.SceneLoadRoutine(Scenes.BootScene);
 	}
 	#endregion
 

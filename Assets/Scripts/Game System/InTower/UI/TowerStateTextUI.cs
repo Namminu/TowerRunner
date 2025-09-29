@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class TowerStateTextUI : MonoBehaviour
 {
 	[SerializeField] private Text ReadyText;
+	public Text ReadyStateText => ReadyText;
 	[SerializeField] private Text RunText;
 	[SerializeField] private float RunTextShowTime;
 
@@ -14,18 +15,16 @@ public class TowerStateTextUI : MonoBehaviour
 		RunText.gameObject.SetActive(false);
 	}
 
-	public void StartReadyState() => StartCoroutine(ReadyRoutine());
-	public void StartRunState() => StartCoroutine(RunRoutine());
-
-	private IEnumerator ReadyRoutine()
+	private void OnEnable()
 	{
-		ReadyText.gameObject.SetActive(true);
-		yield return null;
-		ReadyText.gameObject.SetActive(false);
+		GameBus.Publish(new StateUIReady(this));
 	}
+
+	public void StartRunState() => StartCoroutine(RunRoutine());
 
 	private IEnumerator RunRoutine()
 	{
+		ReadyText.gameObject.SetActive(false);
 		ReadyText.gameObject.SetActive(true);
 		yield return new WaitForSeconds(RunTextShowTime);
 		ReadyText.gameObject.SetActive(false);

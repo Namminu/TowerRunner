@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 
 public interface IInitializable
 {
@@ -22,7 +24,11 @@ public class ManagersInitializer : MonoBehaviour
 	[SerializeField] private AssetReferenceGameObject TownManagerRef;
 	[SerializeField] private AssetReferenceGameObject TowerManagerRef;
 
+	[Header("Scene Config")]
+	[SerializeField] private SceneConfig sceneConfig;
+
 	private bool _isFirstInit;
+	private GameObject _currentSceneManager;
 
 	private void Awake()
 	{
@@ -45,7 +51,13 @@ public class ManagersInitializer : MonoBehaviour
 			yield return LoadAndInitManager(managerRef, persistent: true);
 	}
 
-	public IEnumerator InitializeSceneManagers(Scenes scene)
+	public IEnumerator SceneLoadRoutine(Scenes scene)
+	{
+		yield return InitializeSceneManagers(scene);
+		yield return sceneConfig.LoadSceneRoutine(scene);
+	}
+
+	private IEnumerator InitializeSceneManagers(Scenes scene)
 	{
 		var sceneRef = scene switch
 		{
@@ -54,7 +66,7 @@ public class ManagersInitializer : MonoBehaviour
 			Scenes.Tower => TowerManagerRef,
 			_ => MainManagerRef
 		};
-		yield return LoadAndInitManager(sceneRef, persistent : false);
+		yield return LoadAndInitManager(sceneRef, persistent: false);
 	}
 
 	private IEnumerator LoadAndInitManager(
@@ -70,11 +82,19 @@ public class ManagersInitializer : MonoBehaviour
 		}
 
 		var root = handle.Result;
-		if(persistent)
+		if (persistent)
 			DontDestroyOnLoad(root);
-
-		//foreach(var init in root.GetComponentsInChildren<IInitializable>(true))
-		//	init.Init();
+		else
+		{
+			if(_currentSceneManager != null)
+			{
+				Addressables.ReleaseInstance(_currentSceneManager);
+				_currentSceneManager = null;
+				yield return null;
+			}
+			_currentSceneManager = root;
+			root.transform.parent = transform;
+		}
 
 		root.GetComponent<IInitializable>()?.Init();
 	}

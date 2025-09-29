@@ -27,6 +27,12 @@ public readonly struct RunSignal : IGameSignal
 public readonly struct ActivateMovementNextFrame : IGameSignal
 { }
 
+public struct StateUIReady : IGameSignal
+{
+	public TowerStateTextUI TextUI;
+	public StateUIReady(TowerStateTextUI ui) { TextUI = ui; }
+}
+
 public static class GameBus
 {
     public static event Action<IGameSignal> OnSignal;

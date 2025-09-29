@@ -22,7 +22,6 @@ public class BootSceneController : MonoBehaviour
 	[SerializeField] private BootConfig config;
 
 	[Header("Scenes")]
-	[SerializeField] private SceneConfig sceneConfig;
 	[SerializeField] private Scenes nextSceneName;
 
 	private BootSceneUI _sceneUI;
@@ -44,13 +43,13 @@ public class BootSceneController : MonoBehaviour
 		StartCoroutine(BootRoutine());
 	}
 
-	private void Add(AsyncOperationHandle h)
-	{
-		if (!h.IsValid())
-			Debug.LogError($"[Boot] Invalid Handle {h.DebugName} Skipped");
-		_operations.Add(h);
-		AddressablesTracker.Track(h);
-	}
+	//private void Add(AsyncOperationHandle h)
+	//{
+	//	if (!h.IsValid())
+	//		Debug.LogError($"[Boot] Invalid Handle {h.DebugName} Skipped");
+	//	_operations.Add(h);
+	//	AddressablesTracker.Track(h);
+	//}
 
 	//private void AddOp(AsyncOperationHandle op)
 	//{
@@ -168,8 +167,7 @@ public class BootSceneController : MonoBehaviour
 		_sceneUI.UpdateProgress(1f);
 
 		/* Load Next Scene */
-		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
-		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
+		yield return ManagersInitializer.Instance.SceneLoadRoutine(nextSceneName);
 		Destroy(gameObject);
 	}
 

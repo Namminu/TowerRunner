@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour, IInitializable
 	[SerializeField]
 	private SceneUIConfig sceneConfig;
 	[SerializeField]
-	private string canvasTag = "UIRoot";
+	private GameObject uiRoot;
 
 	private GameObject currentUIGroup;
 	private ISceneUI currentUI;
@@ -80,11 +80,10 @@ public class UIManager : MonoBehaviour, IInitializable
 
 	public IEnumerator LoadUIForScene(Scenes scene)
 	{
-		var root = GameObject.FindWithTag(canvasTag);
-		if (root == null) { yield return null; root = GameObject.FindWithTag(canvasTag); }
-		if (root == null)
+		if (uiRoot == null) { yield return null; uiRoot = GameObject.FindWithTag("UIRoot"); }
+		if (uiRoot == null)
 		{
-			Debug.LogError($"UIManager : Canvas with tag '{canvasTag}' not found.");
+			Debug.LogError($"UIManager : Canvas with tag 'UIRoot' not found.");
 			yield break;
 		}
 
@@ -109,7 +108,7 @@ public class UIManager : MonoBehaviour, IInitializable
 			yield break;
 		}
 
-		currentUIGroup.transform.SetParent(root.transform, worldPositionStays: false);
+		currentUIGroup.transform.SetParent(uiRoot.transform, worldPositionStays: false);
 
 		var uiList = currentUIGroup.GetComponentsInChildren<ISceneUI>(true);
 		if (uiList == null || uiList.Length == 0)

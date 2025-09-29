@@ -15,7 +15,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	public void InitUI()
 	{
-		Debug.Log("Is ShopManager InitUI Called?");
+		//Debug.Log("Is ShopManager InitUI Called?");
 
 		GameEvents.OnItemBuyConfirmed += OnBuyConfirmed;
 
@@ -48,7 +48,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		// If Inven hasn't Enough Slot
 		if (!InvenManager.Instance.HasFreeSlot())
 		{
-			Debug.Log("Shop Manager : Inven Full");
+			//Debug.Log("Shop Manager : Inven Full");
 			GameEvents.RaiseInvenFull();
 			return;
 		}
@@ -56,7 +56,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		// If Player hans't Enough Gold
 		if (EconomyService.Gold < item.itemPrice)
 		{
-			Debug.Log("Shop Manager : Not Enough Money");
+			//Debug.Log("Shop Manager : Not Enough Money");
 			GameEvents.RaiseShortageGold();
 			return;
 		}
@@ -66,12 +66,12 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		var slot = slotPool.First(s => s.Data == item);
 		slot.MarkPurchased();
 		InvenManager.Instance.TryAddItem(item);
-		Debug.Log("Shop Manager : All Clear, Item Purchased");
+		//Debug.Log("Shop Manager : All Clear, Item Purchased");
 	}
 
 	private void PopulateSlots()
 	{
-		Debug.Log("Is ShopManager PopulateSlots Called?");
+		//Debug.Log("Is ShopManager PopulateSlots Called?");
 
 		if (slotPool.Count > 0)
 		{
@@ -106,7 +106,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void CreateSlotsFromPrefab(GameObject prefab)
 	{
-		Debug.Log("Is ShopManager CreateSlotsFromPrefab Called?");
+		//Debug.Log("Is ShopManager CreateSlotsFromPrefab Called?");
 		foreach (var data in shopItems)
 		{
 			var go = Instantiate(prefab, itemList);
@@ -135,7 +135,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 				}
 			};
 		}
-		Debug.Log("Is ShopManager CreateByInstantiateAsync Called?");
+	//	Debug.Log("Is ShopManager CreateByInstantiateAsync Called?");
 	}
 
 	public void Dispose()

@@ -12,8 +12,6 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 
 	[Header("Scene Controll")]
 	[SerializeField]
-	private SceneConfig sceneConfig;
-	[SerializeField]
 	private Scenes nextSceneName;
 
 	public void InitUI()
@@ -24,13 +22,12 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		startBtn.onClick.AddListener(() => StartCoroutine(LinkStartBtn()));
 		exitBtn.onClick.AddListener(() => LinkExitBtn());
 
-		Debug.Log("MainScene UI Inited");
+		//Debug.Log("MainScene UI Inited");
 	}
 
 	private IEnumerator LinkStartBtn()
 	{
-		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
-		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
+		yield return ManagersInitializer.Instance.SceneLoadRoutine(nextSceneName);
 	}
 
 	private async void LinkExitBtn()

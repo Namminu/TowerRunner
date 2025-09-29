@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -26,6 +27,10 @@ public class TowerManager : MonoBehaviour, IInitializable
 	private bool _allReady = false;
 	private bool _isRunIssued = false;
 
+	private TowerStateTextUI _textUI;
+	private readonly List<Action<TowerStateTextUI>> _pendingUIActions = new();
+
+
 	public void Init()
 	{
 		// 자식 매니저 오브젝트 초기화 호출
@@ -36,10 +41,8 @@ public class TowerManager : MonoBehaviour, IInitializable
 				init.Init();
 		}
 
-		// Ready 문구 출력
-
-
 		// 신호 구독
+		GameBus.Subscribe<StateUIReady>(OnTowerUIReady);
 		GameBus.Subscribe<SubsystemReady>(OnSubsystemReady);
 		GameBus.Subscribe<SubsystemFailed>(OnSubSystemFailed);
 
@@ -56,6 +59,18 @@ public class TowerManager : MonoBehaviour, IInitializable
 		while (Time.unscaledTime - t < _runStateMinTime)
 			yield return null;
 		_minDelayPassed = true;
+	}
+
+	private void OnTowerUIReady(StateUIReady sig)
+	{
+		_textUI = sig.TextUI;
+
+		if (_pendingUIActions.Count > 0)
+		{
+			foreach (var act in _pendingUIActions)
+				act(_textUI);
+			_pendingUIActions.Clear();
+		}
 	}
 
 	private void OnSubsystemReady(SubsystemReady sig)
@@ -80,15 +95,13 @@ public class TowerManager : MonoBehaviour, IInitializable
 			if (_minDelayPassed && _allReady)
 			{
 				// Run 연출
-
+				_textUI.StartRunState();
 
 				GameBus.Publish(new RunSignal());
 				yield return null;
 				GameBus.Publish(new ActivateMovementNextFrame());
 
 				_isRunIssued = true;
-
-
 			}
 			// 아니라면 준비 동작 대기
 			yield return null;
@@ -97,6 +110,7 @@ public class TowerManager : MonoBehaviour, IInitializable
 
 	private void OnDestroy()
 	{
+		GameBus.Unsubscribe<StateUIReady>(OnTowerUIReady);
 		GameBus.Unsubscribe<SubsystemReady>(OnSubsystemReady);
 		GameBus.Unsubscribe<SubsystemFailed>(OnSubSystemFailed);
 	}

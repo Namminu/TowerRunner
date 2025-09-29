@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TownSceneUI : MonoBehaviour, ISceneUI
 {
 	[Header("Scene&Setting")]
 	[SerializeField] private Scenes nextSceneName;
-	[SerializeField] private SceneConfig sceneConfig;
 	[SerializeField] private SetupManager setupManager;
 
 	[Header("Top Line")]
@@ -51,8 +51,7 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private IEnumerator GameStartBtn()
 	{
-		yield return ManagersInitializer.Instance.InitializeSceneManagers(nextSceneName);
-		yield return sceneConfig.LoadSceneRoutine(nextSceneName);
+		yield return ManagersInitializer.Instance.SceneLoadRoutine(nextSceneName);
 	}
 
 	private void ShopUIToggle()
@@ -101,4 +100,3 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		goldAmount.text = left;
 	}
 }
- 
