@@ -8,12 +8,15 @@ public class ObjectMover : MonoBehaviour
 	public float MoveDownSpeed => moveSpeed;
 
 	private float _lowerBoundY;
-	private float _speedIncrease;
 	
 	private Renderer _rd;
 	private float _objBoundY;
 
 	public event Action<ObjectMover> OnOutofBounds;
+
+	private bool _isRunning = false;
+	private Action _unsubRun;
+	private Action _unsubActivate;
 
 	private void Awake()
 	{
@@ -23,20 +26,35 @@ public class ObjectMover : MonoBehaviour
 			Debug.Log(this + " has no Renderer");
 
 		_objBoundY = _rd.bounds.size.y;
-	}
-	 
-	private void Start()
-	{
-		_speedIncrease = GameSpeedManager.Instance.SpeedMultiplier;
+
+		// Run 상태 준비
+		_unsubRun = GameBus.SubscribeSticky<RunSignal>(_ => { _isRunning = false; enabled = false; });
+		// Run 상태 시작
+		_unsubActivate = GameBus.SubscribeSticky<ActivateMovementNextFrame>(_ =>
+		{
+			_isRunning = true;
+			enabled = true;
+		});
+
+		enabled = false;
 	}
 
 	private void Update()
 	{
-		transform.position += moveSpeed * _speedIncrease * Time.deltaTime * Vector3.down;
+		if (!_isRunning) return;
+
+		transform.position += moveSpeed * GameSpeedManager.Instance.SpeedMultiplier 
+			* Time.deltaTime * Vector3.down;
+
 		if (transform.position.y + (_objBoundY * 0.5f) < _lowerBoundY)
 		{
-			Debug.Log(name + " Out of Bound!");
 			OnOutofBounds?.Invoke(this);
 		}
+	}
+
+	private void OnDestroy()
+	{
+		_unsubRun?.Invoke();
+		_unsubActivate?.Invoke();
 	}
 }

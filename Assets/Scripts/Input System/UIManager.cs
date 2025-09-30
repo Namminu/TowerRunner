@@ -121,7 +121,7 @@ public class UIManager : MonoBehaviour, IInitializable
 		currentUIGroup.TryGetComponent(out currentUI);
 
 		_loadingRoutine = null;
-		Debug.Log("Load UI For Scene Complete");
+		//Debug.Log("Load UI For Scene Complete");
 	}
 
 

@@ -30,9 +30,18 @@ public class TowerManager : MonoBehaviour, IInitializable
 	private TowerStateTextUI _textUI;
 	private readonly List<Action<TowerStateTextUI>> _pendingUIActions = new();
 
+	// TowerScene 신호 제어
+	private Action _towerUI;
+	private Action _subsystemReady;
+	private Action _subsystemFailed;
 
 	public void Init()
 	{
+		// 신호 구독
+		_towerUI = GameBus.Subscribe<StateUIReady>(OnTowerUIReady);
+		_subsystemReady = GameBus.Subscribe<SubsystemReady>(OnSubsystemReady);
+		_subsystemFailed = GameBus.Subscribe<SubsystemFailed>(OnSubSystemFailed);
+
 		// 자식 매니저 오브젝트 초기화 호출
 		IInitializable[] inits = GetComponentsInChildren<IInitializable>(true);
 		foreach (var init in inits)
@@ -40,11 +49,6 @@ public class TowerManager : MonoBehaviour, IInitializable
 			if (!ReferenceEquals(init, this))
 				init.Init();
 		}
-
-		// 신호 구독
-		GameBus.Subscribe<StateUIReady>(OnTowerUIReady);
-		GameBus.Subscribe<SubsystemReady>(OnSubsystemReady);
-		GameBus.Subscribe<SubsystemFailed>(OnSubSystemFailed);
 
 		// Ready 최소 표시 시간 카운트
 		StartCoroutine(ReadyMinDelayRoutine());
@@ -76,7 +80,9 @@ public class TowerManager : MonoBehaviour, IInitializable
 	private void OnSubsystemReady(SubsystemReady sig)
 	{ 
 		if(requiredSubsystems.Contains(sig.Id))
+		{
 			_readySet.Add(sig.Id);
+		}
 	}
 
 	private void OnSubSystemFailed(SubsystemFailed sig)
@@ -90,7 +96,6 @@ public class TowerManager : MonoBehaviour, IInitializable
 		{
 			bool allListendReady = _readySet.Count == requiredSubsystems.Count;
 			_allReady = allListendReady;
-
 			// 모든 준비 동작 체크 완료 시
 			if (_minDelayPassed && _allReady)
 			{
@@ -110,8 +115,9 @@ public class TowerManager : MonoBehaviour, IInitializable
 
 	private void OnDestroy()
 	{
-		GameBus.Unsubscribe<StateUIReady>(OnTowerUIReady);
-		GameBus.Unsubscribe<SubsystemReady>(OnSubsystemReady);
-		GameBus.Unsubscribe<SubsystemFailed>(OnSubSystemFailed);
+		// 구독 해제
+		_towerUI?.Invoke();
+		_subsystemReady?.Invoke();
+		_subsystemFailed?.Invoke();
 	}
 }

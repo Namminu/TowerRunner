@@ -10,12 +10,6 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 	private float _lastBornY;
 	private float _middleHeight;
 
-	private void Awake()
-	{
-		//// Temp
-		//Init();
-	}
-
 	public void Init()
 	{
 		StartCoroutine(InitRoutine());
@@ -24,6 +18,7 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 	private IEnumerator InitRoutine()
 	{
 		yield return StartCoroutine(MapInitRoutine());
+		// 준비 완료 시그널 전송
 		GameBus.Publish(new SubsystemReady(SubsystemId.Map));
 	}
 
@@ -41,6 +36,7 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 			if(handle.Status != AsyncOperationStatus.Succeeded)
 			{
 				Debug.LogError($"[Map Scroll Manager] Map Scroll Prefs Instantiate Failed : {i}th");
+				GameBus.Publish(new SubsystemFailed(SubsystemId.Map, $"{handle.Status}"));
 				yield break;
 			}
 
@@ -51,10 +47,7 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 			if (!rd) Debug.LogError("Map Scroll Prefs has No Renderer");
 
 			int height = Mathf.FloorToInt(rd.bounds.size.y);
-			Debug.Log("Height : " + height);
-
 			float newY = newBottomY + (height * 0.5f);
-			Debug.Log("newY : " + newY);
 
 			_middleHeight = (height * 0.5f);
 			Vector3 newPos = new Vector3(0.05f, newY, 0f);
@@ -83,6 +76,6 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 
 	private void HandleOutofBound(ObjectMover mover)
 	{
-		mover.gameObject.transform.position = new Vector3(0.05f, _lastBornY + _middleHeight, 0f);
+		mover.gameObject.transform.position = new Vector3(0.05f, (int)(_lastBornY + _middleHeight), 0f);
 	}
 }

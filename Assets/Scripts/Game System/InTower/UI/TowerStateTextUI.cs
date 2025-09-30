@@ -25,8 +25,8 @@ public class TowerStateTextUI : MonoBehaviour
 	private IEnumerator RunRoutine()
 	{
 		ReadyText.gameObject.SetActive(false);
-		ReadyText.gameObject.SetActive(true);
+		RunText.gameObject.SetActive(true);
 		yield return new WaitForSeconds(RunTextShowTime);
-		ReadyText.gameObject.SetActive(false);
+		RunText.gameObject.SetActive(false);
 	}
 }

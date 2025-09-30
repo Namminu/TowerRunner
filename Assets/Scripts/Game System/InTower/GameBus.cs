@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IGameSignal
@@ -36,15 +37,29 @@ public struct StateUIReady : IGameSignal
 public static class GameBus
 {
     public static event Action<IGameSignal> OnSignal;
-    public static void Publish(IGameSignal sig) => OnSignal?.Invoke(sig);
+    private static readonly Dictionary<Type, IGameSignal> _last = new();
 
-    public static void Subscribe<T>(Action<T> handler) where T : IGameSignal
+    public static void Publish(IGameSignal sig)
     {
-        OnSignal += (sig) => { if (sig is T t) handler(t); };
+        OnSignal?.Invoke(sig);
+        _last[sig.GetType()] = sig;
     }
 
-	public static void Unsubscribe<T>(Action<T> handler) where T : IGameSignal
-	{
-		OnSignal -= (sig) => { if (sig is T t) handler(t); };
+    public static Action Subscribe<T>(Action<T> handler) where T : IGameSignal
+    {
+        Action<IGameSignal> scribeToken = (sig) => { if (sig is T t) handler(t); };
+        OnSignal += scribeToken;
+        return () => OnSignal -= scribeToken;
+    }
+
+	/// <summary>
+	/// Subscription method for objects created after the game starts
+	/// </summary>
+	public static Action SubscribeSticky<T>(Action<T> handler) where T : IGameSignal
+    {
+		Action unsub = Subscribe(handler);
+		if (_last.TryGetValue(typeof(T), out var sig))
+			handler((T)sig);
+		return unsub;
 	}
 }
