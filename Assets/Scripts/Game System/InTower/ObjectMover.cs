@@ -15,24 +15,27 @@ public class ObjectMover : MonoBehaviour
 	public event Action<ObjectMover> OnOutofBounds;
 
 	private bool _isRunning = false;
+	private bool _isPaused = true;
+
 	private Action _unsubRun;
 	private Action _unsubActivate;
 
 	private void Awake()
 	{
 		_lowerBoundY = ScreenBounds.LowerY;
-		_rd = GetComponent<Renderer>();
+		_rd = GetComponentInChildren<Renderer>();
 		if( _rd == null)
 			Debug.Log(this + " has no Renderer");
 
 		_objBoundY = _rd.bounds.size.y;
 
 		// Run 상태 준비
-		_unsubRun = GameBus.SubscribeSticky<RunSignal>(_ => { _isRunning = false; enabled = false; });
+		_unsubRun = GameBus.SubscribeSticky<RunSignal>(_ => { _isRunning = false; _isPaused = true;  enabled = false; });
 		// Run 상태 시작
 		_unsubActivate = GameBus.SubscribeSticky<ActivateMovementNextFrame>(_ =>
 		{
 			_isRunning = true;
+			_isPaused = false;
 			enabled = true;
 		});
 
@@ -41,7 +44,7 @@ public class ObjectMover : MonoBehaviour
 
 	private void Update()
 	{
-		if (!_isRunning) return;
+		if (!_isRunning || _isPaused) return;
 
 		transform.position += moveSpeed * GameSpeedManager.Instance.SpeedMultiplier 
 			* Time.deltaTime * Vector3.down;
@@ -51,6 +54,9 @@ public class ObjectMover : MonoBehaviour
 			OnOutofBounds?.Invoke(this);
 		}
 	}
+
+	public void PauseMovement() => _isPaused = true;
+	public void ResumeMovement() => _isPaused = false;
 
 	private void OnDestroy()
 	{

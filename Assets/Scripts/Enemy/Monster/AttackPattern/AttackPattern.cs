@@ -1,6 +1,10 @@
 using UnityEngine;
 
-public abstract class AttackPattern : ScriptableObject
+public abstract class AttackPattern : MonoBehaviour
 {
-    public abstract void ExecuteAttack();
+    [SerializeField]
+    private float attackCoolDown;
+    public float AttackCoolDown => attackCoolDown;
+
+    public abstract void ExecuteAttack(float dmg);
 }

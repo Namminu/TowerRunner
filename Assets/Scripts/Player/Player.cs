@@ -161,19 +161,19 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isDamageCoolDown = false;
 	}
 
-	private void OnDrawGizmosSelected()
-	{
-		Gizmos.color = Color.red;
-		Vector3 center = (Vector2)transform.position + attackOffset;
-		Gizmos.DrawWireSphere(center, attackRadius);
+	//private void OnDrawGizmosSelected()
+	//{
+	//	Gizmos.color = Color.red;
+	//	Vector3 center = (Vector2)transform.position + attackOffset;
+	//	Gizmos.DrawWireSphere(center, attackRadius);
 
-		float halfArc = attackAngle * 0.5f;
-		Vector3 fwd = transform.up * attackRadius;
-		Quaternion leftRot = Quaternion.Euler(0, 0, halfArc);
-		Quaternion rightRot = Quaternion.Euler(0, 0,-halfArc);
-		Gizmos.DrawLine(center, center + leftRot * fwd);
-		Gizmos.DrawLine(center, center + rightRot * fwd);
-	}
+	//	float halfArc = attackAngle * 0.5f;
+	//	Vector3 fwd = transform.up * attackRadius;
+	//	Quaternion leftRot = Quaternion.Euler(0, 0, halfArc);
+	//	Quaternion rightRot = Quaternion.Euler(0, 0,-halfArc);
+	//	Gizmos.DrawLine(center, center + leftRot * fwd);
+	//	Gizmos.DrawLine(center, center + rightRot * fwd);
+	//}
 
 	#endregion
 

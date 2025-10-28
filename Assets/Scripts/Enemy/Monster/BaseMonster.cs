@@ -1,22 +1,45 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class BaseMonster : BaseEnemy, IDamageable
 {
+	[Header("Monster Stats")]
 	[SerializeField]
-	protected float _attackDamage;
+	private float _attackDamage;
 	public float AttackDamage => _attackDamage;
 
 	[SerializeField]
-	protected AttackPattern attackPattern;
+	private float enemyMaxHealth;
+	private float enemyCurHealth;
 
-	[SerializeField]
-	protected float enemyMaxHealth;
-	protected float enemyCurHealth;
+	public Animator Animator { get; private set; }
+	private SpriteRenderer sr;
 
+	private AttackPattern _attackPattern;
+
+	private Coroutine _attackRoutine;
 
 	protected virtual void Awake()
 	{
 		enemyCurHealth = enemyMaxHealth;
+
+		_attackPattern = GetComponent<AttackPattern>();
+		Animator = GetComponentInChildren<Animator>();
+		sr = GetComponentInChildren<SpriteRenderer>();
+	}
+
+	protected virtual void OnEnable()
+	{
+		_attackRoutine = StartCoroutine(AttackRoutine());
+	}
+
+	protected virtual void OnDisable()
+	{
+		if (_attackRoutine != null)
+		{
+			StopCoroutine(_attackRoutine);
+			_attackRoutine = null;
+		}
 	}
 
 	protected void Death()
@@ -34,5 +57,44 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 		enemyCurHealth -= amount;
 		if (enemyCurHealth <= 0f)
 			Death();
+		else StartCoroutine(BlinkRoutine());
+
+		Debug.Log(name + "Take Damage : " + amount);
+	}
+
+	public virtual void Attack()
+	{
+		var mover = GetComponent<ObjectMover>();
+		mover.PauseMovement();
+		Animator.SetTrigger("IsAttack");
+	
+		_attackPattern.ExecuteAttack(_attackDamage);
+	}
+
+	private IEnumerator AttackRoutine()
+	{
+		while (true)
+		{
+			yield return new WaitForSeconds(_attackPattern.AttackCoolDown);
+			Attack();
+		}
+	}
+
+	private IEnumerator BlinkRoutine()
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			sr.enabled = false;
+			yield return new WaitForSeconds(0.3f);
+			sr.enabled = true;
+			yield return new WaitForSeconds(0.3f);
+		}
+		sr.enabled = true;
+	}
+
+	public virtual void OnAttackAnimationEnd()
+	{
+		var mover = GetComponent<ObjectMover>();
+		mover.ResumeMovement();
 	}
 }
