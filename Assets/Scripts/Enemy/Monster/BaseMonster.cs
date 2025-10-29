@@ -15,7 +15,7 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 	public Animator Animator { get; private set; }
 	private SpriteRenderer sr;
 
-	private AttackPattern _attackPattern;
+	protected AttackPattern _attackPattern;
 
 	private Coroutine _attackRoutine;
 

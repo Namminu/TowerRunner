@@ -17,11 +17,6 @@ public class Orc : BaseMonster
 		prefabHandle = thunderPrefs.LoadAssetAsync<GameObject>();
 	}
 
-	public override void Attack()
-	{
-		base.Attack();
-	}
-
 	public void OnTunderAnimationTrigged()
 	{
 		if(thunderInstance != null)

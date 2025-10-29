@@ -17,6 +17,11 @@ public interface IDamageDealer
 	void DealDamage(IDamageable target);
 }
 
+public interface IProjectile
+{
+	void InitializeProjectile(Transform tr, float damage);
+}
+
 public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 {
 	public AssetReferenceGameObject PrefabRef { get; internal set; }
