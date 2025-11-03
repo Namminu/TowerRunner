@@ -16,12 +16,4 @@ public class AnimationEventRelay : MonoBehaviour
 			orc.OnTunderAnimationTrigged();
 		}
 	}
-
-	public void OnArrowShotTrigged()
-	{
-		if(monster is Archer archer)
-		{
-			archer.OnArrowShotTrigged();
-		}
-	}
 }

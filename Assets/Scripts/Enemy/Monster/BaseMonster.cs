@@ -15,13 +15,17 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 	public Animator Animator { get; private set; }
 	private SpriteRenderer sr;
 
+	[Header("Monster Attacks")]
+	[SerializeField] private float _attackDelay;
 	protected AttackPattern _attackPattern;
-
 	private Coroutine _attackRoutine;
+
+	private bool _isDead = false;
+	private ObjectMover _objectMover;
 
 	protected virtual void Awake()
 	{
-		enemyCurHealth = enemyMaxHealth;
+		_objectMover = GetComponent<ObjectMover>();
 
 		_attackPattern = GetComponent<AttackPattern>();
 		Animator = GetComponentInChildren<Animator>();
@@ -30,6 +34,8 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 
 	protected virtual void OnEnable()
 	{
+		_isDead = false;
+		enemyCurHealth = enemyMaxHealth;
 		_attackRoutine = StartCoroutine(AttackRoutine());
 	}
 
@@ -40,10 +46,12 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 			StopCoroutine(_attackRoutine);
 			_attackRoutine = null;
 		}
+		_isDead = true;
 	}
 
 	protected void Death()
 	{
+		_isDead = true;
 		ItemData dropItem = ItemDatabase.GetRandomDrop();
 		if (dropItem != null)
 		{
@@ -64,18 +72,18 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 
 	public virtual void Attack()
 	{
-		var mover = GetComponent<ObjectMover>();
-		mover.PauseMovement();
+		_objectMover.PauseMovement();
 		Animator.SetTrigger("IsAttack");
 	
-		_attackPattern.ExecuteAttack(_attackDamage);
+		_attackPattern.ExecuteAttack(_attackDamage, _attackDelay);
 	}
 
 	private IEnumerator AttackRoutine()
 	{
-		while (true)
+		WaitForSeconds waitTime = new(_attackPattern.AttackCoolDown);
+		while (!_isDead)
 		{
-			yield return new WaitForSeconds(_attackPattern.AttackCoolDown);
+			yield return waitTime;
 			Attack();
 		}
 	}
@@ -94,7 +102,6 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 
 	public virtual void OnAttackAnimationEnd()
 	{
-		var mover = GetComponent<ObjectMover>();
-		mover.ResumeMovement();
+		_objectMover.ResumeMovement();
 	}
 }

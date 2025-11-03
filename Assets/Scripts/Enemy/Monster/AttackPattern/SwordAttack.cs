@@ -1,4 +1,4 @@
-using TMPro.EditorUtilities;
+using System.Collections;
 using UnityEngine;
 
 public class SwordAttack : AttackPattern
@@ -16,13 +16,15 @@ public class SwordAttack : AttackPattern
 		contactFilter.useTriggers = true;
 	}
 
-	public override void ExecuteAttack(float dmg)
+	protected override IEnumerator AttackRoutine(float dmg, float delayTime)
 	{
+		yield return new WaitForSeconds(delayTime);
+
 		int hitCount = attackRange.Overlap(contactFilter, results);
-		for(int i = 0; i< hitCount; i++)
+		for (int i = 0; i < hitCount; i++)
 		{
 			var col = results[i];
-			if(col.TryGetComponent<Player>(out var player))
+			if (col.TryGetComponent<Player>(out var player))
 			{
 				player.TakeDamage(dmg);
 			}

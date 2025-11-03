@@ -5,11 +5,11 @@ public class Archer : BaseMonster
 	[SerializeField]
 	private Transform shotPoint;
 
-	public void OnArrowShotTrigged()
+	public void Start()
 	{
-		if(_attackPattern != null && _attackPattern is ShotAttack shotAtk)
+		if (_attackPattern != null && _attackPattern is ShotAttack shotAtk)
 		{
-			shotAtk.SpawnProjectile(shotPoint, AttackDamage);
+			shotAtk.SetShotPoint(shotPoint);
 		}
 	}
 }

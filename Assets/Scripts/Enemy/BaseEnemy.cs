@@ -17,6 +17,9 @@ public interface IDamageDealer
 	void DealDamage(IDamageable target);
 }
 
+/// <summary>
+/// 몬스터가 생성하는 발사체 속성
+/// </summary>
 public interface IProjectile
 {
 	void InitializeProjectile(Transform tr, float damage);

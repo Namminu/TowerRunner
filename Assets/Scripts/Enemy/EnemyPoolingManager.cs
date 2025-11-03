@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class EnemyPoolingManager : MonoBehaviour
 {
@@ -53,4 +52,11 @@ public class EnemyPoolingManager : MonoBehaviour
 	{
 
 	}
+
+	//private void OnDestroy()
+	//{
+	//	foreach (var kv in prefabHandle)
+	//		if (kv.Value.IsValid()) Addressables.Release(kv.Value);
+	//	prefabHandle.Clear();
+	//}
 }
