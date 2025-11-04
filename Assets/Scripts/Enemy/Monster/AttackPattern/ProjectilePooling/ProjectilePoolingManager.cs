@@ -4,32 +4,45 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class ProjectilePoolingManager : MonoBehaviour
+public class ProjectilePoolingManager : MonoBehaviour, IInitializable
 {
 	public static ProjectilePoolingManager Instance { get; private set; }
 
 	[SerializeField]
 	private ProjectileDatabase projectileDB;
 
-	// 내부 풀/핸들링 매핑
-	private readonly Dictionary<ProjectileType, ObjectPool<BaseProjectile>> _pools = new();
-	private readonly Dictionary<ProjectileType, AsyncOperationHandle<GameObject>> _handles= new();
-
+	private Dictionary<ProjectileType, ObjectPool<BaseProjectile>> _pools;
+	private Dictionary<ProjectileType, AsyncOperationHandle<GameObject>> _handles;
 
 	private void Awake()
 	{
 		Instance = this;
+
+		_pools = new Dictionary<ProjectileType, ObjectPool<BaseProjectile>>();
+		_handles = new Dictionary<ProjectileType, AsyncOperationHandle<GameObject>>();
 	}
 
-	private IEnumerator Start()
+	public void Init()
+	{
+		StartCoroutine(ProjectileBoot());
+	}
+
+	private IEnumerator ProjectileBoot()
+	{
+		yield return StartCoroutine(BootRoutine());
+		// 준비 완료 시그널 전송
+		GameBus.Publish(new SubsystemReady(SubsystemId.Projectile));
+	}
+
+	private IEnumerator BootRoutine()
 	{
 		if (projectileDB == null)
 		{
 			Debug.LogWarning("[ProjectilePoolingManager] ProjectileDatabase not assigned");
+			GameBus.Publish(new SubsystemFailed(SubsystemId.Projectile, "ProjectileDatabase not assigned in Projectile Pooling Manager"));
 			yield break;
 		}
 
-		// 비동기 로드 및 풀 생성
 		foreach (var entry in projectileDB.entries)
 		{
 			if (entry.prefabRef == null)
@@ -67,30 +80,35 @@ public class ProjectilePoolingManager : MonoBehaviour
 	/// <summary>
 	/// id(type)로 spawn 하고 내부에서 InitializeProjectile, OnSpawn 까지 처리
 	/// </summary>
-	public BaseProjectile Spawn(ProjectileType type, Transform shotPoint, float damage)
+	public BaseProjectile[] Spawn(ProjectileType type, Transform[] shotPoint, float damage)
 	{
-		if (!_pools.TryGetValue(type, out var pool))
+		List<BaseProjectile> spawnedProjectiles = new List<BaseProjectile>();
+		foreach (Transform tr in shotPoint)
 		{
-			Debug.LogWarning($"[ProjectilePoolingManager] Pool not ready or not found for {type}");
-			return null;
+			if (!_pools.TryGetValue(type, out var pool))
+			{
+				Debug.LogWarning($"[ProjectilePoolingManager] Pool not ready or not found for {type}");
+				return null;
+			}
+
+			var inst = pool.Spawn(tr.position, tr.rotation);
+			if (inst == null) return null;
+
+			// 인스턴스 타입 기록
+			inst.ProjectileType = type;
+
+			// 초기화 + 활성화
+			inst.InitializeProjectile(tr, damage);
+			// 안전 호출 보장
+			inst.OnSpawn();
+
+			spawnedProjectiles.Add(inst);
 		}
-
-		var inst = pool.Spawn(shotPoint.position, shotPoint.rotation);
-		if (inst == null) return null;
-
-		// 인스턴스가 어떤 타입에서 왔는지 기록
-		inst.ProjectileType = type;
-
-		// 초기화와 활성화
-		inst.InitializeProjectile(shotPoint, damage);
-		// OnSpawn은 ObjectPool.Spawn에서 이미 호출하지만, 안전을 위해 호출 보장
-		inst.OnSpawn();
-
-		return inst;
+		return spawnedProjectiles.ToArray();
 	}
 
 	/// <summary>
-	/// Pool로 반환. BaseProjectile.OnDespawn()을 외부에서 직접 호출하지 말고 이 API를 사용하세요.
+	/// Pool로 반환
 	/// </summary>
 	public void Despawn(BaseProjectile proj)
 	{
@@ -100,12 +118,9 @@ public class ProjectilePoolingManager : MonoBehaviour
 		if (!_pools.TryGetValue(type, out var pool))
 		{
 			Debug.LogWarning($"[ProjectilePoolingManager] No pool found for type {type} on Despawn; destroying as fallback");
-			// 안전망: 파괴(풀 관리가 아니라면)
-			Destroy(proj.gameObject);
 			return;
 		}
 
-		// OnDespawn 처리와 큐 삽입은 ObjectPool.Despawn이 담당
 		pool.Despawn(proj);
 	}
 

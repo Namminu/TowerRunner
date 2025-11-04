@@ -1,49 +1,45 @@
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
+/// <summary>
+/// 간단한 풀 래퍼: prefab(BaseEnemy)을 받아 ObjectPool<BaseEnemy>를 생성/관리.
+/// Addressables 핸들 관리는 매니저(EnemyPoolingManager)가 담당합니다.
+/// </summary>
 public class EnemyPool
 {
-	readonly AssetReferenceGameObject prefabRef;
-	readonly Transform parent;
-	readonly int initialSize;
+	private readonly Transform parent;
+	private readonly int initialSize;
 
 	private ObjectPool<BaseEnemy> innerPool;
-	private bool isReady = false;
 
-	public EnemyPool(AssetReferenceGameObject prefabRef, 
-		int initialSize, Transform parent = null)
+	public EnemyPool(BaseEnemy prefab, int initialSize, Transform parent = null)
 	{
-		this.prefabRef = prefabRef;
 		this.initialSize = initialSize;
 		this.parent = parent;
 
-		prefabRef.LoadAssetAsync<GameObject>().Completed += OnPrefabLoaded;
+		if (prefab == null)
+		{
+			Debug.LogError("[EnemyPool] prefab is null");
+			return;
+		}
+
+		innerPool = new ObjectPool<BaseEnemy>(prefab, Mathf.Max(1, initialSize), parent);
 	}
 
-	private void OnPrefabLoaded(AsyncOperationHandle<GameObject> handle)
-	{
-		var prefabGo = handle.Result;
-		var prefab = prefabGo.GetComponent<BaseEnemy>();
-		innerPool = new ObjectPool<BaseEnemy>(prefab, initialSize, parent);
-		isReady = true;
-	}
+	public bool IsReady => innerPool != null;
 
 	public BaseEnemy Spawn(Vector3 pos, Quaternion rot)
 	{
-		if(!isReady)
+		if (!IsReady)
 		{
-			Debug.LogWarning($"Pool for {prefabRef.RuntimeKey} Not Ready");
+			Debug.LogWarning("[EnemyPool] Spawn requested but pool not ready");
+			return null;
 		}
-
-		var enemy = innerPool.Spawn(pos, rot);
-		enemy.PrefabRef = prefabRef;
-		return enemy;
+		return innerPool.Spawn(pos, rot);
 	}
 
 	public void Despawn(BaseEnemy inst)
 	{
-		if (!isReady) return;
+		if (!IsReady || inst == null) return;
 		innerPool.Despawn(inst);
 	}
 }

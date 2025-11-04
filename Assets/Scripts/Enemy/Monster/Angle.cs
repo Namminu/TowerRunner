@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Archer : BaseMonster
+public class Angle : BaseMonster
 {
 	[SerializeField]
 	private Transform[] shotPoint;

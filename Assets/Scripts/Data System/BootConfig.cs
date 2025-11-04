@@ -8,6 +8,7 @@ public class BootConfig : ScriptableObject
 	public AssetReferenceT<EnemyData> enemyDataRef;
 	public AssetReferenceT<ItemDatabase> itemDBRef;
 	public AssetReferenceT<EnforceDatabase> enforceDBRef;
+	public AssetReferenceT<ProjectileDatabase> projectileDBRef;
 
 #if UNITY_EDITOR
 	private void OnValidate()
@@ -18,6 +19,8 @@ public class BootConfig : ScriptableObject
 			Debug.LogError("[Boot Config] itemDBRef Miss");
 		if (enforceDBRef == null || !enforceDBRef.RuntimeKeyIsValid())
 			Debug.LogError("[Boot Config] enforceDBRef Miss");
+		if (projectileDBRef == null || !projectileDBRef.RuntimeKeyIsValid())
+			Debug.LogError("[Boot Config] projectileDBRef Miss");
 	}
 #endif
 }

@@ -8,7 +8,9 @@ using UnityEngine;
 public enum SubsystemId
 {
 	Map,
-	Pooling,
+	Enemy,
+	Item,
+	Projectile,
 	Speed,
 	Audio,
 

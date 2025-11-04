@@ -7,7 +7,7 @@ using UnityEngine.AddressableAssets;
 public enum ProjectileType
 {
     Arrow,
-    LightCross,
+	HolyCross,
     DarkCross,
 }
 

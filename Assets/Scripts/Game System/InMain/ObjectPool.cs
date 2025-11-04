@@ -61,4 +61,14 @@ public class ObjectPool<T> where T : MonoBehaviour, IPoolable
 		item.gameObject.SetActive(false);
 		pool.Enqueue(item);
 	}
+
+	public void Clear()
+	{
+		while (pool.Count > 0)
+		{
+			var item = pool.Dequeue();
+			GameObject.Destroy(item.gameObject);
+		}
+		prefab = null;
+	}
 }

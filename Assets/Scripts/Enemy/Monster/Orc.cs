@@ -44,7 +44,7 @@ public class Orc : BaseMonster
 
 	private void OnDestroy()
 	{
-		if(thunderInstance != null )
+		if(thunderInstance != null)
 		{
 			Destroy(thunderInstance);
 			thunderInstance = null;

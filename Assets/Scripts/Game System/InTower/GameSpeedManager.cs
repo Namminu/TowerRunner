@@ -23,7 +23,6 @@ public class GameSpeedManager : MonoBehaviour, IInitializable
 	public void Init()
 	{
 		StartCoroutine(InitRoutine());
-		Debug.Log("Is Speed Manager Init Called?");
 	}
 
 	private IEnumerator InitRoutine()

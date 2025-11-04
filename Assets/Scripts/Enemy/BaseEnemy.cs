@@ -33,7 +33,14 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 	private float _hitDamage;
 	public float HitDamage => _hitDamage;
 
-	//public BaseEnemy Prefab { get; internal set; }
+	private ObjectMover _mover;
+
+	protected virtual void Awake()
+	{
+		_mover = GetComponent<ObjectMover>();
+		if (_mover == null)
+			_mover = gameObject.AddComponent<ObjectMover>();
+	}
 
 	public void DealDamage(IDamageable target)
 	{
@@ -47,6 +54,12 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 			col.enabled = true;
 		if (GetComponent<Animator>() is Animator ani)
 			ani.Play("Idle");
+
+		if(_mover != null)
+		{
+			_mover.OnOutofBounds -= HandleOutofBounds;
+			_mover.OnOutofBounds += HandleOutofBounds;
+		}
 	}
 
 	public virtual void OnDespawn()
@@ -55,6 +68,9 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 		StopAllCoroutines();
 		if (GetComponent<Collider2D>() is Collider2D col)
 			col.enabled = false;
+
+		if (_mover != null)
+			_mover.OnOutofBounds -= HandleOutofBounds;
 	}
 
 	protected virtual void OnTriggerEnter2D(Collider2D col)
@@ -64,4 +80,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 		if(col.TryGetComponent<Player>(out var player))
 			DealDamage(player);
 	}
+
+	private void HandleOutofBounds(ObjectMover mover)
+		=> EnemyPoolingManager.Instance.Despawn(this);
 }

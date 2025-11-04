@@ -9,12 +9,7 @@ public class Blade : BaseObject
 	private float sideMoveSpeed;
 
 	private float minX, maxX;
-	private int direction;
-
-	private void Awake()
-	{
-		direction = 1;
-	}
+	private int direction = 1;
 
 	private void Start()
 	{

@@ -23,8 +23,9 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 	private bool _isDead = false;
 	private ObjectMover _objectMover;
 
-	protected virtual void Awake()
+	protected override void Awake()
 	{
+		base.Awake();
 		_objectMover = GetComponent<ObjectMover>();
 
 		_attackPattern = GetComponent<AttackPattern>();

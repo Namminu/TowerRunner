@@ -9,28 +9,31 @@ public class ShotAttack : AttackPattern
 	[SerializeField]
 	private ProjectileType projectile;
 
-	private Transform shotPoint;
+	private Transform[] shotPoint;
 
-	public void SetShotPoint(Transform point)
+	public void SetShotPoint(Transform[] point)
 	{
-		shotPoint = point;
+		shotPoint = new Transform[point.Length];
+		for (int i= 0; i < point.Length; i++)
+		{
+			shotPoint[i] = point[i];
+		}
 	}
 
 	protected override IEnumerator AttackRoutine(float damage, float delayTime)
 	{
 		yield return new WaitForSeconds(delayTime);
 
-		// ProjectilePoolingManager의 id(enum) 기반 Spawn 사용
-		if (ProjectilePoolingManager.Instance != null)
+		if (ProjectilePoolingManager.Instance == null)
 		{
-			var proj = ProjectilePoolingManager.Instance.Spawn(projectile, shotPoint, damage);
-			if (proj == null)
-				Debug.LogWarning("[ShotAttack] Projectile spawn returned null (pool not ready?)");
+			Debug.LogWarning("[ShotAttack] ProjectilePoolingManager Instance is null.");
+			yield break;
 		}
-		else
+
+		var proj = ProjectilePoolingManager.Instance.Spawn(projectile, shotPoint, damage);
+		if(proj == null)
 		{
-			// 폴백: 기존 Addressables 방식 (간단 로그)
-			Debug.LogWarning("[ShotAttack] ProjectilePoolingManager not available; consider using Addressables.InstantiateAsync fallback if needed.");
+			Debug.LogWarning("[ShotAttack] Spawn Method return nothing");
 		}
 	}
 }
