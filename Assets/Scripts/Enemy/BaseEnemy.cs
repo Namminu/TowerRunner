@@ -37,7 +37,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 
 	protected virtual void Awake()
 	{
-		_mover = GetComponent<ObjectMover>();
+		_mover = GetComponentInChildren<ObjectMover>();
 		if (_mover == null)
 			_mover = gameObject.AddComponent<ObjectMover>();
 	}
@@ -50,10 +50,8 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 	public virtual void OnSpawn()
 	{
 		enabled = true;
-		if (GetComponent<Collider2D>() is Collider2D col)
+		if (GetComponentInChildren<Collider2D>() is Collider2D col)
 			col.enabled = true;
-		if (GetComponent<Animator>() is Animator ani)
-			ani.Play("Idle");
 
 		if(_mover != null)
 		{
@@ -66,7 +64,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 	{
 		enabled = false;
 		StopAllCoroutines();
-		if (GetComponent<Collider2D>() is Collider2D col)
+		if (GetComponentInChildren<Collider2D>() is Collider2D col)
 			col.enabled = false;
 
 		if (_mover != null)
@@ -75,7 +73,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 
 	protected virtual void OnTriggerEnter2D(Collider2D col)
 	{
-		if (!col.CompareTag("PLAYER")) return;
+		if (!col.CompareTag("Player")) return;
 	
 		if(col.TryGetComponent<Player>(out var player))
 			DealDamage(player);

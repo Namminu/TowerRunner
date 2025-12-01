@@ -21,7 +21,7 @@ public class BaseProjectile : MonoBehaviour, IDamageable, IDamageDealer, IProjec
 
 	private void OnTriggerEnter2D(Collider2D col)
 	{
-		if (!col.CompareTag("PLAYER")) return;
+		if (!col.CompareTag("Player")) return;
 
 		if (col.TryGetComponent<Player>(out var player))
 		{

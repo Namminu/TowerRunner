@@ -78,7 +78,7 @@ public class ItemManager : MonoBehaviour, IInitializable
 		float z = Mathf.Abs(Camera.main.transform.position.z);
 		var leftTop = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, z));
 		var rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, z));
-		Vector3 pos = new(UnityEngine.Random.Range(leftTop.x, rightTop.x), leftTop.y + 1f, 0);
+		Vector3 pos = new(UnityEngine.Random.Range(leftTop.x + 1, rightTop.x - 1), leftTop.y + 1f, 0);
 
 		return pos;
 	}

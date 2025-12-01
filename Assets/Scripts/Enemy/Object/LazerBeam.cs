@@ -16,7 +16,7 @@ public class LazerBeam : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D col)
 	{
-		if (!col.CompareTag("PLAYER")) return;
+		if (!col.CompareTag("Player")) return;
 
 		if (col.TryGetComponent<Player>(out var player))
 			player.TakeDamage(beamDamage);

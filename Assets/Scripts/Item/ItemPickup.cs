@@ -1,10 +1,12 @@
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 [Tooltip("Component Class to Specific Item Prefabs")]
 public class ItemPickup : MonoBehaviour, IPoolable
 {
 	[SerializeField]
-	public ItemData Data { get; }
+	private ItemData data;
+	public ItemData Data => data;
 
 	private Collider2D _col;
 	private SpriteRenderer _sprite;
@@ -22,9 +24,9 @@ public class ItemPickup : MonoBehaviour, IPoolable
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if(other.CompareTag("PLAYER"))
+		if(other.CompareTag("Player"))
 		{
-			Data.Apply(other.GetComponent<Player>());
+			data.Apply(other.GetComponent<Player>());
 			ItemPoolingManager.Instance.Despawn(this);
 		}
 	}

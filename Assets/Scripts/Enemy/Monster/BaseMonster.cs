@@ -50,6 +50,14 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 		_isDead = true;
 	}
 
+	public override void OnSpawn()
+	{
+		base.OnSpawn();
+
+		if (GetComponentInChildren<Animator>() is Animator ani)
+			if(ani) ani.Play("Run");
+	}
+
 	protected void Death()
 	{
 		_isDead = true;
