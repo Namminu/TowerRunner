@@ -7,6 +7,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum UISwitcher
+{
+	GameStart,
+	Shop,
+	Enforce
+}
+
 public class TownSceneUI : MonoBehaviour, ISceneUI
 {
 	[Header("Scene&Setting")]
@@ -44,9 +51,7 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		shopNpcBtn.onClick.AddListener(() => ShopUIToggle());
 		enforceNpcBtn.onClick.AddListener(() => EnforceUIToggle());
 
-		gameStartBtn.gameObject.SetActive(true);
-		shopScroll.gameObject.SetActive(false);
-		enforceScroll.gameObject.SetActive(false);
+		SwitchingUI(UISwitcher.GameStart);
 	}
 
 	private IEnumerator GameStartBtn()
@@ -56,36 +61,26 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void ShopUIToggle()
 	{
-		if(shopScroll.IsActive())
+		if (shopScroll.IsActive())
 		{
-			shopScroll.gameObject.SetActive(false);
-			return;
+			SwitchingUI(UISwitcher.GameStart);
 		}
-
-		if(enforceScroll.IsActive())
+		else
 		{
-			enforceScroll.gameObject.SetActive(false);
+			SwitchingUI(UISwitcher.Shop);
 		}
-
-		gameStartBtn.gameObject.SetActive(false);
-		shopScroll.gameObject.SetActive(true);
 	}
 
 	private void EnforceUIToggle()
 	{
-		if(enforceScroll.IsActive())
+		if (enforceScroll.IsActive())
 		{
-			enforceScroll.gameObject.SetActive(false);
-			return;
+			SwitchingUI(UISwitcher.GameStart);
 		}
-
-		if (shopScroll.IsActive())
+		else
 		{
-			shopScroll.gameObject.SetActive(false);
+			SwitchingUI(UISwitcher.Enforce);
 		}
-
-		gameStartBtn.gameObject.SetActive(false);
-		enforceScroll.gameObject.SetActive(true);
 	}
 
 	private void SettingUIToggle() 
@@ -99,4 +94,26 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		string left = amount.ToString();
 		goldAmount.text = left;
 	}
+
+	private void SwitchingUI(UISwitcher UIType)
+	{
+		switch(UIType)
+		{
+			case UISwitcher.GameStart:
+				gameStartBtn.gameObject.SetActive(true);
+				shopScroll.gameObject.SetActive(false);
+				enforceScroll.gameObject.SetActive(false);
+				break;
+			case UISwitcher.Enforce:
+				gameStartBtn.gameObject.SetActive(false);
+				shopScroll.gameObject.SetActive(false);
+				enforceScroll.gameObject.SetActive(true);
+				break;
+			case UISwitcher.Shop:
+				gameStartBtn.gameObject.SetActive(false);
+				shopScroll.gameObject.SetActive(true);
+				enforceScroll.gameObject.SetActive(false);
+				break;
+		}	
+	}	
 }

@@ -3,16 +3,27 @@ using UnityEngine.UI;
 
 public class TowerPanelUI : MonoBehaviour
 {
-	[SerializeField] private Image settingPanel;
-	[SerializeField] private Image gameOverPanel;
+	[Header("Setting")]
+	[SerializeField] private Image SettingPanel;
+	[SerializeField] private Button SettingCloseButton;
 
-	public void PopupSettingPanel()
+	[Header("Game Over")]
+	[SerializeField] private Image GameOverPanel;
+
+	private void Awake()
 	{
-		settingPanel.gameObject.SetActive(true);
+		SettingCloseButton.onClick.RemoveAllListeners();
+
+		SettingCloseButton.onClick.AddListener(() => CloseSettingPanel());
+	}
+
+	public void CloseSettingPanel()
+	{
+		SettingPanel.gameObject.SetActive(false);
 	}
 
 	public void PopupGameOverPanel()
 	{
-		gameOverPanel.gameObject.SetActive(true);
+		GameOverPanel.gameObject.SetActive(true);
 	}
 }

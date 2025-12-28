@@ -13,7 +13,6 @@ public class TowerTopUI : MonoBehaviour
 
 	private void Awake()
 	{
-		settingBtn.onClick.AddListener(SettingPanelUp);
 	}
 
 	public void SetHighScore(int _score)
@@ -24,11 +23,6 @@ public class TowerTopUI : MonoBehaviour
 	private void SetCurScore(int _score)
 	{
 		curScore.text = _score.ToString();
-	}
-
-	private void SettingPanelUp()
-	{
-		panelUI.PopupSettingPanel();
 	}
 
 	private void OnDestroy()

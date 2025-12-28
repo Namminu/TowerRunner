@@ -45,7 +45,7 @@ public class ShopPopup : MonoBehaviour
 		currentItem = item;
 
 		itemIcon.sprite = item.itemIcon;
-		itemName.text = item.name;
+		itemName.text = item.itemName;
 		itemDescription.text = item.itemDescription;
 
 		popupRoot.SetActive(true);
