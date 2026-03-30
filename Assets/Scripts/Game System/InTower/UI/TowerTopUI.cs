@@ -6,16 +6,25 @@ public class TowerTopUI : MonoBehaviour
 	[Header("Top Zone")]
 	[SerializeField] private Text highScore;
 	[SerializeField] private Text curScore;
-	[SerializeField] private Button settingBtn;
 
 	[Header("Panel Zone")]
-	[SerializeField] private TowerPanelUI panelUI;
+	[SerializeField] private Button settingBtn;
+	[SerializeField] private TowerPanelUI PanelUI;
 
-	private void Awake()
+	public void InitUI()
 	{
+		settingBtn.onClick.RemoveAllListeners();
+		settingBtn.onClick.AddListener(() => ShowSettingPanel());
+
+		SetHighScore(SaveService.Current.bestScore);
 	}
 
-	public void SetHighScore(int _score)
+	private void ShowSettingPanel()
+	{
+		PanelUI.ShowPanel(TowerPanelType.Setting);
+	}
+
+	private void SetHighScore(int _score)
 	{
 		highScore.text = _score.ToString();
 	}

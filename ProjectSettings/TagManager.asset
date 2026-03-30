@@ -17,7 +17,7 @@ TagManager:
   - Player
   - Monster
   - Item
-  - 
+  - BG
   - 
   - 
   - 
@@ -44,14 +44,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Layer 1
+  - name: Player
     uniqueID: 2425651459
     locked: 0
-  - name: Layer 2
+  - name: Monster
     uniqueID: 4250941897
     locked: 0
-  - name: Layer 3
+  - name: Item
     uniqueID: 4189426099
+    locked: 0
+  - name: BG
+    uniqueID: 1664211959
     locked: 0
   m_RenderingLayers:
   - Default

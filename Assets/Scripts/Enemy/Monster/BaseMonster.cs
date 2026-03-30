@@ -54,8 +54,8 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 	{
 		base.OnSpawn();
 
-		if (GetComponentInChildren<Animator>() is Animator ani)
-			if(ani) ani.Play("Run");
+		//if (GetComponentInChildren<Animator>() is Animator ani)
+		//	if(ani) ani.Play("Run");
 	}
 
 	protected void Death()

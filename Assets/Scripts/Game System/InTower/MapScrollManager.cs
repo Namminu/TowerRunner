@@ -50,7 +50,7 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 			float newY = newBottomY + (height * 0.5f);
 
 			_middleHeight = (height * 0.5f);
-			Vector3 newPos = new Vector3(0.05f, newY, 0f);
+			Vector3 newPos = new Vector3(0.05f, newY, 0.5f);
 			go.transform.position = newPos;
 
 			// On Out of Bound 이벤트 연결
@@ -76,6 +76,6 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 
 	private void HandleOutofBound(ObjectMover mover)
 	{
-		mover.gameObject.transform.position = new Vector3(0.05f, (int)(_lastBornY + _middleHeight), 0f);
+		mover.gameObject.transform.position = new Vector3(0.05f, (int)(_lastBornY + _middleHeight), 0.5f);
 	}
 }
