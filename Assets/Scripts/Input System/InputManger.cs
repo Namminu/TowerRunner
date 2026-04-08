@@ -5,41 +5,34 @@ public class InputManger : MonoBehaviour, IInitializable
 {
 	private void Update()
 	{
-		#region ---- Detect Mouse Click Input ----
-		if (Input.touchCount == 0)
+#if UNITY_EDITOR || UNITY_STANDALONE
+		if (Input.GetMouseButtonDown(0))
+			TouchProcessor.Instance.ProcessTouchBegan(0, Input.mousePosition);
+		if (Input.GetMouseButton(0))
+			TouchProcessor.Instance.ProcessTouchMoved(0, Input.mousePosition);
+		if (Input.GetMouseButtonUp(0))
+			TouchProcessor.Instance.ProcessTouchEnded(0, Input.mousePosition);
+#else
+		foreach (var t in Input.touches)
 		{
-			if(Input.GetMouseButtonDown(0))
-				TouchProcessor.Instance.ProcessTouchBegan(0, Input.mousePosition);
-			if(Input.GetMouseButton(0))
-				TouchProcessor.Instance.ProcessTouchMoved(0, Input.mousePosition);
-			if(Input.GetMouseButtonUp(0))
-				TouchProcessor.Instance.ProcessTouchEnded(0, Input.mousePosition);
-		}
-		#endregion
-		#region ---- Detect Mobile Touch Input ----
-		else
-		{
-			foreach(var t in Input.touches)
+			switch (t.phase)
 			{
-				switch(t.phase)
-				{
-					case TouchPhase.Began:
-						TouchProcessor.Instance.ProcessTouchBegan(t.fingerId, t.position);
-						break;
+				case TouchPhase.Began:
+					TouchProcessor.Instance.ProcessTouchBegan(t.fingerId, t.position);
+					break;
 
-					//case TouchPhase.Moved:
-					case TouchPhase.Stationary:
-						TouchProcessor.Instance.ProcessTouchMoved(t.fingerId, t.position);
-						break;
+				//case TouchPhase.Moved:
+				case TouchPhase.Stationary:
+					TouchProcessor.Instance.ProcessTouchMoved(t.fingerId, t.position);
+					break;
 
-					//case TouchPhase.Ended:
-					case TouchPhase.Canceled:
-						TouchProcessor.Instance.ProcessTouchEnded(t.fingerId, t.position);
-						break;
-				}
+				//case TouchPhase.Ended:
+				case TouchPhase.Canceled:
+					TouchProcessor.Instance.ProcessTouchEnded(t.fingerId, t.position);
+					break;
 			}
 		}
-		#endregion
+#endif
 	}
 
 	public void Init()

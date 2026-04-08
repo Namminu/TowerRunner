@@ -50,7 +50,7 @@ public class TouchProcessor
         float duration = Time.time - data.startTime;
         var dist = Vector2.Distance(data.startPos, pos);
 
-        if (!data.isDragging && duration <= tapMaxTime && dist <= dragThreshold)
+        if (!data.isDragging /*&& duration <= tapMaxTime*/ && dist <= dragThreshold)
             OnTap?.Invoke(id, pos);             // 탭 판정
         else if (data.isDragging)
             OnDragEnd?.Invoke(id, pos);         // 드래그 판정

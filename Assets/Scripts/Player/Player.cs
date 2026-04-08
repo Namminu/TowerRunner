@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public enum EnforceType
@@ -17,6 +18,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	public PlayerMover Mover { get; private set; }
 	public PlayerItemChecker ItemChecker { get; private set; }
 	public PlayerEffectChecker EffectChecker { get; private set; }
+
+	public Animator Ani { get; private set; }
 
 	#region ---- Members ----
 	[Header("Player State Stats")]
@@ -110,9 +113,9 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			Mover.SetSpeed(playerSpeed);
 		}
 
-		ItemChecker = GetComponent<PlayerItemChecker>();
-		EffectChecker = GetComponent<PlayerEffectChecker>();
-		_spriteRenderer = GetComponent<SpriteRenderer>();
+		ItemChecker = GetComponentInChildren<PlayerItemChecker>();
+		EffectChecker = GetComponentInChildren<PlayerEffectChecker>();
+		_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
 		_maxHealth = 100f;
 		_curHealth = _maxHealth;
@@ -120,11 +123,13 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isInvincible = false;
 		_isShield = false;
 		_isDamageCoolDown = false;
+
+		Ani = GetComponentInChildren<Animator>();
 	}
 
 	private void Start()
 	{
-		ApplySavedPlayerData();
+		//ApplySavedPlayerData();
 	}
 
 	private void ApplySavedPlayerData()
@@ -200,6 +205,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 				}
 			}
 		}
+
+		Ani.SetTrigger("IsAttack");
 	}
 
 	public void TakeDamage(float amount)
