@@ -13,7 +13,6 @@ public enum SubsystemId
 	Projectile,
 	Speed,
 	Audio,
-
 }
 
 public class TowerManager : MonoBehaviour, IInitializable

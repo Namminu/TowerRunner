@@ -61,12 +61,24 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 	protected void Death()
 	{
 		_isDead = true;
+		StartCoroutine(DeathRoutine());
+	}
+
+	private IEnumerator DeathRoutine()
+	{
+		_collider.enabled = false;
+		_objectMover.PauseMovement();
+		Animator.SetBool("IsDeath", true);
+
+		yield return new WaitForSeconds(0.5f);
+
+		EnemyPoolingManager.Instance.Despawn(this);
+
 		ItemData dropItem = ItemDatabase.GetRandomDrop();
 		if (dropItem != null)
 		{
-			ItemPoolingManager.Instance.Spawn(dropItem,transform.position);
+			ItemPoolingManager.Instance.Spawn(dropItem, transform.position);
 		}
-		EnemyPoolingManager.Instance.Despawn(this);
 	}
 
 	public virtual void TakeDamage(float amount)

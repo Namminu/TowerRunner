@@ -47,8 +47,8 @@ public class BaseProjectile : MonoBehaviour, IDamageable, IDamageDealer, IProjec
 		mover.OnOutofBounds -= HandleOutOfBound;
 		StopAllCoroutines();
 
-		if (GetComponent<Collider2D>() is Collider2D col)
-			col.enabled = false;
+		//if (GetComponent<Collider2D>() is Collider2D col)
+		//	col.enabled = false;
 		
 		gameObject.SetActive(false);
 	}

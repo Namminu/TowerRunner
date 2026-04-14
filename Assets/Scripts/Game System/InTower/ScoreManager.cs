@@ -57,7 +57,7 @@ public class ScoreManager : MonoBehaviour, IInitializable
 		Instance = this;
 		DontDestroyOnLoad(gameObject);
 
-		highScore = 0;
+		highScore = SaveService.Current.bestScore;
 	}
 
 	private void Start()
@@ -72,7 +72,7 @@ public class ScoreManager : MonoBehaviour, IInitializable
 
 		raw = default;
 		currentScore = 0;
-		GameEvents.RaiseScoreChanged(0);
+		GameEvents.RaiseScoreChanged(highScore);
 
 		sessionRoutine = StartCoroutine(SessionTimerTicker());
 	}

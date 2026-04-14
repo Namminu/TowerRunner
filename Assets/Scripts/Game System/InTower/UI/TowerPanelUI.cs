@@ -1,3 +1,5 @@
+using System.Collections;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,11 +27,22 @@ public class TowerPanelUI : MonoBehaviour
 
 	[Header("Game Over")]
 	[SerializeField] private Image GameOverPanel;
-	[SerializeField] private Button GameSessionCloseButton;
+	//[SerializeField] private Button GameSessionCloseButton;
+	[SerializeField] private EndGamePanelUI EndGamePanelUI;
 
 	private void Awake()
 	{
-		/* Setting Panel */ 
+		if(EndGamePanelUI == null)
+		{
+			EndGamePanelUI = GetComponentInChildren<EndGamePanelUI>();
+		}
+	}
+
+	public void InitUI()
+	{
+		GameEvents.OnBattleEnded += HandlePlayerDeathGameEnd;
+
+		/* Setting Panel */
 		SettingCloseButton.onClick.RemoveAllListeners();
 		SettingCloseButton.onClick.AddListener(() => CloseSettingPanel());
 
@@ -50,12 +63,9 @@ public class TowerPanelUI : MonoBehaviour
 		RetryButton.onClick.AddListener(() => RetryGameOnStart());
 
 		/* Setting Panel : Exit */
-		RetryButton.onClick.RemoveAllListeners();
-		RetryButton.onClick.AddListener(() => ExitGameAndLoadTownScene());
+		ExitButton.onClick.RemoveAllListeners();
+		ExitButton.onClick.AddListener(() => ExitGameAndLoadTownScene());
 
-		/* Game Over Panel */
-		GameSessionCloseButton.onClick.RemoveAllListeners();
-		GameSessionCloseButton.onClick.AddListener(() => CloseGameOverPanel());
 	}
 
 	public void ShowPanel(TowerPanelType OnType)
@@ -120,17 +130,28 @@ public class TowerPanelUI : MonoBehaviour
 	#endregion
 
 
-
 	#region --- Game Over Panel ---
 
-
-	public void CloseGameOverPanel()
+	private void HandlePlayerDeathGameEnd()
 	{
-		PanelBG.gameObject.SetActive(false);
-		GameOverPanel.gameObject.SetActive(false);
+		PanelBG.gameObject.SetActive(true);
+		GameOverPanel.gameObject.SetActive(true);
 
-		// Town Scene ¿Ãµø
-
+		if(EndGamePanelUI)
+		{
+			EndGamePanelUI.HandleGameEndCheck();
+		}
 	}
+
 	#endregion
+
+	private void OnDisable()
+	{
+		GameEvents.OnBattleEnded -= HandlePlayerDeathGameEnd;
+
+		SettingCloseButton.onClick.RemoveAllListeners();
+		vibrateButton.onClick.RemoveAllListeners();
+		RetryButton.onClick.RemoveAllListeners();
+		ExitButton.onClick.RemoveAllListeners();
+	}
 }

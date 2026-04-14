@@ -17,6 +17,8 @@ public class TowerTopUI : MonoBehaviour
 		settingBtn.onClick.AddListener(() => ShowSettingPanel());
 
 		SetHighScore(SaveService.Current.bestScore);
+
+		GameEvents.OnScoreChanged += SetCurScore;
 	}
 
 	private void ShowSettingPanel()
@@ -34,8 +36,9 @@ public class TowerTopUI : MonoBehaviour
 		curScore.text = _score.ToString();
 	}
 
-	private void OnDestroy()
+	private void OnDisable()
 	{
+		GameEvents.OnScoreChanged -= SetCurScore;
 		settingBtn.onClick.RemoveAllListeners();
 	}
 }

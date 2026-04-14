@@ -92,6 +92,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	public bool IsDamageCoolDown => _isDamageCoolDown;
 
 	public event Action OnShieldConsumed;
+
+	public event Action<float> OnHealthChanged;
 	#endregion
 
 
@@ -145,6 +147,10 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	private void Death()
 	{
 		Debug.Log("Player Death. Game Over");
+
+		//OnPlayerDeath?.Invoke();
+		GameEvents.RaiseBattleEnd();
+		Ani.SetBool("IsDeath", true);
 	}
 
 	private IEnumerator DamagedInvincible()
@@ -153,12 +159,13 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 		float elapsed = 0f;
 		bool visible = true;
+		WaitForSeconds waitTime = new(blinkInterval);
 
-		while(elapsed < damagedInvincibleTime)
+		while (elapsed < damagedInvincibleTime)
 		{
 			visible = !visible;
 			_spriteRenderer.enabled = visible;
-			yield return new WaitForSeconds(blinkInterval);
+			yield return waitTime;
 			elapsed += blinkInterval;
 		}
 
@@ -221,14 +228,20 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 
 		_curHealth -= amount;
-		EffectChecker.PlayerHitted();
+
+		float healthRatio = _curHealth / _maxHealth;
+		OnHealthChanged?.Invoke(healthRatio);
+
 		if (_curHealth <= 0)
 		{
 			Death();
 			return;
-		}		
-
-		StartCoroutine(DamagedInvincible());
+		}
+		else
+		{
+			EffectChecker.PlayerHitted();
+			StartCoroutine(DamagedInvincible());
+		}
 	}
 
 	public void DealDamage(IDamageable target)

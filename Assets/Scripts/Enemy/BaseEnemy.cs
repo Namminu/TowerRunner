@@ -35,11 +35,15 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 
 	private ObjectMover _mover;
 
+	protected Collider2D _collider;
+
 	protected virtual void Awake()
 	{
 		_mover = GetComponentInChildren<ObjectMover>();
 		if (_mover == null)
 			_mover = gameObject.AddComponent<ObjectMover>();
+
+		_collider = GetComponentInChildren<Collider2D>();
 	}
 
 	public void DealDamage(IDamageable target)
@@ -64,8 +68,8 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 	{
 		enabled = false;
 		StopAllCoroutines();
-		if (GetComponentInChildren<Collider2D>() is Collider2D col)
-			col.enabled = false;
+		if(_collider != null && _collider.enabled)
+			_collider.enabled = false;
 
 		if (_mover != null)
 			_mover.OnOutofBounds -= HandleOutofBounds;
