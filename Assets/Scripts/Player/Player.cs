@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -80,6 +81,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	private Vector2 attackOffset = Vector2.zero;
 	[SerializeField]
 	private LayerMask attackTargetLayer;
+	private bool isAttacking = false;
 
 	public int PlayerGold => EconomyService.Gold;
 
@@ -88,7 +90,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	private bool _isDamageCoolDown;
 
 	public bool IsPlayerInvincible => _isInvincible;
-	public bool IsPLayerShield => _isShield;
+	public bool IsPlayerShield => _isShield;
 	public bool IsDamageCoolDown => _isDamageCoolDown;
 
 	public event Action OnShieldConsumed;
@@ -107,7 +109,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			return;
 		}
 		Instance = this;
-		//DontDestroyOnLoad(gameObject);
+		DontDestroyOnLoad(gameObject);
 
 		Mover = GetComponent<PlayerMover>();
 		if(Mover != null)
@@ -119,7 +121,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		EffectChecker = GetComponentInChildren<PlayerEffectChecker>();
 		_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-		_maxHealth = 100f;
+		ApplySavedPlayerData();
 		_curHealth = _maxHealth;
 
 		_isInvincible = false;
@@ -129,11 +131,6 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		Ani = GetComponentInChildren<Animator>();
 	}
 
-	private void Start()
-	{
-		//ApplySavedPlayerData();
-	}
-
 	private void ApplySavedPlayerData()
 	{
 		for(int idx = 0; idx < SaveService.Current.upgrades.Count; idx++) 
@@ -141,14 +138,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			int level = UpgradeService.GetLevel(idx);
 			UpgradeService.SetLevel(idx, level, applyToPlayer:true);
 		}
-		_curHealth = Mathf.Min(_curHealth, _maxHealth);
 	}
 
 	private void Death()
 	{
 		Debug.Log("Player Death. Game Over");
 
-		//OnPlayerDeath?.Invoke();
 		GameEvents.RaiseBattleEnd();
 		Ani.SetBool("IsDeath", true);
 	}
@@ -190,8 +185,13 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	#endregion
 
 	#region ---- Public Method ----
+
 	public void OnTap(Vector2 pos)
 	{
+		if (isAttacking) return;
+
+		isAttacking = true;
+
 		EffectChecker.AttackSwing();
 
 		Vector2 center = (Vector2)transform.position + attackOffset;
@@ -215,6 +215,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 		Ani.SetTrigger("IsAttack");
 	}
+
+	public void EndAttack() => isAttacking = false;
 
 	public void TakeDamage(float amount)
 	{
@@ -309,5 +311,24 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	#region ---- Setter ----
 	internal void SetInvincible(bool on) => _isInvincible = on;
 	internal void SetShieldOn() => _isShield = true;
+
+	internal void ResetInTower(Vector3 resetPosition)
+	{
+		// Tower Scene 위치 초기화
+		transform.position = resetPosition;
+
+		/* 스탯 초기화 */
+		ApplySavedPlayerData();
+		// 체력
+		_curHealth = _maxHealth;
+		// 스탯
+		_isInvincible = false;
+		_isShield = false;
+		_isDamageCoolDown = false;
+
+	}
+
+	internal void SetPlayerObjectState(bool isPlayerActive)
+		=> gameObject.SetActive(isPlayerActive);
 	#endregion
 }

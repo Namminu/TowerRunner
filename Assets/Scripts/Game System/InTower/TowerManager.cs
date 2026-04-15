@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor.TextCore.Text;
 using UnityEngine;
 
 public enum SubsystemId
@@ -17,6 +18,9 @@ public enum SubsystemId
 
 public class TowerManager : MonoBehaviour, IInitializable
 {
+	[Header("Player Start Position")]
+	[SerializeField] private Vector3 playetStartPoint;
+
 	[Header("Ready / Run UI Setup")]
 	[SerializeField, Tooltip("Run 문구 최소 대기 시간")] 
 	private float _runStateMinTime = 1.0f;
@@ -56,6 +60,10 @@ public class TowerManager : MonoBehaviour, IInitializable
 
 		// AllReady 체크
 		StartCoroutine(AllReadyCheck());
+
+		// Player 초기화
+		Player.Instance.gameObject.SetActive(true);
+		Player.Instance.ResetInTower(playetStartPoint);
 	}
 
 	private IEnumerator ReadyMinDelayRoutine()
@@ -100,6 +108,10 @@ public class TowerManager : MonoBehaviour, IInitializable
 			// 모든 준비 동작 체크 완료 시
 			if (_minDelayPassed && _allReady)
 			{
+				// Player 초기화
+				Player.Instance.gameObject.SetActive(true);
+				Player.Instance.ResetInTower(playetStartPoint);
+
 				// Run 연출
 				_textUI.StartRunState();
 
