@@ -16,7 +16,7 @@ public class PlayerItemChecker : MonoBehaviour
 		if (magnetCtrl == null)
 			magnetCtrl = transform.Find("CoinCollider").GetComponent<CoinMagnetController>();
 		if(player == null)
-			player = GetComponent<Player>();
+			player = GetComponentInParent<Player>();
 
 		player.OnShieldConsumed += () =>
 		{

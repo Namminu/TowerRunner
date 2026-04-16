@@ -20,10 +20,10 @@ TagManager:
   - Monster
   - Item
   - BG
-  - 
-  - 
-  - 
-  - 
+  - PlayerBody
+  - PlayerSensor
+  - PlayerAttack
+  - Coin
   - 
   - 
   - 

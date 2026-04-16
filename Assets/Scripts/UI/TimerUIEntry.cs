@@ -7,8 +7,6 @@ public class TimerUIEntry : MonoBehaviour, IPoolable
 	private Image timerIcon;
 	[SerializeField]
 	private Image fillImage;
-	[SerializeField]
-	private Text timerText;
 
 	private float remain;
 	private float totalDuration;
@@ -30,8 +28,7 @@ public class TimerUIEntry : MonoBehaviour, IPoolable
 		totalDuration = duration;
 		remain = duration;
 		timerIcon.sprite = icon;
-		fillImage.fillAmount = 1f;
-		timerText.text = duration.ToString("F0");
+		fillImage.fillAmount = 0f;
 		gameObject.SetActive(true);
 	}
 
@@ -40,10 +37,10 @@ public class TimerUIEntry : MonoBehaviour, IPoolable
 		remain -= Time.deltaTime;
 		if(remain <= 0f)
 		{
+			fillImage.fillAmount = 1f;
 			onFinish?.Invoke();
 			return;
 		}
-		fillImage.fillAmount = remain / totalDuration;
-		timerText.text = remain.ToString("F0");
+		fillImage.fillAmount = 1 - (remain / totalDuration);
 	}
 }

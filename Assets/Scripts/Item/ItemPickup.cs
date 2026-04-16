@@ -26,8 +26,12 @@ public class ItemPickup : MonoBehaviour, IPoolable
 	{
 		if(other.CompareTag("Player"))
 		{
-			data.Apply(other.GetComponent<Player>());
-			ItemPoolingManager.Instance.Despawn(this);
+			Player player = other.GetComponentInParent<Player>();
+			if(player)
+			{
+				data.Apply(player);
+				ItemPoolingManager.Instance.Despawn(this);
+			}
 		}
 	}
 
