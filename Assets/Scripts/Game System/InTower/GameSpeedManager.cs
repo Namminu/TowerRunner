@@ -30,6 +30,25 @@ public class GameSpeedManager : MonoBehaviour, IInitializable
 		yield return StartCoroutine(SubscribeRoutine());
 		// 준비 완료 시그널 전송
 		GameBus.Publish(new SubsystemReady(SubsystemId.Speed));
+
+		GameStateManager.OnStateChanged += HandleGameStateChanged;
+	}
+
+	private void HandleGameStateChanged(GameStateManager.GameState curState)
+	{
+		switch(curState)
+		{
+			case GameStateManager.GameState.Play:
+				_isRunning = true;
+				enabled = true;
+				break;
+
+			case GameStateManager.GameState.GameOver:
+				_isRunning = false;
+				enabled = false;
+				break;
+
+		}
 	}
 
 	private IEnumerator SubscribeRoutine()
@@ -58,5 +77,7 @@ public class GameSpeedManager : MonoBehaviour, IInitializable
 		// 구독 해제
 		_unsubRun?.Invoke();
 		_unsubActivate?.Invoke();
+
+		GameStateManager.OnStateChanged -= HandleGameStateChanged;
 	}
 }

@@ -42,6 +42,11 @@ public class ObjectMover : MonoBehaviour
 		enabled = false;
 	}
 
+	private void OnEnable()
+	{
+		GameStateManager.OnStateChanged += HandleGameStateChanged;
+	}
+
 	private void Update()
 	{
 		if (!_isRunning || _isPaused) return;
@@ -62,5 +67,28 @@ public class ObjectMover : MonoBehaviour
 	{
 		_unsubRun?.Invoke();
 		_unsubActivate?.Invoke();
+	}
+
+	private void OnDisable()
+	{
+		GameStateManager.OnStateChanged -= HandleGameStateChanged;
+	}
+
+	private void HandleGameStateChanged(GameStateManager.GameState curState)
+	{
+		switch (curState)
+		{
+			case GameStateManager.GameState.Play:
+				_isRunning = true;
+				_isPaused = false;
+				enabled = true;
+				break;
+
+			case GameStateManager.GameState.GameOver:
+				_isRunning = false;
+				_isPaused = true;
+				enabled = false;
+				break;
+		}
 	}
 }

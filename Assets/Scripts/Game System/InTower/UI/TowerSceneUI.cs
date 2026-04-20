@@ -20,19 +20,19 @@ public class TowerSceneUI : MonoBehaviour, ISceneUI
 		if(TopUI == null)
 		{
 			TopUI = GetComponentInChildren<TowerTopUI>();
-			if (TopUI)
-			{
-				TopUI.InitUI();
-			}
+		}
+		if (TopUI)
+		{
+			TopUI.InitUI();
 		}
 
-		if(PanelUI == null)
+		if (PanelUI == null)
 		{
 			PanelUI = GetComponentInChildren<TowerPanelUI>();
-			if (PanelUI)
-			{
-				PanelUI.InitUI();
-			}
+		}
+		if (PanelUI)
+		{
+			PanelUI.InitUI();
 		}
 
 		Player.Instance.OnHealthChanged += HandlePlayerHealthOnUI;

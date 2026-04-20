@@ -38,6 +38,8 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 		_isDead = false;
 		enemyCurHealth = enemyMaxHealth;
 		_attackRoutine = StartCoroutine(AttackRoutine());
+
+		GameStateManager.OnStateChanged += HandleGameStateChanged;
 	}
 
 	protected virtual void OnDisable()
@@ -48,6 +50,22 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 			_attackRoutine = null;
 		}
 		_isDead = true;
+
+		GameStateManager.OnStateChanged -= HandleGameStateChanged;
+	}
+
+	private void HandleGameStateChanged(GameStateManager.GameState curState)
+	{
+		switch (curState)
+		{
+			case GameStateManager.GameState.GameOver:
+				if (_attackRoutine != null)
+				{
+					StopCoroutine(_attackRoutine);
+					_attackRoutine = null;
+				}
+				break;
+		}
 	}
 
 	public override void OnSpawn()

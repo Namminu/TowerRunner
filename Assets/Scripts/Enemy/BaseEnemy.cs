@@ -54,8 +54,15 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 	public virtual void OnSpawn()
 	{
 		enabled = true;
-		if (GetComponentInChildren<Collider2D>() is Collider2D col)
-			col.enabled = true;
+		if(_collider)
+		{
+			_collider.enabled = true;
+		}
+		else
+		{
+			if (GetComponentInChildren<Collider2D>() is Collider2D col)
+				col.enabled = true;
+		}
 
 		if(_mover != null)
 		{
@@ -78,9 +85,12 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageDealer, IPoolable
 	protected virtual void OnTriggerEnter2D(Collider2D col)
 	{
 		if (!col.CompareTag("Player")) return;
-	
-		if(col.TryGetComponent<Player>(out var player))
+
+		Player player = col.GetComponentInParent<Player>();
+		if (player)
+		{
 			DealDamage(player);
+		}
 	}
 
 	private void HandleOutofBounds(ObjectMover mover)

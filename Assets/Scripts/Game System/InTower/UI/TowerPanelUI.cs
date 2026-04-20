@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +30,9 @@ public class TowerPanelUI : MonoBehaviour
 	[SerializeField] private Image GameOverPanel;
 	//[SerializeField] private Button GameSessionCloseButton;
 	[SerializeField] private EndGamePanelUI EndGamePanelUI;
+
+	[Header("Pause Count")]
+	[SerializeField] private Text countdownText;
 
 	private void Awake()
 	{
@@ -82,9 +86,6 @@ public class TowerPanelUI : MonoBehaviour
 				GameOverPanel.gameObject.SetActive(true);
 				break;
 		}
-
-		// 게임 멈추는 로직 필요
-
 	}
 
 	#region --- Setting Panel ---
@@ -124,8 +125,26 @@ public class TowerPanelUI : MonoBehaviour
 		SettingPanel.gameObject.SetActive(false);
 		PanelBG.gameObject.SetActive(false);
 
-		// 게임 재개하는 로직 필요
+		StartCoroutine(EnsumeGameCount());
+	}
 
+	private IEnumerator EnsumeGameCount()
+	{
+		countdownText.gameObject.SetActive(true);
+
+		int count = 3;
+		WaitForSecondsRealtime waitTime = new(1);
+		while(count > 0)
+		{
+			countdownText.text = count.ToString();
+			yield return waitTime;
+
+			count--;
+		}
+
+		countdownText.gameObject.SetActive(false);
+		// 게임 재개
+		GameStateManager.Instance.SetState(GameStateManager.GameState.Play);
 	}
 	#endregion
 
@@ -134,10 +153,19 @@ public class TowerPanelUI : MonoBehaviour
 
 	private void HandlePlayerDeathGameEnd()
 	{
+		StartCoroutine(GameEndRoutine());
+	}
+
+	private IEnumerator GameEndRoutine()
+	{
+		GameStateManager.Instance.SetState(GameStateManager.GameState.GameOver);
+
+		yield return new WaitForSecondsRealtime(1.5f);
+
 		PanelBG.gameObject.SetActive(true);
 		GameOverPanel.gameObject.SetActive(true);
 
-		if(EndGamePanelUI)
+		if (EndGamePanelUI)
 		{
 			EndGamePanelUI.HandleGameEndCheck();
 		}

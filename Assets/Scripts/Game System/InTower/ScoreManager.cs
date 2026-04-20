@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
+using static ScoreManager;
 
 public class ScoreManager : MonoBehaviour, IInitializable
 {
@@ -44,15 +45,16 @@ public class ScoreManager : MonoBehaviour, IInitializable
 
 		public int TotalScore;
 	}
-	public static event Action<FinalBreakdown> OnSessionEnded;
-
+	//public static event Action<FinalBreakdown> OnSessionEnded;
+	private FinalBreakdown finalBreakdown;
+	public FinalBreakdown FinalBreakDown => finalBreakdown;
 
 	private void Awake()
 	{
-		Instance = this;
-		if(Instance != null && Instance != this)
+		if (Instance != null && Instance != this)
 		{
 			Destroy(gameObject);
+			return;
 		}
 		Instance = this;
 		DontDestroyOnLoad(gameObject);
@@ -80,7 +82,10 @@ public class ScoreManager : MonoBehaviour, IInitializable
 	private void EndSession()
 	{
 		if (sessionRoutine != null)
+		{
 			StopCoroutine(sessionRoutine);
+			sessionRoutine = null;
+		}
 
 		int noHitScore = raw.IsPlayerHit ? 0 : noHitBonus;
 		int monsterScore = raw.MonsterKillCount * monsterKillBonus;
@@ -92,16 +97,27 @@ public class ScoreManager : MonoBehaviour, IInitializable
 		{
 			highScore = total;
 			GameEvents.RaiseHighScoreChanged(highScore);
+
+			SaveService.Current.bestScore = highScore;
 		}
 
-		OnSessionEnded?.Invoke(new FinalBreakdown
+		finalBreakdown = new FinalBreakdown
 		{
 			DistanceScore = raw.DistanceScore,
 			MonsterKillScore = monsterScore,
 			ItemUseScore = itemScore,
 			NoHitScore = noHitScore,
 			TotalScore = total
-		});
+		};
+
+		//OnSessionEnded?.Invoke(new FinalBreakdown
+		//{
+		//	DistanceScore = raw.DistanceScore,
+		//	MonsterKillScore = monsterScore,
+		//	ItemUseScore = itemScore,
+		//	NoHitScore = noHitScore,
+		//	TotalScore = total
+		//});
 	}
 
 	private IEnumerator SessionTimerTicker()

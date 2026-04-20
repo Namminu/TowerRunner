@@ -23,6 +23,8 @@ public class TowerTopUI : MonoBehaviour
 
 	private void ShowSettingPanel()
 	{
+		GameStateManager.Instance.SetState(GameStateManager.GameState.Pause);
+
 		PanelUI.ShowPanel(TowerPanelType.Setting);
 	}
 

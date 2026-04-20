@@ -24,6 +24,19 @@ public class ItemManager : MonoBehaviour, IInitializable
 	public void Init()
 	{
 		_runUnsub = GameBus.Subscribe<RunSignal>(OnRunSignal);
+
+		GameStateManager.OnStateChanged += HandleGameStateChanged;
+	}
+
+	private void HandleGameStateChanged(GameStateManager.GameState curState)
+	{
+		if (curState == GameStateManager.GameState.GameOver)
+		{
+			// 스폰 코루틴 정리
+			foreach (var c in _spawnCoroutines)
+				if (c != null) StopCoroutine(c);
+			_spawnCoroutines.Clear();
+		}
 	}
 
 	public void SetData(ItemDatabase data)
@@ -92,5 +105,7 @@ public class ItemManager : MonoBehaviour, IInitializable
 		foreach (var c in _spawnCoroutines)
 			if (c != null) StopCoroutine(c);
 		_spawnCoroutines.Clear();
+
+		GameStateManager.OnStateChanged -= HandleGameStateChanged;
 	}
 }

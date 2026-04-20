@@ -108,14 +108,11 @@ public class TowerManager : MonoBehaviour, IInitializable
 			// 모든 준비 동작 체크 완료 시
 			if (_minDelayPassed && _allReady)
 			{
-				// Player 초기화
-				Player.Instance.gameObject.SetActive(true);
-				Player.Instance.ResetInTower(playetStartPoint);
-
 				// Run 연출
 				_textUI.StartRunState();
 
 				GameBus.Publish(new RunSignal());
+				GameEvents.RaiseBattleStart();
 				yield return null;
 				GameBus.Publish(new ActivateMovementNextFrame());
 

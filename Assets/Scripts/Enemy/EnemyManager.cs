@@ -25,6 +25,8 @@ public class EnemyManager : MonoBehaviour, IInitializable
 	{
 		// RunSignal 구독: RunSignal 수신 시 스폰 시작
 		_runUnsub = GameBus.Subscribe<RunSignal>(OnRunSignal);
+
+		GameStateManager.OnStateChanged += HandleGameStateChanged;
 	}
 
 	public void SetData(EnemyData data)
@@ -79,6 +81,17 @@ public class EnemyManager : MonoBehaviour, IInitializable
 		return pos;
 	}
 
+	private void HandleGameStateChanged(GameStateManager.GameState curState)
+	{
+		if(curState == GameStateManager.GameState.GameOver)
+		{
+			// 스폰 코루틴 정리
+			foreach (var c in _spawnCoroutines)
+				if (c != null) StopCoroutine(c);
+			_spawnCoroutines.Clear();
+		}
+	}
+
 	private void OnDestroy()
 	{
 		// 구독 해제
@@ -88,5 +101,7 @@ public class EnemyManager : MonoBehaviour, IInitializable
 		foreach (var c in _spawnCoroutines)
 			if (c != null) StopCoroutine(c);
 		_spawnCoroutines.Clear();
+
+		GameStateManager.OnStateChanged -= HandleGameStateChanged;
 	}
 }

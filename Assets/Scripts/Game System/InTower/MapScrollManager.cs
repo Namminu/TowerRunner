@@ -69,11 +69,6 @@ public class MapScrollManager : MonoBehaviour, IInitializable
 		yield return null;
 	}
 
-	private void OnDestroy()
-	{
-		
-	}
-
 	private void HandleOutofBound(ObjectMover mover)
 	{
 		mover.gameObject.transform.position = new Vector3(0.05f, (int)(_lastBornY + _middleHeight), 0.5f);

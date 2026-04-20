@@ -27,20 +27,14 @@ public class EndGamePanelUI : MonoBehaviour
 			scoreSet.scoreText.gameObject.SetActive(false);
 		}
 
-		OnSessionEnded += HandleSessionEnded;
-
 		CloseButton.onClick.RemoveAllListeners();
 		CloseButton.onClick.AddListener(() => CloseGameOverPanel());
 	}
 
-	private void HandleSessionEnded(FinalBreakdown breakdown)
-	{
-		ScoreStruct = breakdown;
-		HandleGameEndCheck();
-	}
-
 	public void CloseGameOverPanel()
 	{
+		GameStateManager.Instance.SetState(GameStateManager.GameState.Play);
+
 		// Town Scene 이동
 		StartCoroutine(GameOverRoutine());
 	}
@@ -57,7 +51,7 @@ public class EndGamePanelUI : MonoBehaviour
 
 	private IEnumerator GameEndRoutine()
 	{
-		yield return new WaitForSeconds(1.5f); // 잠시 대기 후 시작
+		ScoreStruct = ScoreManager.Instance.FinalBreakDown;
 
 		WaitForSeconds waitTime = new(delayBetweenSteps);
 

@@ -23,7 +23,14 @@ public class BaseProjectile : MonoBehaviour, IDamageable, IDamageDealer, IProjec
 	{
 		if (!col.CompareTag("Player")) return;
 
-		if (col.TryGetComponent<Player>(out var player))
+		//if (col.TryGetComponent<Player>(out var player))
+		//{
+		//	DealDamage(player);
+		//	Despawn();
+		//}
+
+		Player player = col.GetComponentInParent<Player>();
+		if(player)
 		{
 			DealDamage(player);
 			Despawn();

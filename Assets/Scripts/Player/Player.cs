@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor.SceneManagement;
+using UnityEditor.TextCore.Text;
 using UnityEngine;
 
 public enum EnforceType
@@ -40,6 +41,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			_curHealth = Mathf.Clamp(value, 0f, PlayerMaxHealth);
 		}
 	}
+	[SerializeField, Tooltip("Auto Decrease Health Amount")]
+	private float autoDecAmount = 4f;
 
 	[SerializeField, Tooltip("Invincible Time for Take Damage")]
 	private float damagedInvincibleTime;
@@ -96,6 +99,9 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	public event Action OnShieldConsumed;
 
 	public event Action<float> OnHealthChanged;
+
+	public event Action _runUnsub;
+	private Coroutine autoHealthDecrease;
 	#endregion
 
 
@@ -131,12 +137,22 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		Ani = GetComponentInChildren<Animator>();
 	}
 
+	private void Start()
+	{
+		_runUnsub = GameBus.Subscribe<RunSignal>(StartAutoDecrease);
+
+		GameEvents.OnBattleEnded += StopAutoDecrease;
+	}
+
 	private void ApplySavedPlayerData()
 	{
-		for(int idx = 0; idx < SaveService.Current.upgrades.Count; idx++) 
+		if(SaveService.Current != null)
 		{
-			int level = UpgradeService.GetLevel(idx);
-			UpgradeService.SetLevel(idx, level, applyToPlayer:true);
+			for (int idx = 0; idx < SaveService.Current.upgrades.Count; idx++)
+			{
+				int level = UpgradeService.GetLevel(idx);
+				UpgradeService.SetLevel(idx, level, applyToPlayer: true);
+			}
 		}
 	}
 
@@ -148,25 +164,83 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		Ani.SetBool("IsDeath", true);
 	}
 
+	//private IEnumerator DamagedInvincible()
+	//{
+	//	_isDamageCoolDown = true;
+
+	//	float elapsed = 0f;
+	//	bool visible = true;
+	//	WaitForSeconds waitTime = new(blinkInterval);
+
+	//	while (elapsed < damagedInvincibleTime)
+	//	{
+	//		visible = !visible;
+	//		_spriteRenderer.enabled = visible;
+	//		yield return waitTime;
+	//		elapsed += blinkInterval;
+	//	}
+
+	//	_spriteRenderer.enabled = true;
+	//	_isDamageCoolDown = false;
+	//}
+
+	private void StartAutoDecrease(RunSignal sig)
+	{
+		autoHealthDecrease = StartCoroutine(AutoHealthDecreaseRoutine());
+	}
+
+	private IEnumerator AutoHealthDecreaseRoutine()
+	{
+		WaitForSeconds waitTime = new(1f);
+
+		while(true)
+		{
+			yield return waitTime;
+
+			_curHealth -= autoDecAmount;
+
+			float healthRatio = _curHealth / _maxHealth;
+			OnHealthChanged?.Invoke(healthRatio);
+
+			if (_curHealth <= 0)
+			{
+				Death();
+				yield break;
+			}
+		}
+	}
+
+	private void StopAutoDecrease()
+	{
+		if(autoHealthDecrease != null)
+		{
+			StopCoroutine(autoHealthDecrease);
+			autoHealthDecrease = null;
+		}
+	}
+
 	private IEnumerator DamagedInvincible()
 	{
 		_isDamageCoolDown = true;
 
-		float elapsed = 0f;
-		bool visible = true;
-		WaitForSeconds waitTime = new(blinkInterval);
+		float waitTimePerState = damagedInvincibleTime / (blinkInterval * 2);
+		WaitForSeconds waitTime = new(waitTimePerState);
 
-		while (elapsed < damagedInvincibleTime)
+		for(int i = 0; i<blinkInterval; i++)
 		{
-			visible = !visible;
-			_spriteRenderer.enabled = visible;
+			// True -> False
+			_spriteRenderer.enabled = false;
 			yield return waitTime;
-			elapsed += blinkInterval;
+
+			// False -> True
+			_spriteRenderer.enabled = true;
+			yield return waitTime;
 		}
 
 		_spriteRenderer.enabled = true;
 		_isDamageCoolDown = false;
 	}
+
 
 	//private void OnDrawGizmosSelected()
 	//{
@@ -243,6 +317,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		{
 			EffectChecker.PlayerHitted();
 			StartCoroutine(DamagedInvincible());
+
+			ScoreManager.Instance.RegisterPlayerHit();
 		}
 	}
 
@@ -331,4 +407,11 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	internal void SetPlayerObjectState(bool isPlayerActive)
 		=> gameObject.SetActive(isPlayerActive);
 	#endregion
+
+	private void OnDestroy()
+	{
+		_runUnsub?.Invoke();
+
+		GameEvents.OnBattleEnded -= StopAutoDecrease;
+	}
 }
