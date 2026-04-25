@@ -10,9 +10,26 @@ public class PlaneHole : BaseObject
 	{
 		if (!col.CompareTag("Player")) return;
 
-		if (col.TryGetComponent<Player>(out var player))
+		//if (col.TryGetComponent<Player>(out var player))
+		//{
+		//	if (player.IsDamageCoolDown || player.IsPlayerInvincible)
+		//	{
+		//		OnDespawn();
+		//		return;
+		//	}
+
+		//	GetComponent<Collider2D>().enabled = false;
+		//	StartCoroutine(PlayerInHole(player));
+		//}
+
+		Player player = col.GetComponentInParent<Player>();
+		if(player)
 		{
-			if (player.IsDamageCoolDown || player.IsPlayerInvincible) return;
+			if (player.IsDamageCoolDown || player.IsPlayerInvincible)
+			{
+				OnDespawn();
+				return;
+			}
 
 			GetComponent<Collider2D>().enabled = false;
 			StartCoroutine(PlayerInHole(player));

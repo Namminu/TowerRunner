@@ -11,6 +11,7 @@ public class PlayerEffectChecker : MonoBehaviour
 
 	[Header("Booster Effect")]
 	[SerializeField] private GameObject boosterEffect;
+
 	[Header("Magnet Effect")]
 	[SerializeField] private GameObject magnetEffect;
 	private Coroutine magnetCoroutine;
@@ -23,9 +24,9 @@ public class PlayerEffectChecker : MonoBehaviour
 	[Header("Coin Effect")]
 	[SerializeField] private GameObject coinEffect;
 	private Coroutine coinCoroutine;
-	[SerializeField] private float jumpHeight = 1.5f;   // Æ¢ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-	[SerializeField] private float duration = 0.6f;     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
-	[SerializeField] private float rotationSpeed = 720f; // ï¿½Ê´ï¿½ È¸ï¿½ï¿½ ï¿½Óµï¿½ (360ï¿½ï¿½ * 2ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+	[SerializeField] private float jumpHeight = 1.5f;   // Æ¢¾î¿À¸¦ ³ôÀÌ
+	[SerializeField] private float duration = 0.6f;     // ¿¬Ãâ Áö¼Ó ½Ã°£
+	[SerializeField] private float rotationSpeed = 720f; // ÃÊ´ç È¸Àü ¼Óµµ (360µµ * 2¹ÙÄû µî)
 
 	#region --- Player Attack Effect ---
 	public void AttackSwing()
@@ -94,16 +95,16 @@ public class PlayerEffectChecker : MonoBehaviour
 			float progress = elapsed / duration;
 
 			float yOffset = Mathf.Sin(progress * Mathf.PI) * jumpHeight;
-			transform.localPosition = startPos + new Vector3(0, yOffset, 0);
+			coinEffect.transform.localPosition = startPos + new Vector3(0, yOffset, 0);
 
-			transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+			coinEffect.transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
 
 			yield return null;
 		}
 
 		coinEffect.transform.localPosition = startPos;
 		coinEffect.transform.localRotation = Quaternion.identity;
-		gameObject.SetActive(false);
+		coinEffect.SetActive(false);
 
 		coinCoroutine = null;
 	}

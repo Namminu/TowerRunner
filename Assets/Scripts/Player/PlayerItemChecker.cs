@@ -98,4 +98,13 @@ public class PlayerItemChecker : MonoBehaviour
 		effectChecker.FatalElixirEffect(false);
 	}
 	#endregion
+
+	public void ResetAllItemApply()
+	{
+		RemoveFatalElixir(0);
+		RemoveCoinMagnet();
+		RemoveBattleBooster();
+
+		effectChecker.ShieldEffect(false);
+	}
 }

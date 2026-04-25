@@ -129,13 +129,20 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 
 	private IEnumerator BlinkRoutine()
 	{
-		for(int i = 0; i < 3; i++)
+		float waitTimePerState = 0.8f / 6;
+		WaitForSeconds waitTime = new(waitTimePerState);
+
+		for (int i = 0; i < 3; i++)
 		{
+			// True -> False
 			sr.enabled = false;
-			yield return new WaitForSeconds(0.3f);
+			yield return waitTime;
+
+			// False -> True
 			sr.enabled = true;
-			yield return new WaitForSeconds(0.3f);
+			yield return waitTime;
 		}
+
 		sr.enabled = true;
 	}
 

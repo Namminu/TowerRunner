@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -76,6 +77,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
 	private float playerPower = 1f;
 
+	[Header("Attack")]
 	[SerializeField, Tooltip("Player Attack Radius"), Range(1, 5)]
 	private float attackRadius = 1f;
 	[SerializeField, Tooltip("Player Attack Circle Angle"), Range(90f, 180f)]
@@ -85,6 +87,10 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	[SerializeField]
 	private LayerMask attackTargetLayer;
 	private bool isAttacking = false;
+	[SerializeField]
+	private BoxCollider2D AttackRange;
+	private ContactFilter2D contactFilter;
+	private Collider2D[] results = new Collider2D[8];
 
 	public int PlayerGold => EconomyService.Gold;
 
@@ -135,6 +141,13 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isDamageCoolDown = false;
 
 		Ani = GetComponentInChildren<Animator>();
+
+		if (AttackRange == null)
+			AttackRange = GetComponentInChildren<BoxCollider2D>();
+		contactFilter = new ContactFilter2D();
+		contactFilter.SetLayerMask(LayerMask.GetMask("Monster"));
+		contactFilter.useLayerMask = true;
+		contactFilter.useTriggers = true;
 	}
 
 	private void Start()
@@ -268,26 +281,57 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 		EffectChecker.AttackSwing();
 
-		Vector2 center = (Vector2)transform.position + attackOffset;
-		Collider2D[] hits = Physics2D.OverlapCircleAll(center, attackRadius, attackTargetLayer);
+		//Vector2 center = (Vector2)transform.position + attackOffset;
+		//Collider2D[] hits = Physics2D.OverlapCircleAll(center, attackRadius, attackTargetLayer);
 
-		float halfArc = attackAngle * 0.5f;
-		Vector2 forward = transform.up;
+		//float halfArc = attackAngle * 0.5f;
+		//Vector2 forward = transform.up;
 
-		foreach(var col in hits)
+		//foreach(var col in hits)
+		//{
+		//	Vector2 dir = (col.transform.position - (Vector3)center).normalized;
+		//	float angle = Vector2.Angle(forward, dir);
+		//	if(angle <= halfArc)
+		//	{
+		//		if(col.TryGetComponent<IDamageable>(out var target))
+		//		{
+		//			DealDamage(target);
+		//		}
+		//	}
+		//}
+
+		Vector2 worldPos = (Vector2)AttackRange.transform.position +
+							(Vector2)(AttackRange.transform.rotation * AttackRange.offset);
+
+		int hitCount = Physics2D.OverlapBox(
+			worldPos, AttackRange.size, AttackRange.transform.eulerAngles.z,
+			contactFilter, results);
+
+		for(int i = 0; i<hitCount; i++)
 		{
-			Vector2 dir = (col.transform.position - (Vector3)center).normalized;
-			float angle = Vector2.Angle(forward, dir);
-			if(angle <= halfArc)
+			var col = results[i];
+			IDamageable damageable = col.GetComponentInParent<IDamageable>();
+			if(damageable != null)
 			{
-				if(col.TryGetComponent<IDamageable>(out var target))
-				{
-					DealDamage(target);
-				}
+				DealDamage(damageable);
 			}
 		}
 
 		Ani.SetTrigger("IsAttack");
+	}
+
+	private void OnDrawGizmosSelected()
+	{
+		if (AttackRange is BoxCollider2D box)
+		{
+			Gizmos.color = Color.red;
+			// 몬스터의 현재 위치 + 회전이 반영된 오프셋
+			Vector2 worldPos = (Vector2)AttackRange.transform.position +
+							   (Vector2)(AttackRange.transform.rotation * box.offset);
+
+			Gizmos.matrix = Matrix4x4.TRS(worldPos, AttackRange.transform.rotation, Vector3.one);
+			Gizmos.DrawWireCube(Vector3.zero, box.size);
+		}
 	}
 
 	public void EndAttack() => isAttacking = false;
@@ -402,6 +446,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isShield = false;
 		_isDamageCoolDown = false;
 
+		/* 아이템 사용 여부 초기화 */
+		if (ItemChecker != null)
+		{
+			ItemChecker.ResetAllItemApply();
+		}
+		else Debug.Log("Player ItemChecker Script Null Error");
 	}
 
 	internal void SetPlayerObjectState(bool isPlayerActive)

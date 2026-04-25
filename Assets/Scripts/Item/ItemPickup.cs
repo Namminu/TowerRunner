@@ -1,3 +1,4 @@
+using System;
 using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
@@ -12,6 +13,10 @@ public class ItemPickup : MonoBehaviour, IPoolable
 	private SpriteRenderer _sprite;
 	private ObjectMover _mover;
 
+	/* coin item */
+	private Transform magnetTarget;
+	private float pullSpeed = 10f;
+
 	private void Awake()
 	{
 		_col = GetComponent<Collider2D>();
@@ -24,7 +29,9 @@ public class ItemPickup : MonoBehaviour, IPoolable
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if(other.CompareTag("Player"))
+		//if(other.CompareTag("Player"))
+
+		if(other.gameObject.layer == LayerMask.NameToLayer("PlayerBody"))
 		{
 			Player player = other.GetComponentInParent<Player>();
 			if(player)
@@ -32,6 +39,15 @@ public class ItemPickup : MonoBehaviour, IPoolable
 				data.Apply(player);
 				ItemPoolingManager.Instance.Despawn(this);
 			}
+		}
+	}
+
+	private void Update()
+	{
+		if(magnetTarget != null)
+		{
+			transform.position = Vector2.MoveTowards(transform.position, 
+				magnetTarget.position, pullSpeed * Time.deltaTime);
 		}
 	}
 
@@ -50,6 +66,9 @@ public class ItemPickup : MonoBehaviour, IPoolable
 
 	public void OnDespawn()
 	{
+		if(magnetTarget != null)
+			magnetTarget = null;
+
 		if (_mover != null)
 			_mover.OnOutofBounds -= HandleOutOfBound;
 
@@ -60,4 +79,8 @@ public class ItemPickup : MonoBehaviour, IPoolable
 
 	private void HandleOutOfBound(ObjectMover mover)
 		=> ItemPoolingManager.Instance.Despawn(this);
+
+	public void StartMagnet(Transform target)
+		=> magnetTarget = target;
+
 }

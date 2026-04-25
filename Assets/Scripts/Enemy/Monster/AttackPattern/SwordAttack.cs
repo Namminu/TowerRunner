@@ -12,7 +12,8 @@ public class SwordAttack : AttackPattern
 	private void Awake()
 	{
 		contactFilter = new ContactFilter2D();
-		contactFilter.SetLayerMask(LayerMask.GetMask("Player"));
+		contactFilter.SetLayerMask(LayerMask.GetMask("PlayerBody"));
+		contactFilter.useLayerMask = true;
 		contactFilter.useTriggers = true;
 	}
 
@@ -20,11 +21,19 @@ public class SwordAttack : AttackPattern
 	{
 		yield return new WaitForSeconds(delayTime);
 
-		int hitCount = attackRange.Overlap(contactFilter, results);
+		BoxCollider2D collider = attackRange as BoxCollider2D;
+		Vector2 worldPos = (Vector2)attackRange.transform.position +
+			(Vector2)(attackRange.transform.rotation * collider.offset);
+
+		int hitCount = Physics2D.OverlapBox(
+			worldPos, collider.size, attackRange.transform.eulerAngles.z,
+			contactFilter, results);
+
 		for (int i = 0; i < hitCount; i++)
 		{
 			var col = results[i];
-			if (col.TryGetComponent<Player>(out var player))
+			Player player = col.GetComponentInParent<Player>();
+			if(player)
 			{
 				player.TakeDamage(dmg);
 			}

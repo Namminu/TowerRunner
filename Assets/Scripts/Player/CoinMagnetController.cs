@@ -21,10 +21,14 @@ public class CoinMagnetController : MonoBehaviour
 	{
 		if (!col.CompareTag("COIN")) return;
 
-		Transform coinTf = col.transform;
-		Vector2 targetPos = transform.parent.position;
-		coinTf.position = Vector2.MoveTowards(
-			coinTf.position, targetPos, pullSpeed * Time.deltaTime);
+		//Transform coinTf = col.transform;
+		//Vector2 targetPos = transform.parent.position;
+		//coinTf.position = Vector2.MoveTowards(
+		//	coinTf.position, targetPos, pullSpeed * Time.deltaTime);
+		if(col.TryGetComponent<ItemPickup>(out var coin))
+		{
+			coin.StartMagnet(transform.parent);
+		}
 	}
 
 	public void ActivateMagnet(float range)
