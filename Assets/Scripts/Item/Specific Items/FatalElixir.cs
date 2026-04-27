@@ -12,6 +12,7 @@ public class FatalElixir : ItemData
 	public override void Apply(Player player)
 	{
 		player.ItemChecker.ApplyFatalElixir(maxRange);
+		ScoreManager.Instance.RegisterItemUse();
 
 		TimerUIManager.Instance.StartTimer(itemIcon, duration, () =>
 		{

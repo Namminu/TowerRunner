@@ -9,6 +9,7 @@ public class Gold : ItemData
 	public override void Apply(Player player)
 	{
 		player.ItemChecker.GetCoin(GetRandomCoin());
+		ScoreManager.Instance.RegisterItemUse();
 	}
 
 	private int GetRandomCoin()

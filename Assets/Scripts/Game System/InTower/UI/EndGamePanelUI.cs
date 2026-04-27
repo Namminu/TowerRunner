@@ -62,8 +62,8 @@ public class EndGamePanelUI : MonoBehaviour
 			int scoreValue = i switch
 			{
 				0 => ScoreStruct.DistanceScore,
-				1 => ScoreStruct.MonsterKillScore,
-				2 => ScoreStruct.ItemUseScore,
+				1 => ScoreStruct.ItemUseScore,
+				2 => ScoreStruct.MonsterKillScore,
 				3 => ScoreStruct.NoHitScore,
 				4 => ScoreStruct.TotalScore,
 				_ => 0

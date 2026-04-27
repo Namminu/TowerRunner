@@ -12,6 +12,7 @@ public class CoinMagnet : ItemData
 	public override void Apply(Player player)
 	{
 		player.ItemChecker.ApplyCoinMagnet(range);
+		ScoreManager.Instance.RegisterItemUse();
 
 		TimerUIManager.Instance.StartTimer(itemIcon, duration, () =>
 		{

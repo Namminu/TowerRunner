@@ -88,6 +88,8 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 		_objectMover.PauseMovement();
 		Animator.SetBool("IsDeath", true);
 
+		ScoreManager.Instance.RegisterMonsterKill();
+
 		yield return new WaitForSeconds(0.5f);
 
 		EnemyPoolingManager.Instance.Despawn(this);

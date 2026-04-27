@@ -13,5 +13,6 @@ public class HealthPotion : ItemData
 
 		float healAmount = player.PlayerMaxHealth * (healRatio / 100);
 		player.ItemChecker.Heal(healAmount);
+		ScoreManager.Instance.RegisterItemUse();
 	}
 }

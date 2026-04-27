@@ -9,6 +9,7 @@ public class BattleBooster : ItemData
 	public override void Apply(Player player)
 	{
 		player.ItemChecker.ApplyBattleBooster();
+		ScoreManager.Instance.RegisterItemUse();
 
 		TimerUIManager.Instance.StartTimer(itemIcon, duration, () =>
 		{
