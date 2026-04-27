@@ -69,7 +69,6 @@ public class TowerPanelUI : MonoBehaviour
 		/* Setting Panel : Exit */
 		ExitButton.onClick.RemoveAllListeners();
 		ExitButton.onClick.AddListener(() => ExitGameAndLoadTownScene());
-
 	}
 
 	public void ShowPanel(TowerPanelType OnType)
@@ -117,7 +116,10 @@ public class TowerPanelUI : MonoBehaviour
 
 	private void ExitGameAndLoadTownScene()
 	{
+		PanelBG.gameObject.SetActive(false);
+		SettingPanel.gameObject.SetActive(false);
 
+		Player.Instance.ImmediateDeath();
 	}
 
 	public void CloseSettingPanel()
