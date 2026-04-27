@@ -40,8 +40,6 @@ public class ShopPopup : MonoBehaviour
 
 	private void ShowPopup(ItemData item)
 	{
-		Debug.Log($"{item.itemName} has called in Show Popup : [Shop Pupup.cs]");
-
 		currentItem = item;
 
 		itemIcon.sprite = item.itemIcon;

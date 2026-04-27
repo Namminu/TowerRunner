@@ -80,7 +80,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		UpgradeService.SetLevel(selectedIndex, newLevel);
 
 		float newValue = EnforceService.GetValue(selectedIndex, newLevel);
-		Player.Instance?.ApplyUpgrade((EnforceType)selectedIndex, newValue);
+		Player.Instance.ApplyUpgrade((EnforceType)selectedIndex, newValue);
 
 		ShowPage(selectedIndex);	
 	}

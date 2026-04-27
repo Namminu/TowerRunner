@@ -40,10 +40,22 @@ public class SceneConfig : ScriptableObject
         if (reference == null) yield break;
 
         var handle = reference.LoadSceneAsync();
-        yield return handle;
+		//yield return handle;
 
-        if (handle.Status != AsyncOperationStatus.Succeeded)
-            Debug.LogError($"Scene Load Failed : {scene}");
-        else CurrentScene = scene;
+		//if (handle.Status != AsyncOperationStatus.Succeeded)
+		//    Debug.LogError($"Scene Load Failed : {scene}");
+		//else CurrentScene = scene;
+
+		handle.Completed += (op) =>
+		{
+			if (op.Status == AsyncOperationStatus.Succeeded)
+			{
+				CurrentScene = scene;
+			}
+			else
+			{
+				Debug.LogError($"Scene Load Failed : {scene}");
+			}
+		};
 	}
 }

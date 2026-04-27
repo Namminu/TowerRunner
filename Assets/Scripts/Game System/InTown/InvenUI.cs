@@ -61,7 +61,8 @@ public class InvenUI : MonoBehaviour, ISceneUI
 				slot.SetEmpty();
 				slotUIs.Add(slot);
 
-				slot.Button.onClick.AddListener(() => UseItemAt(i));
+				int index = i;
+				slot.Button.onClick.AddListener(() => UseItemAt(index));
 			}
 			RefreshSlots();
 		};

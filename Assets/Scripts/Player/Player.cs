@@ -80,12 +80,12 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	[Header("Attack")]
 	[SerializeField, Tooltip("Player Attack Radius"), Range(1, 5)]
 	private float attackRadius = 1f;
-	[SerializeField, Tooltip("Player Attack Circle Angle"), Range(90f, 180f)]
-	private float attackAngle = 130f;
-	[SerializeField]
-	private Vector2 attackOffset = Vector2.zero;
-	[SerializeField]
-	private LayerMask attackTargetLayer;
+	//[SerializeField, Tooltip("Player Attack Circle Angle"), Range(90f, 180f)]
+	//private float attackAngle = 130f;
+	//[SerializeField]
+	//private Vector2 attackOffset = Vector2.zero;
+	//[SerializeField]
+	//private LayerMask attackTargetLayer;
 	private bool isAttacking = false;
 	[SerializeField]
 	private BoxCollider2D AttackRange;
@@ -307,7 +307,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 			worldPos, AttackRange.size, AttackRange.transform.eulerAngles.z,
 			contactFilter, results);
 
-		for(int i = 0; i<hitCount; i++)
+		for(int i = 0; i < hitCount; i++)
 		{
 			var col = results[i];
 			IDamageable damageable = col.GetComponentInParent<IDamageable>();
