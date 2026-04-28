@@ -36,12 +36,12 @@ public class EndGamePanelUI : MonoBehaviour
 		GameStateManager.Instance.SetState(GameStateManager.GameState.Play);
 
 		// Town Scene ¿Ãµø
-		StartCoroutine(GameOverRoutine());
+		GameOverRoutine();
 	}
 
-	private IEnumerator GameOverRoutine()
+	private void GameOverRoutine()
 	{
-		yield return ManagersInitializer.Instance.SceneLoadRoutine(Scenes.Town);
+		ManagersInitializer.Instance.SceneLoad(Scenes.Town);
 	}
 
 	public void HandleGameEndCheck()

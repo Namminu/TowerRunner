@@ -23,6 +23,7 @@ public class ManagersInitializer : MonoBehaviour
 	[SerializeField] private AssetReferenceGameObject MainManagerRef;
 	[SerializeField] private AssetReferenceGameObject TownManagerRef;
 	[SerializeField] private AssetReferenceGameObject TowerManagerRef;
+	[SerializeField] private AssetReferenceGameObject LoadingManagerRef;
 
 	[Header("Scene Config")]
 	[SerializeField] private SceneConfig sceneConfig;
@@ -51,7 +52,12 @@ public class ManagersInitializer : MonoBehaviour
 			yield return LoadAndInitManager(managerRef, persistent: true);
 	}
 
-	public IEnumerator SceneLoadRoutine(Scenes scene)
+	public void SceneLoad(Scenes nextScene)
+	{
+		StartCoroutine(SceneLoadRoutine(nextScene));
+	}
+
+	private IEnumerator SceneLoadRoutine(Scenes scene)
 	{
 		yield return InitializeSceneManagers(scene);
 		yield return sceneConfig.LoadSceneRoutine(scene);
@@ -64,6 +70,7 @@ public class ManagersInitializer : MonoBehaviour
 			Scenes.Main => MainManagerRef,
 			Scenes.Town => TownManagerRef,
 			Scenes.Tower => TowerManagerRef,
+			Scenes.Loading => LoadingManagerRef,
 			_ => MainManagerRef
 		};
 		yield return LoadAndInitManager(sceneRef, persistent: false);

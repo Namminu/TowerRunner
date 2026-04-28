@@ -99,7 +99,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 		yield return null;
 
-		yield return ManagersInitializer.Instance.SceneLoadRoutine(Scenes.BootScene);
+		ManagersInitializer.Instance.SceneLoad(Scenes.BootScene);
 	}
 	#endregion
 

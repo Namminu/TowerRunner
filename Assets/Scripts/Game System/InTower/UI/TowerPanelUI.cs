@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEditor.SearchService;
@@ -22,7 +23,6 @@ public class TowerPanelUI : MonoBehaviour
 	[Header("Setting|Content")]
 	[SerializeField] private Slider volumeSlider;
 	[SerializeField] private Slider brightnessSlider;
-	[SerializeField] private Button vibrateButton;
 	[SerializeField] private Button RetryButton;
 	[SerializeField] private Button ExitButton;
 
@@ -57,10 +57,6 @@ public class TowerPanelUI : MonoBehaviour
 		/* Setting Panel : Brightness */
 		brightnessSlider.value = Prefs.DisplayBrightness;
 		brightnessSlider.onValueChanged.AddListener(OnDisPlaySliderChanged);
-
-		/* Setting Panel : Vibrate */
-		vibrateButton.onClick.RemoveAllListeners();
-		vibrateButton.onClick.AddListener(() => OnToggleVibrateSystem());
 
 		/* Setting Panel : Retry */
 		RetryButton.onClick.RemoveAllListeners();
@@ -104,14 +100,15 @@ public class TowerPanelUI : MonoBehaviour
 		BrightnessManager.Instance.SetBrightness(value);
 	}
 
-	private void OnToggleVibrateSystem()
-	{
-
-	}
-
 	private void RetryGameOnStart()
 	{
+		GameEvents.RaiseBattleEnd();
+		RetryGameRoutiune();
+	}
 
+	private void RetryGameRoutiune()
+	{
+		ManagersInitializer.Instance.SceneLoad(Scenes.Loading);
 	}
 
 	private void ExitGameAndLoadTownScene()
@@ -180,7 +177,6 @@ public class TowerPanelUI : MonoBehaviour
 		GameEvents.OnBattleEnded -= HandlePlayerDeathGameEnd;
 
 		SettingCloseButton.onClick.RemoveAllListeners();
-		vibrateButton.onClick.RemoveAllListeners();
 		RetryButton.onClick.RemoveAllListeners();
 		ExitButton.onClick.RemoveAllListeners();
 	}

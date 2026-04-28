@@ -11,7 +11,8 @@ public enum Scenes
 	BootScene,
 	Main,
 	Town,
-	Tower
+	Tower,
+	Loading
 }
 
 public class BootSceneController : MonoBehaviour
@@ -167,7 +168,7 @@ public class BootSceneController : MonoBehaviour
 		_sceneUI.UpdateProgress(1f);
 
 		/* Load Next Scene */
-		yield return ManagersInitializer.Instance.SceneLoadRoutine(nextSceneName);
+		ManagersInitializer.Instance.SceneLoad(nextSceneName);
 		Destroy(gameObject);
 	}
 

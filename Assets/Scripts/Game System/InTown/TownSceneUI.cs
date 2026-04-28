@@ -46,7 +46,7 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		shopNpcBtn.onClick.RemoveAllListeners();
 		enforceNpcBtn.onClick.RemoveAllListeners();
 
-		gameStartBtn.onClick.AddListener(() => StartCoroutine(GameStartBtn()));
+		gameStartBtn.onClick.AddListener(() => GameStartBtn());
 		settingBtn.onClick.AddListener(() => SettingUIToggle());
 		shopNpcBtn.onClick.AddListener(() => ShopUIToggle());
 		enforceNpcBtn.onClick.AddListener(() => EnforceUIToggle());
@@ -54,9 +54,9 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		SwitchingUI(UISwitcher.GameStart);
 	}
 
-	private IEnumerator GameStartBtn()
+	private void GameStartBtn()
 	{
-		yield return ManagersInitializer.Instance.SceneLoadRoutine(nextSceneName);
+		ManagersInitializer.Instance.SceneLoad(nextSceneName);
 	}
 
 	private void ShopUIToggle()
