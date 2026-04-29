@@ -62,7 +62,8 @@ public class UIManager : MonoBehaviour, IInitializable
 
 	public void OnTap(Vector2 screenPos)
 	{
-		Debug.Log("UI Tap");
+		// UI 에서의 Tap 은 동작하지 않음
+		return;
 	}
 
 	public void OnDrag(Vector2 screenPos)
@@ -89,10 +90,10 @@ public class UIManager : MonoBehaviour, IInitializable
 
 		var aref = sceneConfig.GetUIFor(scene);
 		var handle = aref.InstantiateAsync();
+		yield return handle;
+
 		_currentHandle = handle;
 		_hasHandle = true;
-
-		yield return handle;
 
 		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
@@ -100,6 +101,8 @@ public class UIManager : MonoBehaviour, IInitializable
 			_hasHandle = false; _currentHandle = default;
 			yield break;
 		}
+
+		AddressablesTracker.Track(_currentHandle, isPersistent: false);
 
 		currentUIGroup = handle.Result;
 		if (currentUIGroup == null)
@@ -121,7 +124,6 @@ public class UIManager : MonoBehaviour, IInitializable
 		currentUIGroup.TryGetComponent(out currentUI);
 
 		_loadingRoutine = null;
-		//Debug.Log("Load UI For Scene Complete");
 	}
 
 
@@ -140,7 +142,11 @@ public class UIManager : MonoBehaviour, IInitializable
 				var h = _currentHandle;
 				h.Completed += _ => { if (h.IsValid()) Addressables.ReleaseInstance(h); };
 			}
-			else Addressables.ReleaseInstance(_currentHandle);
+			else
+			{
+				bool isReleased = Addressables.ReleaseInstance(_currentHandle);
+				Debug.Log("isRelease : " + isReleased);
+			}
 		}
 		else
 		{

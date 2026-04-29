@@ -386,6 +386,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	{
 		if (_isInvincible || _isDamageCoolDown) return;
 
+		ScoreManager.Instance.RegisterPlayerHit();
+
 		_curHealth = 0;
 		Death();
 	}

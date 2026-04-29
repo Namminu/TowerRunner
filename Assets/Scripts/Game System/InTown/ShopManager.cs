@@ -179,26 +179,26 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		}
 	}
 
-	private void CreateByInstantiateAsync()
-	{
-		foreach (var data in shopItems)
-		{
-			var handle = itemSlotPrefab.InstantiateAsync(parent: itemList);
-			handle.Completed += h =>
-			{
-				if(h.Status == AsyncOperationStatus.Succeeded)
-				{
-					var slot = h.Result.GetComponent<ShopItemSlot>();
-					slot.Setup(data);
-					slotPool.Add(slot);
-				}
-				else
-				{
-					Debug.LogError($"[ShopManager] InstantiateAsync Failed : {h.OperationException}");
-				}
-			};
-		}
-	}
+	//private void CreateByInstantiateAsync()
+	//{
+	//	foreach (var data in shopItems)
+	//	{
+	//		var handle = itemSlotPrefab.InstantiateAsync(parent: itemList);
+	//		handle.Completed += h =>
+	//		{
+	//			if(h.Status == AsyncOperationStatus.Succeeded)
+	//			{
+	//				var slot = h.Result.GetComponent<ShopItemSlot>();
+	//				slot.Setup(data);
+	//				slotPool.Add(slot);
+	//			}
+	//			else
+	//			{
+	//				Debug.LogError($"[ShopManager] InstantiateAsync Failed : {h.OperationException}");
+	//			}
+	//		};
+	//	}
+	//}
 
 	public void Dispose()
 	{

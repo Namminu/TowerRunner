@@ -62,6 +62,8 @@ public class ProjectilePoolingManager : MonoBehaviour, IInitializable
 				continue;
 			}
 
+			AddressablesTracker.Track(handle, isPersistent: false);
+
 			var prefabGO = handle.Result;
 			var projComp = prefabGO.GetComponent<BaseProjectile>();
 			if (projComp == null)

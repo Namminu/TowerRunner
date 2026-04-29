@@ -63,6 +63,8 @@ public class EnemyPoolingManager : MonoBehaviour, IInitializable
 				continue;
 			}
 
+			AddressablesTracker.Track(handle, isPersistent: false);
+
 			var prefabGO = handle.Result;
 			var enemyComp = prefabGO.GetComponent<BaseEnemy>();
 			if (enemyComp == null)

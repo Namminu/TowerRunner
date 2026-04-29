@@ -18,7 +18,7 @@ public class GameData
         {
             version = DefaultVersion,
             bestScore = 0,
-            gold = 100,
+            gold = 0,
             upgrades = new List<UpgradeData>(),
             inventory = new int[3] { -1, -1, -1}
         };

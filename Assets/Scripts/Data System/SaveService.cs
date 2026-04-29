@@ -26,7 +26,7 @@ public static class SaveService
 	/// <summary>
 	/// Delete game progress data
 	/// </summary>
-	public static void ResetAll()
+	public static void ResetSaveData()
     {
         SaveSystem.Delete();
         Current = GameData.CreateDefault();

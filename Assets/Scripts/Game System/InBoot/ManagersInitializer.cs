@@ -88,6 +88,8 @@ public class ManagersInitializer : MonoBehaviour
 			yield break;
 		}
 
+		AddressablesTracker.Track(handle, isPersistent: persistent);
+
 		var root = handle.Result;
 		if (persistent)
 			DontDestroyOnLoad(root);
@@ -104,6 +106,26 @@ public class ManagersInitializer : MonoBehaviour
 		}
 
 		root.GetComponent<IInitializable>()?.Init();
+	}
+
+	public void ResetCall()
+	{
+		StartCoroutine(GameResetRoutine());
+	}
+
+	private IEnumerator GameResetRoutine()
+	{
+		SaveService.ResetSaveData();
+
+		UIManager.Instance.UnLoadCurrentUI();
+		AddressablesTracker.ReleaseSceneHandles();
+
+		ScoreManager.Instance.ResetScore();
+		InventoryService.SyncFromSave();
+
+		yield return null;
+
+		SceneLoad(Scenes.Main); // Main 으로 변경 가능 여부 체크
 	}
 }
 

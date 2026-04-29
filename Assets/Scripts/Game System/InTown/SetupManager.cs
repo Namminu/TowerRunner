@@ -86,20 +86,13 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	{
 		popup.Show(
 			"게임 데이터를 초기화하시겠습니까?",
-			onYes: () => StartCoroutine(ResetRoutine())
+			onYes: () => ResetCall()
 			);
 	}
 
-	private IEnumerator ResetRoutine()
+	private void ResetCall()
 	{
-		SaveService.ResetAll();
-
-		UIManager.Instance.UnLoadCurrentUI();
-		AddressablesTracker.ReleaseAll();
-
-		yield return null;
-
-		ManagersInitializer.Instance.SceneLoad(Scenes.BootScene);
+		ManagersInitializer.Instance.ResetCall();
 	}
 	#endregion
 

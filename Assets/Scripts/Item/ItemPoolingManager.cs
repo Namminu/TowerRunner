@@ -59,6 +59,8 @@ public class ItemPoolingManager : MonoBehaviour, IInitializable
 				continue;
 			}
 
+			AddressablesTracker.Track(handle, isPersistent: false);
+
 			var prefabGO = handle.Result;
 			var prefabPickUp = prefabGO.GetComponent<ItemPickup>();
 			if(prefabPickUp == null)
