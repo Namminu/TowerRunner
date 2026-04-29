@@ -125,7 +125,7 @@ public class ScoreManager : MonoBehaviour, IInitializable
 		float acc = 0f;
 		while(true)
 		{
-			acc += secondScore * Time.deltaTime;
+			acc += secondScore * Time.deltaTime * GameSpeedManager.Instance.EnviSpeed;
 			int delta = Mathf.FloorToInt(acc);
 			if(delta > 0)
 			{

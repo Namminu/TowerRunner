@@ -57,7 +57,11 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		enforceLevel.text = level.ToString();
 
 		int costInt = EnforceService.GetCost(idx, level);
-		costText.text = costInt.ToString();
+		if(level >= enforceDB.enforceDB[idx].maxLevel)
+		{
+			costText.text = "MAX";
+		}
+		else costText.text = costInt.ToString();
 
 		bool canUpgrade = level < data.maxLevel /*&& EconomyService.Gold >= costInt*/;
 		enforceBtn.interactable = canUpgrade;

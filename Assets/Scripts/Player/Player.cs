@@ -12,7 +12,7 @@ public enum EnforceType
 	Health = 0,
 	Fatal = 1,
 	Power = 2,
-	Range = 3
+	Speed = 3
 }
 
 public class Player : MonoBehaviour, IDamageable, IDamageDealer
@@ -28,6 +28,10 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	[Header("Player State Stats")]
 	[SerializeField, Tooltip("Player SideMove Speed"), Range(50, 100)]
 	private float playerSpeed = 50f;
+
+	[SerializeField, Tooltip("Player Run Speed")]
+	private float playerRunSpeed = 1f;
+	public float PlayerRunSpeed => playerRunSpeed;
 
 	[SerializeField, Tooltip("Player Max Health")]
 	private float _maxHealth;
@@ -78,8 +82,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	private float playerPower = 1f;
 
 	[Header("Attack")]
-	[SerializeField, Tooltip("Player Attack Radius"), Range(1, 5)]
-	private float attackRadius = 1f;
+	//[SerializeField, Tooltip("Player Attack Radius"), Range(1, 5)]
+	//private float attackRadius = 1f;
 	//[SerializeField, Tooltip("Player Attack Circle Angle"), Range(90f, 180f)]
 	//private float attackAngle = 130f;
 	//[SerializeField]
@@ -254,21 +258,6 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isDamageCoolDown = false;
 	}
 
-
-	//private void OnDrawGizmosSelected()
-	//{
-	//	Gizmos.color = Color.red;
-	//	Vector3 center = (Vector2)transform.position + attackOffset;
-	//	Gizmos.DrawWireSphere(center, attackRadius);
-
-	//	float halfArc = attackAngle * 0.5f;
-	//	Vector3 fwd = transform.up * attackRadius;
-	//	Quaternion leftRot = Quaternion.Euler(0, 0, halfArc);
-	//	Quaternion rightRot = Quaternion.Euler(0, 0,-halfArc);
-	//	Gizmos.DrawLine(center, center + leftRot * fwd);
-	//	Gizmos.DrawLine(center, center + rightRot * fwd);
-	//}
-
 	#endregion
 
 	#region ---- Public Method ----
@@ -420,8 +409,8 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 				PlayerFatalDamage = value;	break;
 			case EnforceType.Power:
 				playerPower = value;		break;
-			case EnforceType.Range:
-				attackRadius = value;		break;
+			case EnforceType.Speed:
+				playerRunSpeed = value;		break;
 			default:
 				Debug.LogWarning($"Unknown Upgrade Type : {type}");
 				break;

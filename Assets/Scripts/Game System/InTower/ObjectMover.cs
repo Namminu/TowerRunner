@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class ObjectMover : MonoBehaviour
 {
+	public enum MoveType { Envi, Entity }
+	[Header("Object Move Type")]
+	[SerializeField] private MoveType moveType;
+
 	[SerializeField, Tooltip("Object Fall Down Speed Range, Min : 1f"), Range(2f, 5f)]
 	private float moveSpeed = 2f;
 	public float MoveDownSpeed => moveSpeed;
@@ -51,8 +55,18 @@ public class ObjectMover : MonoBehaviour
 	{
 		if (!_isRunning || _isPaused) return;
 
-		transform.position += moveSpeed * GameSpeedManager.Instance.SpeedMultiplier 
-			* Time.deltaTime * Vector3.down;
+		float finalSpeed = 1f;
+
+		if(moveType == MoveType.Envi)
+		{
+			finalSpeed = GameSpeedManager.Instance.EnviSpeed;
+		}
+		else if(moveType == MoveType.Entity)
+		{
+			finalSpeed = GameSpeedManager.Instance.SpeedMultiplier;
+		}
+
+		transform.position += moveSpeed * finalSpeed * Time.deltaTime * Vector3.down;
 
 		if (transform.position.y + (_objBoundY * 0.5f) < _lowerBoundY)
 		{

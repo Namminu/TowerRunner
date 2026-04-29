@@ -7,8 +7,10 @@ public class GameSpeedManager : MonoBehaviour, IInitializable
 	public static GameSpeedManager Instance { get; private set; }
 	public float SpeedMultiplier { get; private set; } = 1f;
 
+	public float EnviSpeed => (Player.Instance.PlayerRunSpeed * SpeedMultiplier) * 0.5f;
+
 	[Tooltip("speed increase per second during combat")]
-	[SerializeField, Range(0.01f, 1f)]
+	[SerializeField, Range(0.01f, 0.5f)]
 	private float speedAccelrator = 0.01f;
 
 	private bool _isRunning = false;
