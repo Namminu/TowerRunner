@@ -24,6 +24,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 	private void ApplyVolume()
 	{
 		AudioListener.volume = _masterVolume;
+		Prefs.MasterVolume = _masterVolume;
 	}
 
 	public void Init()

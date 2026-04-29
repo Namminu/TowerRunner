@@ -8,6 +8,9 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 	[SerializeField] private Image overlayImage;
 	private const byte MaxAlphaByte = 240;
 
+	private float _currentBrightness = 0.5f;
+	public float CurrentBrightness => _currentBrightness;
+
 	private void Awake()
 	{
 		if (Instance != null)
@@ -33,6 +36,9 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 			Debug.Log("Overlay Image Null Reference Error");
 			return;
 		}
+
+		_currentBrightness = Mathf.Clamp01(value);
+		Prefs.DisplayBrightness = _currentBrightness;
 
 		float alpha = (1f - Mathf.Clamp01(value)) * (MaxAlphaByte / 255f);
 		Color c = overlayImage.color;

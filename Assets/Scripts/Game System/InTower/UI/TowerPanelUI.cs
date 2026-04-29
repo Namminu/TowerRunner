@@ -75,6 +75,8 @@ public class TowerPanelUI : MonoBehaviour
 			case TowerPanelType.Setting:
 				GameOverPanel.gameObject.SetActive(false);
 				SettingPanel.gameObject.SetActive(true);
+
+				SetSavedSettingValue();
 				break;
 			case TowerPanelType.GameOver:
 				SettingPanel.gameObject.SetActive(false);
@@ -84,15 +86,16 @@ public class TowerPanelUI : MonoBehaviour
 	}
 
 	#region --- Setting Panel ---
+	
+	private void SetSavedSettingValue()
+	{
+		volumeSlider.value = AudioManager.Instance.MasterVolume;
+		brightnessSlider.value = BrightnessManager.Instance.CurrentBrightness;
+	}
+
 	private void OnVolumeSliderChanged(float value)
 	{
 		AudioManager.Instance.SetMasterVolume(value);
-	}
-
-	private void SaveVolumeSetting()
-	{
-		float value = volumeSlider.value;
-
 	}
 
 	private void OnDisPlaySliderChanged(float value)

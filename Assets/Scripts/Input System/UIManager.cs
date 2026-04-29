@@ -145,7 +145,6 @@ public class UIManager : MonoBehaviour, IInitializable
 			else
 			{
 				bool isReleased = Addressables.ReleaseInstance(_currentHandle);
-				Debug.Log("isRelease : " + isReleased);
 			}
 		}
 		else

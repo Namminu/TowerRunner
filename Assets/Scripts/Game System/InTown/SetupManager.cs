@@ -57,11 +57,6 @@ public class SetupManager : MonoBehaviour, ISceneUI
 		AudioManager.Instance.SetMasterVolume(value);
 	}
 
-	private void SaveVolumeSetting()
-	{
-		float value = volumeSlider.value;
-
-	}
 	#endregion
 
 	#region --- Display ---
@@ -104,6 +99,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 			onYes: async () =>
 			{
 				await SaveService.SaveAllAsync();
+				AddressablesTracker.ReleaseAll();
 #if UNITY_EDITOR
 				UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -112,6 +108,17 @@ public class SetupManager : MonoBehaviour, ISceneUI
 			});
 	}
 	#endregion
+
+	private void OnEnable()
+	{
+		SetSavedSettingValue();
+	}
+
+	private void SetSavedSettingValue()
+	{
+		volumeSlider.value = AudioManager.Instance.MasterVolume;
+		displaySlider.value = BrightnessManager.Instance.CurrentBrightness;
+	}
 
 	private void OnDestroy()
 	{
