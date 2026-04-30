@@ -74,9 +74,9 @@ public class EnemyManager : MonoBehaviour, IInitializable
 	private Vector3 GetSpawnPosition()
 	{
 		float z = Camera.main.transform.position.z;
-		var leftTop = Camera.main.ViewportToWorldPoint(new Vector3(0, 2, z/2));
-		var rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1, 2, z/2));
-		Vector3 pos = new(UnityEngine.Random.Range(leftTop.x + 1, rightTop.x -1), leftTop.y + 1f, z/2);
+		var leftTop = Camera.main.ViewportToWorldPoint(new Vector3(0, 2, 0));
+		var rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1, 2, 0));
+		Vector3 pos = new(UnityEngine.Random.Range(leftTop.x + 1, rightTop.x -1), leftTop.y + 1f, 0);
 
 		return pos;
 	}
