@@ -20,7 +20,6 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		_isInitialized = false;
 		slotPool.Clear();
 
-		GameEvents.OnItemBuyConfirmed -= OnBuyConfirmed;
 		GameEvents.OnItemBuyConfirmed += OnBuyConfirmed;
 
 		PopulateSlots();
@@ -84,7 +83,6 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 		if (this == null) // 유니티 엔진에서 파괴된 상태라면
 		{
-			GameEvents.OnItemBuyConfirmed -= OnBuyConfirmed; // 즉시 사슬 끊기
 			return; // 로직 실행 안 함
 		}
 
