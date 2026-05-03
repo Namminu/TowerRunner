@@ -39,10 +39,10 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		}
 
 		enforceBtn.onClick.AddListener(OnEnforceClicked);
-
 		warningUI.SetActive(false);
-
 		ShowPage(selectedIndex);
+
+		GameEvents.OnGoldChanged += HandleGoldChange;
 	}
 
 	private void ShowPage(int idx)
@@ -89,12 +89,20 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		ShowPage(selectedIndex);	
 	}
 
-	private void OnEnable()
-	{
-		GameEvents.OnGoldChanged += _ => ShowPage(selectedIndex);
-	}
 	private void OnDisable()
 	{
-		GameEvents.OnGoldChanged -= _ => ShowPage(selectedIndex);
+		GameEvents.OnGoldChanged -= HandleGoldChange;
+
+		enforceBtn.onClick.RemoveAllListeners();
+		for (int i = 0; i < attributeBtns.Length; i++)
+		{
+			attributeBtns[i].onClick.RemoveAllListeners();
+		}
+	}
+
+	private void HandleGoldChange(int gold)
+	{
+		if (this == null) return;
+		ShowPage(selectedIndex);
 	}
 }

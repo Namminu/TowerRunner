@@ -119,6 +119,8 @@ public class TowerPanelUI : MonoBehaviour
 		PanelBG.gameObject.SetActive(false);
 		SettingPanel.gameObject.SetActive(false);
 
+		// 公利 秦力 饶 溜荤 贸府
+		Player.Instance.SetInvincible(false);
 		Player.Instance.ImmediateDeath();
 	}
 
