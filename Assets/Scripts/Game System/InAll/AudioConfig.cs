@@ -17,6 +17,8 @@ public enum  AudioID
     FatalExlixir,
     Magnet,
     Shield,
+    PlayerDeath,
+    PlayerAttack
 }
 
 [CreateAssetMenu(fileName = "AudioConfig", menuName = "Scriptable Objects/AudioConfig")]
@@ -30,6 +32,11 @@ public class AudioConfig : ScriptableObject
 	}
 
     public Dictionary<AudioID, AudioEntry> entries = new();
+
+    public void Initialize()
+    {
+
+    }
 
     public AssetReferenceT<AudioClip> GetAudioClip(AudioID audioID)
     {
