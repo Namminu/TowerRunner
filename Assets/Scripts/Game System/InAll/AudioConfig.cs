@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum  AudioID
 {
@@ -21,33 +23,55 @@ public enum  AudioID
     PlayerAttack
 }
 
+public struct AudioStruct
+{
+    public AudioClip clip;
+    public float volume;
+}
+
 [CreateAssetMenu(fileName = "AudioConfig", menuName = "Scriptable Objects/AudioConfig")]
 public class AudioConfig : ScriptableObject
 {
     [Serializable]
     public struct AudioEntry
     {
+        public AudioID id;
         public AssetReferenceT<AudioClip> clipRef;
         [Range(0f, 1f)] public float volume;
 	}
+	[SerializeField] private List<AudioEntry> audioList = new();
 
-    public Dictionary<AudioID, AudioEntry> entries = new();
+	public Dictionary<AudioID, AudioStruct> loadedClips = new();
 
-    public void Initialize()
+    public async Task Initialize()
     {
+		List<Task> loadTasks = new();
+		foreach (var entry in audioList)
+		{
+			loadTasks.Add(LoadAndCached(entry));
+		}
+		await Task.WhenAll(loadTasks);
+	}
 
-    }
-
-    public AssetReferenceT<AudioClip> GetAudioClip(AudioID audioID)
+    private async Task LoadAndCached(AudioEntry entry)
     {
-        if (entries.TryGetValue(audioID, out var entry))
-        {
-            return entry.clipRef;
-        }
+        var handle = entry.clipRef.LoadAssetAsync();
+        await handle.Task;
+		if (handle.Status == AsyncOperationStatus.Succeeded)
+		{
+			if(!loadedClips.ContainsKey(entry.id))
+            {
+				AudioStruct newAudio = new AudioStruct
+                {
+                    clip = handle.Result,
+                    volume = entry.volume
+                };
+				loadedClips.Add(entry.id, newAudio);
+			}
+		}
         else
         {
-            Debug.LogError($"[AudioConfig] AudioID {audioID} not found in entries.");
-            return null;
+            Debug.LogError($"Failed to load audio clip for AudioID {entry.id}");
 		}
 	}
 }

@@ -53,6 +53,7 @@ public class ShopPopup : MonoBehaviour
 
 	private void OnConfirm()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameEvents.RaiseShopItemBuyConfirmed(currentItem);
 		popupRoot.SetActive(false);
 	}

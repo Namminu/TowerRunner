@@ -23,7 +23,9 @@ public class TowerTopUI : MonoBehaviour
 
 	private void ShowSettingPanel()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameStateManager.Instance.SetState(GameStateManager.GameState.Pause);
+		AudioManager.Instance.PauseBGM();
 
 		PanelUI.ShowPanel(TowerPanelType.Setting);
 	}

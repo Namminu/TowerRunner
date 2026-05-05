@@ -105,6 +105,7 @@ public class TowerPanelUI : MonoBehaviour
 
 	private void RetryGameOnStart()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameEvents.RaiseBattleEnd();
 		RetryGameRoutiune();
 	}
@@ -116,6 +117,8 @@ public class TowerPanelUI : MonoBehaviour
 
 	private void ExitGameAndLoadTownScene()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		PanelBG.gameObject.SetActive(false);
 		SettingPanel.gameObject.SetActive(false);
 
@@ -126,6 +129,8 @@ public class TowerPanelUI : MonoBehaviour
 
 	public void CloseSettingPanel()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		SettingPanel.gameObject.SetActive(false);
 		PanelBG.gameObject.SetActive(false);
 
@@ -149,6 +154,7 @@ public class TowerPanelUI : MonoBehaviour
 		countdownText.gameObject.SetActive(false);
 		// 게임 재개
 		GameStateManager.Instance.SetState(GameStateManager.GameState.Play);
+		AudioManager.Instance.ResumeBGM();
 	}
 	#endregion
 

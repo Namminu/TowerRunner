@@ -62,12 +62,14 @@ public class PlayerEffectChecker : MonoBehaviour
 		{
 			shieldEffect.SetActive(false);
 		}
+		AudioManager.Instance.PlaySound(AudioID.Shield);
 	}
 
 	public void HealingEffect()
 	{
 		healEffect.SetActive(false);
 		healEffect.SetActive(true);
+		AudioManager.Instance.PlaySound(AudioID.HealthPotion);
 	}
 
 	public void DropCoinEffect()
@@ -79,6 +81,7 @@ public class PlayerEffectChecker : MonoBehaviour
 		}
 
 		coinCoroutine = StartCoroutine(CoinAnimation());
+		AudioManager.Instance.PlaySound(AudioID.Gold);
 	}
 
 	private IEnumerator CoinAnimation()
@@ -114,6 +117,7 @@ public class PlayerEffectChecker : MonoBehaviour
 		if (isBoosterOn)
 		{
 			boosterEffect.SetActive(true);
+			AudioManager.Instance.PlaySound(AudioID.BattleBooster);
 		}
 		else
 		{
@@ -129,6 +133,7 @@ public class PlayerEffectChecker : MonoBehaviour
 			if (magnetCoroutine != null) StopCoroutine(magnetCoroutine);
 
 			magnetCoroutine = StartCoroutine(FloatingRoutine());
+			AudioManager.Instance.PlaySound(AudioID.Magnet);
 		}
 		else
 		{
@@ -160,6 +165,7 @@ public class PlayerEffectChecker : MonoBehaviour
 		if(isElixirOn)
 		{
 			elixirEffect.SetActive(true);
+			AudioManager.Instance.PlaySound(AudioID.FatalExlixir);
 		}
 		else
 		{

@@ -117,6 +117,7 @@ public class TowerManager : MonoBehaviour, IInitializable
 				GameBus.Publish(new ActivateMovementNextFrame());
 
 				_isRunIssued = true;
+				AudioManager.Instance.PlayBGM(AudioID.TowerBGM);
 			}
 			// 아니라면 준비 동작 대기
 			yield return null;

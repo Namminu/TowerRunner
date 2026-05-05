@@ -69,6 +69,8 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	#region --- Review ---
 	private void OnReviewBtnClicked()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		popup.Show(
 			"리뷰를 작성하러 이동합니다",
 			onYes: () => Application.OpenURL("https://play.google.com/store/games?hl=ko")
@@ -79,6 +81,8 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	#region --- Reset ---
 	private void OnDataResetBtnClicked()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		popup.Show(
 			"게임 데이터를 초기화하시겠습니까?",
 			onYes: () => ResetCall()
@@ -94,6 +98,8 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	#region --- Exit ---
 	private void OnExitBtnClicked()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		popup.Show(
 			"게임을 종료합니다",
 			onYes: async () =>

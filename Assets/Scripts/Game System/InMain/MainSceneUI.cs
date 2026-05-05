@@ -27,11 +27,15 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 
 	private void LinkStartBtn()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		ManagersInitializer.Instance.SceneLoad(nextSceneName);
 	}
 
 	private async void LinkExitBtn()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		await SaveService.SaveAllAsync();
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;

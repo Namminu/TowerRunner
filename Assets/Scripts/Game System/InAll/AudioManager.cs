@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -8,13 +10,18 @@ public class AudioManager : MonoBehaviour, IInitializable
     public static AudioManager Instance { get; private set; }
 
 	[Header("Volume Settings")]
-	[Range(0f, 1f)]
+	[UnityEngine.Range(0f, 1f)]
 	private float _masterVolume = 0.5f;
 	public float MasterVolume => _masterVolume;
 
 	[Header("Audio Sources")]
 	[SerializeField] public AssetReferenceT<AudioConfig> audioDataRef;
 	private AudioConfig _audioConfig;
+
+	private AudioSource _bgmSource;
+	private List<AudioSource> _sfxSource = new();
+
+	private const int SFX_POOL_COUNT = 10;
 
 	private void Awake()
 	{
@@ -37,30 +44,32 @@ public class AudioManager : MonoBehaviour, IInitializable
 
 	public void Init()
     {
-		StartCoroutine(InitRoutine());
+		_bgmSource = gameObject.AddComponent<AudioSource>();
+		_bgmSource.loop = true;
+
+		for(int i = 0; i< SFX_POOL_COUNT; i++)
+		{
+			var source = gameObject.AddComponent<AudioSource>();
+			_sfxSource.Add(source);
+		}
 
 		SetMasterVolume(Prefs.MasterVolume);
 		ApplyVolume();
+
+		StartCoroutine(InitRoutine());
 	}
 
 	private IEnumerator InitRoutine()
 	{
-		var handle = audioDataRef.InstantiateAsync();
+		var handle = audioDataRef.LoadAssetAsync<AudioConfig>();
 		yield return handle;
-
 		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
-			Debug.LogError($"{audioDataRef.RuntimeKey} Load Failed");
+			Debug.LogError("Failed to load AudioConfig.");
 			yield break;
 		}
-
-		_audioConfig = handle.Result.GetComponent<AudioConfig>();
-		if(_audioConfig == null)
-		{
-			Debug.LogError($"{audioDataRef.RuntimeKey} Load Failed");
-			yield break;
-		}
-		_audioConfig.Initialize();
+		_audioConfig = handle.Result;
+		yield return _audioConfig.Initialize();
 	}
 
 	public void SetMasterVolume(float value)
@@ -69,58 +78,68 @@ public class AudioManager : MonoBehaviour, IInitializable
 		ApplyVolume();
 	}
 
-	public async void PlayBGM(AudioID id)
+	public void PlayBGM(AudioID id)
 	{
-		if (_audioConfig == null)
+		if (!_audioConfig.loadedClips.TryGetValue(id, out var audioStruct))
 		{
-			Debug.LogError("AudioConfig not loaded yet.");
+			Debug.LogAssertion($"Audio clip for ID {id} not found.");
 			return;
 		}
-		var clipRef = _audioConfig.GetAudioClip(id);
-		if (clipRef == null)
+
+		if (_bgmSource.clip == audioStruct.clip && _bgmSource.isPlaying)
 		{
-			Debug.LogError($"AudioClip for {id} not found.");
 			return;
 		}
-		var handle = clipRef.LoadAssetAsync();
-		await handle.Task;
-		if (handle.Status != AsyncOperationStatus.Succeeded)
-		{
-			Debug.LogError($"Failed to load AudioClip for {id}.");
-			return;
-		}
-		var clip = handle.Result;
-		var audioSource = gameObject.AddComponent<AudioSource>();
-		audioSource.clip = clip;
-		audioSource.volume = _audioConfig.entries[id].volume * MasterVolume;
-		audioSource.loop = true;
-		audioSource.Play();
+
+		_bgmSource.Stop(); // 이전 BGM 중단
+		_bgmSource.clip = audioStruct.clip;
+		_bgmSource.volume = audioStruct.volume * MasterVolume;
+		_bgmSource.Play();
 	}
 
-	public async void PlaySound(AudioID id)
+	public void PauseBGM()
 	{
-		if (_audioConfig == null)
+		if(_bgmSource == null)
 		{
-			Debug.LogError("AudioConfig not loaded yet.");
+			Debug.Log("BGM Audio Source Null Error");
 			return;
 		}
-		var clipRef = _audioConfig.GetAudioClip(id);
-		if (clipRef == null)
+		_bgmSource.Pause();
+	}
+
+	public void ResumeBGM()
+	{
+		if (_bgmSource == null)
 		{
-			Debug.LogError($"AudioClip for {id} not found.");
+			Debug.Log("BGM Audio Source Null Error");
 			return;
 		}
-		var handle = clipRef.LoadAssetAsync();
-		await handle.Task;
-		if (handle.Status != AsyncOperationStatus.Succeeded)
+		_bgmSource.UnPause();
+	}
+
+	public void PlaySound(AudioID id)
+	{
+		if (!_audioConfig.loadedClips.TryGetValue(id, out var audioStruct))
 		{
-			Debug.LogError($"Failed to load AudioClip for {id}.");
+			Debug.LogAssertion($"Audio clip for ID {id} not found.");
 			return;
 		}
-		var clip = handle.Result;
-		var audioSource = gameObject.AddComponent<AudioSource>();
-		audioSource.clip = clip;
-		audioSource.volume = _audioConfig.entries[id].volume * MasterVolume;
-		audioSource.Play();
+
+		var source = _sfxSource.Find(s => !s.isPlaying);
+		if (source == null) source = _sfxSource[0];
+
+		float finalVolume = audioStruct.volume * MasterVolume;
+		source.PlayOneShot(audioStruct.clip, finalVolume);
+
+		//AudioStruct audioStruct = _audioConfig.GetAudioClip(id);
+		//if(audioStruct.clip == null)
+		//{
+		//	Debug.LogAssertion($"Audio clip for ID {id} is null.");
+		//	return;
+		//}
+
+		//source.clip = audioStruct.clip;
+		//source.volume = _audioConfig.loadedClips[id].volume * MasterVolume;
+		//source.PlayOneShot(source.clip);
 	}
 }

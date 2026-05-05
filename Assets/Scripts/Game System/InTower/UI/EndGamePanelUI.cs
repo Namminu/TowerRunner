@@ -33,6 +33,7 @@ public class EndGamePanelUI : MonoBehaviour
 
 	public void CloseGameOverPanel()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameStateManager.Instance.SetState(GameStateManager.GameState.Play);
 
 		// Town Scene ¿Ãµø

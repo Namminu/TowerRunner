@@ -11,6 +11,8 @@ public class MainController : MonoBehaviour, IInitializable
 
 	public void Init()
 	{
+		AudioManager.Instance.PlayBGM(AudioID.MainBGM);
+
 		StartCoroutine(CreatePlayer());
 
 		return;

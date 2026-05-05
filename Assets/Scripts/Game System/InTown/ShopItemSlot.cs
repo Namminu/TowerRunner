@@ -20,6 +20,7 @@ public class ShopItemSlot : MonoBehaviour
 
 	private void OnClicked()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameEvents.RaiseShopItemSeleted(data);
 	}
 

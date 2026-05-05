@@ -56,11 +56,15 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void GameStartBtn()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		ManagersInitializer.Instance.SceneLoad(nextSceneName);
 	}
 
 	private void ShopUIToggle()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		if (shopScroll.IsActive())
 		{
 			SwitchingUI(UISwitcher.GameStart);
@@ -73,6 +77,8 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 
 	private void EnforceUIToggle()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		if (enforceScroll.IsActive())
 		{
 			SwitchingUI(UISwitcher.GameStart);
@@ -83,8 +89,11 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		}
 	}
 
-	private void SettingUIToggle() 
-		=> settingPanel.gameObject.SetActive(true);
+	private void SettingUIToggle()
+	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+		settingPanel.gameObject.SetActive(true);
+	}
 
 	/// <summary>
 	/// Send Player's Left Gold Amount to Parameter

@@ -176,7 +176,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 	private void Death()
 	{
 		Debug.Log("Player Death. Game Over");
-
+		AudioManager.Instance.PlaySound(AudioID.PlayerDeath);
 		GameEvents.RaiseBattleEnd();
 		Ani.SetBool("IsDeath", true);
 	}
@@ -269,7 +269,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		isAttacking = true;
 
 		EffectChecker.AttackSwing();
-
+		AudioManager.Instance.PlaySound(AudioID.PlayerAttack);
 		//Vector2 center = (Vector2)transform.position + attackOffset;
 		//Collider2D[] hits = Physics2D.OverlapCircleAll(center, attackRadius, attackTargetLayer);
 
@@ -337,6 +337,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 
 		_curHealth -= amount;
+		AudioManager.Instance.PlaySound(AudioID.PlayerHit);
 
 		float healthRatio = _curHealth / _maxHealth;
 		OnHealthChanged?.Invoke(healthRatio);
@@ -436,6 +437,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_isInvincible = false;
 		_isShield = false;
 		_isDamageCoolDown = false;
+		isAttacking = false;
 
 		/* 아이템 사용 여부 초기화 */
 		if (ItemChecker != null)

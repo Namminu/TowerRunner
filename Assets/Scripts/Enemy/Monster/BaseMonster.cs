@@ -109,6 +109,8 @@ public abstract class BaseMonster : BaseEnemy, IDamageable
 		else StartCoroutine(BlinkRoutine());
 
 		Debug.Log(name + "Take Damage : " + amount);
+
+		AudioManager.Instance.PlaySound(AudioID.EnemyHit);
 	}
 
 	public virtual void Attack()

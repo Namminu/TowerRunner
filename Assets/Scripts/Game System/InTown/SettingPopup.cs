@@ -42,6 +42,8 @@ public class SettingPopup : MonoBehaviour, ISceneUI
 
 	private void OnYes()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		_onYes?.Invoke();
 		Clear();
 		Hide();
@@ -49,6 +51,8 @@ public class SettingPopup : MonoBehaviour, ISceneUI
 
 	private void OnNo() 
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		_onNo?.Invoke();
 		Clear();
 		Hide();

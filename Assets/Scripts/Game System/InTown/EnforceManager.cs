@@ -34,6 +34,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 
 			attributeBtns[i].onClick.AddListener(() =>
 			{
+				AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 				ShowPage(idx);
 			});
 		}
@@ -69,6 +70,8 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 
 	private void OnEnforceClicked()
 	{
+		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
+
 		int level = UpgradeService.GetLevel(selectedIndex);
 
 		int cost = EnforceService.GetCost(selectedIndex, level);
@@ -89,7 +92,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		ShowPage(selectedIndex);	
 	}
 
-	private void OnDisable()
+	private void OnDestroy()
 	{
 		GameEvents.OnGoldChanged -= HandleGoldChange;
 
