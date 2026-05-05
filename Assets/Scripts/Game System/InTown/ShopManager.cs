@@ -32,6 +32,8 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		//			PopulateSlots();
 		//	};
 		//}
+
+		gameObject.SetActive(false);
 	}
 
 	//private void OnDisable()
@@ -115,6 +117,10 @@ public class ShopManager : MonoBehaviour, ISceneUI
 			EconomyService.TrySpendGold(item.itemPrice);
 			slot.MarkPurchased();
 			InvenManager.Instance.TryAddItem(item);
+		}
+		else
+		{
+			GameEvents.RaiseInvenFull();
 		}
 	}
 
