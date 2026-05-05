@@ -1,5 +1,3 @@
-using UnityEditor.UIElements;
-using UnityEngine;
 
 public static class EconomyService
 {

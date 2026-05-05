@@ -1,4 +1,3 @@
-using UnityEditor.TextCore.Text;
 using UnityEngine;
 
 public class InputManger : MonoBehaviour, IInitializable
@@ -21,12 +20,12 @@ public class InputManger : MonoBehaviour, IInitializable
 					TouchProcessor.Instance.ProcessTouchBegan(t.fingerId, t.position);
 					break;
 
-				//case TouchPhase.Moved:
+				case TouchPhase.Moved:
 				case TouchPhase.Stationary:
 					TouchProcessor.Instance.ProcessTouchMoved(t.fingerId, t.position);
 					break;
 
-				//case TouchPhase.Ended:
+				case TouchPhase.Ended:
 				case TouchPhase.Canceled:
 					TouchProcessor.Instance.ProcessTouchEnded(t.fingerId, t.position);
 					break;

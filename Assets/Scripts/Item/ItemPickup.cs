@@ -1,5 +1,3 @@
-using System;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 [Tooltip("Component Class to Specific Item Prefabs")]
