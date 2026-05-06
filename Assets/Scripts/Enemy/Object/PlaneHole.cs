@@ -38,8 +38,11 @@ public class PlaneHole : BaseObject
 
 	private IEnumerator PlayerInHole(Player player)
 	{
+		// Set Game Stop
 		player.enabled = false;
+		GameEvents.RaiseFallInHole();
 
+		// Set Player Falling Animation
 		var startPos = player.transform.position;
 		var capsule = GetComponent<CapsuleCollider2D>();
 		var holeCenter = capsule.transform.TransformPoint(capsule.offset);

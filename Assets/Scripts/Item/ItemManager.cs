@@ -29,6 +29,7 @@ public class ItemManager : MonoBehaviour, IInitializable
 		_runUnsub = GameBus.Subscribe<RunSignal>(OnRunSignal);
 
 		GameStateManager.OnStateChanged += HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole += HandlePlayerFallInHole;
 	}
 
 	private void HandleGameStateChanged(GameStateManager.GameState curState)
@@ -45,6 +46,15 @@ public class ItemManager : MonoBehaviour, IInitializable
 				StopCoroutine(_spawnCoroutine);
 				_spawnCoroutine = null;
 			}
+		}
+	}
+
+	private void HandlePlayerFallInHole()
+	{
+		if (_spawnCoroutine != null)
+		{
+			StopCoroutine(_spawnCoroutine);
+			_spawnCoroutine = null;
 		}
 	}
 
@@ -146,5 +156,6 @@ public class ItemManager : MonoBehaviour, IInitializable
 		}
 
 		GameStateManager.OnStateChanged -= HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole -= HandlePlayerFallInHole;
 	}
 }

@@ -49,6 +49,7 @@ public class ObjectMover : MonoBehaviour
 	private void OnEnable()
 	{
 		GameStateManager.OnStateChanged += HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole += HandlePlayerFallInHole;
 	}
 
 	private void Update()
@@ -86,6 +87,7 @@ public class ObjectMover : MonoBehaviour
 	private void OnDisable()
 	{
 		GameStateManager.OnStateChanged -= HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole -= HandlePlayerFallInHole;
 	}
 
 	private void HandleGameStateChanged(GameStateManager.GameState curState)
@@ -104,5 +106,12 @@ public class ObjectMover : MonoBehaviour
 				enabled = false;
 				break;
 		}
+	}
+
+	private void HandlePlayerFallInHole()
+	{
+		_isRunning = false;
+		_isPaused = true;
+		enabled = false;
 	}
 }

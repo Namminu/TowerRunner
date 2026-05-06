@@ -31,6 +31,7 @@ public class EnemyManager : MonoBehaviour, IInitializable
 		_runUnsub = GameBus.Subscribe<RunSignal>(OnRunSignal);
 
 		GameStateManager.OnStateChanged += HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole += HandlePlayerFallInHole;
 	}
 
 	public void SetData(EnemyData data)
@@ -125,6 +126,12 @@ public class EnemyManager : MonoBehaviour, IInitializable
 		}
 	}
 
+	private void HandlePlayerFallInHole()
+	{
+		if (_spawnCoroutines != null) StopCoroutine(_spawnCoroutines);
+		_spawnCoroutines = null;
+	}
+
 	private void OnDestroy()
 	{
 		// 구독 해제
@@ -139,5 +146,6 @@ public class EnemyManager : MonoBehaviour, IInitializable
 		_spawnCoroutines = null;
 
 		GameStateManager.OnStateChanged -= HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole -= HandlePlayerFallInHole;
 	}
 }

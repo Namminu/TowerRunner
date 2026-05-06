@@ -34,6 +34,13 @@ public class GameSpeedManager : MonoBehaviour, IInitializable
 		GameBus.Publish(new SubsystemReady(SubsystemId.Speed));
 
 		GameStateManager.OnStateChanged += HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole += HandlePlayerFallInHole;
+	}
+
+	private void HandlePlayerFallInHole()
+	{
+		_isRunning = false;
+		enabled = false;
 	}
 
 	private void HandleGameStateChanged(GameStateManager.GameState curState)
@@ -81,5 +88,6 @@ public class GameSpeedManager : MonoBehaviour, IInitializable
 		_unsubActivate?.Invoke();
 
 		GameStateManager.OnStateChanged -= HandleGameStateChanged;
+		GameEvents.OnPlayerFallInHole -= HandlePlayerFallInHole;
 	}
 }

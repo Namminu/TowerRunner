@@ -79,4 +79,10 @@ public static class GameEvents
 	public static void RaiseBattleEnd()
 		=> OnBattleEnded?.Invoke();
 
+	/// <summary>
+	/// Call When the player falls into a hole (PlaneHole)
+	/// </summary>
+	public static event Action OnPlayerFallInHole;
+	public static void RaiseFallInHole()
+		=> OnPlayerFallInHole?.Invoke();
 }

@@ -421,8 +421,10 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	internal void ResetInTower(Vector3 resetPosition)
 	{
+		enabled = true;
 		// Tower Scene 위치 초기화
 		transform.position = resetPosition;
+		transform.localScale = new Vector3(1, 1, 1);
 
 		/* 스탯 초기화 */
 		ApplySavedPlayerData();
