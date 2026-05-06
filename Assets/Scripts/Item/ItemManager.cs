@@ -3,18 +3,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class ItemManager : MonoBehaviour, IInitializable
 {
 	public static ItemManager Instance { get; private set; }
 
-	private List<ItemDatabase.ItemEntry> _entries;
+	//private List<ItemDatabase.ItemEntry> _entries;
+	private ItemDatabase _itemDB;
 	private Action _runUnsub;
 
 	private bool _isPrepared = false;
 	private bool _runIssued = false;
 
-	private readonly List<Coroutine> _spawnCoroutines = new();
+	//private readonly List<Coroutine> _spawnCoroutines = new();
+	private Coroutine _spawnCoroutine;
 
 	private void Awake()
 	{
@@ -33,15 +36,22 @@ public class ItemManager : MonoBehaviour, IInitializable
 		if (curState == GameStateManager.GameState.GameOver)
 		{
 			// 스폰 코루틴 정리
-			foreach (var c in _spawnCoroutines)
-				if (c != null) StopCoroutine(c);
-			_spawnCoroutines.Clear();
+			//foreach (var c in _spawnCoroutines)
+			//	if (c != null) StopCoroutine(c);
+			//_spawnCoroutines.Clear();
+
+			if (_spawnCoroutine != null)
+			{
+				StopCoroutine(_spawnCoroutine);
+				_spawnCoroutine = null;
+			}
 		}
 	}
 
 	public void SetData(ItemDatabase data)
 	{
-		_entries = data.entries;
+		//_entries = data.entries;
+		_itemDB = data;
 		_isPrepared = true;
 
 		// 준비 완료 신호
@@ -61,28 +71,52 @@ public class ItemManager : MonoBehaviour, IInitializable
 	private void StartSpawning()
 	{
 		// 중복 호출 방지
-		if (_spawnCoroutines.Count > 0) return;
+		//if (_spawnCoroutines.Count > 0) return;
 
-		foreach (var entry in _entries)
-		{
-			var c = StartCoroutine(SpawnLoop(entry));
-			_spawnCoroutines.Add(c);
-		}
+		//foreach (var entry in _entries)
+		//{
+		//	var c = StartCoroutine(SpawnLoop(entry));
+		//	_spawnCoroutines.Add(c);
+		//}
+
+		if (_spawnCoroutine != null) return;
+		_spawnCoroutine = StartCoroutine(SpawnLoop());
 	}
 
-	private IEnumerator SpawnLoop(ItemDatabase.ItemEntry entry)
+	//private IEnumerator SpawnLoop(ItemDatabase.ItemEntry entry)
+	//{
+	//	while(true)
+	//	{
+	//		float baseInterval = entry.spawnInterval;
+	//		float speedMul = GameSpeedManager.Instance.SpeedMultiplier;
+	//		float difficulty = Mathf.Lerp(1f, 2f, (Mathf.Clamp01(Time.timeSinceLevelLoad / 120f)));
+	//		float interval = (baseInterval / speedMul) * difficulty;
+
+	//		yield return new WaitForSeconds(interval);
+
+	//		Vector3 spawnPos = GetRandomSpawnPosition();
+	//		ItemPoolingManager.Instance.Spawn(entry.data, spawnPos);
+	//	}
+	//}
+
+	private IEnumerator SpawnLoop()
 	{
-		while(true)
+		WaitForSeconds errorWaitTime = new(1.0f);
+		while (true)
 		{
-			float baseInterval = entry.spawnInterval;
-			float speedMul = GameSpeedManager.Instance.SpeedMultiplier;
-			float difficulty = Mathf.Lerp(1f, 2f, (Mathf.Clamp01(Time.timeSinceLevelLoad / 120f)));
-			float interval = (baseInterval / speedMul) * difficulty;
+			float spawnInterval = _itemDB.GetRandomSpawnInterval();
+			float adjustedInterval = spawnInterval / GameSpeedManager.Instance.SpeedMultiplier;
+			yield return new WaitForSeconds(adjustedInterval);
 
-			yield return new WaitForSeconds(interval);
-
-			Vector3 spawnPos = GetRandomSpawnPosition();
-			ItemPoolingManager.Instance.Spawn(entry.data, spawnPos);
+			ItemData target = _itemDB.GetRandowmSpawnTarget();
+			if (target == null)
+			{
+				Debug.LogError("Item Data Get Null Spawn Target");
+				yield return errorWaitTime;
+				continue;
+			}
+			else 
+				ItemPoolingManager.Instance.Spawn(target, GetRandomSpawnPosition());
 		}
 	}
 
@@ -101,9 +135,15 @@ public class ItemManager : MonoBehaviour, IInitializable
 		_runUnsub?.Invoke();
 
 		// 스폰 코루틴 정리
-		foreach (var c in _spawnCoroutines)
-			if (c != null) StopCoroutine(c);
-		_spawnCoroutines.Clear();
+		//foreach (var c in _spawnCoroutines)
+		//	if (c != null) StopCoroutine(c);
+		//_spawnCoroutines.Clear();
+
+		if (_spawnCoroutine != null)
+		{
+			StopCoroutine(_spawnCoroutine);
+			_spawnCoroutine = null;
+		}
 
 		GameStateManager.OnStateChanged -= HandleGameStateChanged;
 	}

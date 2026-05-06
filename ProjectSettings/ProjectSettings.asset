@@ -140,8 +140,10 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.1
-  preloadedAssets: []
+  bundleVersion: 1.1.2
+  preloadedAssets:
+  - {fileID: -4855056890299455516, guid: 807190e1b66c6c04bb7c6644e5cf8135, type: 2}
+  - {fileID: 11400000, guid: d78fab7c6cd4fbb4c8cd4bb21d032679, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -266,7 +268,7 @@ PlayerSettings:
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: '{inproject}: TowerRunnerKey.keystore'
-  AndroidKeyaliasName: tower_runner
+  AndroidKeyaliasName: towerrunner
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
