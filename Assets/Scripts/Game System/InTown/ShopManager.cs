@@ -111,17 +111,24 @@ public class ShopManager : MonoBehaviour, ISceneUI
 			return;
 		}
 
-		// 角力 备概 肺流 角青
-		if (EconomyService.Gold >= item.itemPrice && InvenManager.Instance.HasFreeSlot())
-		{
-			EconomyService.TrySpendGold(item.itemPrice);
-			slot.MarkPurchased();
-			InvenManager.Instance.TryAddItem(item);
-		}
-		else
+		// If Inven hasn't Enough Slot
+		if (!InvenManager.Instance.HasFreeSlot())
 		{
 			GameEvents.RaiseInvenFull();
+			return;
 		}
+
+		// If Player hans't Enough Gold
+		if (EconomyService.Gold < item.itemPrice)
+		{
+			GameEvents.RaiseShortageGold();
+			return;
+		}
+
+		// 角力 备概 肺流 角青
+		EconomyService.TrySpendGold(item.itemPrice);
+		slot.MarkPurchased();
+		InvenManager.Instance.TryAddItem(item);
 	}
 
 	private void PopulateSlots()
@@ -173,7 +180,6 @@ public class ShopManager : MonoBehaviour, ISceneUI
 
 	private void CreateSlotsFromPrefab(GameObject prefab)
 	{
-		//Debug.Log("Is ShopManager CreateSlotsFromPrefab Called?");
 		foreach (var data in shopItems)
 		{
 			var go = Instantiate(prefab, itemList);
