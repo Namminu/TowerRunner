@@ -24,6 +24,9 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	[Header("Pop Up UI")]
 	[SerializeField] private SettingPopup popup;
 
+	/*private readonly string GamePlayURL = "https://play.google.com/store/games?hl=ko";*/
+	private readonly string GamePlayURL = "https://play.google.com/store/apps/details?id=com.beistudio.towerrunner";
+
 	public void InitUI()
 	{
 		/* About Remove Listener */
@@ -73,7 +76,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 		popup.Show(
 			"리뷰를 작성하러 이동합니다",
-			onYes: () => Application.OpenURL("https://play.google.com/store/games?hl=ko")
+			onYes: () => Application.OpenURL(GamePlayURL)
 			);
 	}
 	#endregion
