@@ -1,8 +1,6 @@
-using NUnit.Framework;
+
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 public class InvenManager : MonoBehaviour, IInitializable
 {
@@ -35,12 +33,16 @@ public class InvenManager : MonoBehaviour, IInitializable
 		}
 		items.Add(item);
 		GameEvents.RaiseInventoryChanged();
+		FirebaseManager.LogEvent($"{item.name} Add to Inven");
 	}
 
 	public void RemoveItem(ItemData item)
 	{
 		if (items.Remove(item))
+		{
 			GameEvents.RaiseInventoryChanged();
+			FirebaseManager.LogEvent($"{item.name} Spend from Inven");
+		}
 	}
 
 	public bool HasFreeSlot() => items.Count < maxSlots;

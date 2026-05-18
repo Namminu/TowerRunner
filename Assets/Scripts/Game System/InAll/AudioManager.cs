@@ -66,6 +66,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
 			Debug.LogError("Failed to load AudioConfig.");
+			FirebaseManager.LogCrash($"{handle.DebugName} Load Failed");
 			yield break;
 		}
 		_audioConfig = handle.Result;
@@ -83,6 +84,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 		if (!_audioConfig.loadedClips.TryGetValue(id, out var audioStruct))
 		{
 			Debug.LogAssertion($"Audio clip for ID {id} not found.");
+			FirebaseManager.LogCrash($"Audio clip for ID {id} not found");
 			return;
 		}
 
@@ -102,6 +104,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 		if(_bgmSource == null)
 		{
 			Debug.Log("BGM Audio Source Null Error");
+			FirebaseManager.LogCrash($"BGM Source Null Error");
 			return;
 		}
 		_bgmSource.Pause();
@@ -112,6 +115,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 		if (_bgmSource == null)
 		{
 			Debug.Log("BGM Audio Source Null Error");
+			FirebaseManager.LogCrash($"BGM Source Null Error");
 			return;
 		}
 		_bgmSource.UnPause();
@@ -122,6 +126,7 @@ public class AudioManager : MonoBehaviour, IInitializable
 		if (!_audioConfig.loadedClips.TryGetValue(id, out var audioStruct))
 		{
 			Debug.LogAssertion($"Audio clip for ID {id} not found.");
+			FirebaseManager.LogCrash($"Audio Clip : {id} not Founded");
 			return;
 		}
 

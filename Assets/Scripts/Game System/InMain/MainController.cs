@@ -31,6 +31,7 @@ public class MainController : MonoBehaviour, IInitializable
 		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
 			Debug.LogError($"{playerRef.RuntimeKey} Load Failed");
+			FirebaseManager.LogCrash($"{playerRef.RuntimeKey} Load Failed");
 			yield break;
 		}
 

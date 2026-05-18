@@ -58,7 +58,8 @@ public class SceneConfig : ScriptableObject
                 else
                 {
                     Debug.LogError($"Scene Load Failed : {scene}");
-                }
+					FirebaseManager.LogCrash($"{handle.DebugName} Load Failed");
+				}
             };
 	}
 }

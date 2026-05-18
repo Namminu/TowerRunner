@@ -85,6 +85,7 @@ public class ManagersInitializer : MonoBehaviour
 		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
 			Debug.LogError($"{managerRef.RuntimeKey} Load Failed");
+			FirebaseManager.LogCrash($"{handle.DebugName} Load Failed");
 			yield break;
 		}
 

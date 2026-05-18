@@ -108,6 +108,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 			// 2. 왜 못 찾았는지 상세 로그 출력
 			string poolInfo = string.Join(", ", slotPool.Select(s => s.Data?.itemName ?? "Null"));
 			Debug.LogError($"[ShopManager-{this.GetHashCode()}] 슬롯 미매칭! 찾으려는것: {item.itemName}, 풀에 있는것들: [{poolInfo}]");
+			FirebaseManager.LogCrash("Shop Manager Slot Mis Matching");
 			return;
 		}
 
@@ -115,6 +116,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		if (!InvenManager.Instance.HasFreeSlot())
 		{
 			GameEvents.RaiseInvenFull();
+			FirebaseManager.LogEvent($"Item Purchase Failed : not enough slot");
 			return;
 		}
 
@@ -122,6 +124,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		if (EconomyService.Gold < item.itemPrice)
 		{
 			GameEvents.RaiseShortageGold();
+			FirebaseManager.LogEvent($"Item Purchase Failed : not enough gold");
 			return;
 		}
 
@@ -129,6 +132,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		EconomyService.TrySpendGold(item.itemPrice);
 		slot.MarkPurchased();
 		InvenManager.Instance.TryAddItem(item);
+		FirebaseManager.LogEvent($"Item Purchase : {item.name}");
 	}
 
 	private void PopulateSlots()

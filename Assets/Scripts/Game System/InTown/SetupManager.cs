@@ -76,7 +76,11 @@ public class SetupManager : MonoBehaviour, ISceneUI
 
 		popup.Show(
 			"리뷰를 작성하러 이동합니다",
-			onYes: () => Application.OpenURL(GamePlayURL)
+			onYes: () =>
+			{
+				Application.OpenURL(GamePlayURL);
+				FirebaseManager.LogEvent("Get Review");
+			}
 			);
 	}
 	#endregion
@@ -95,6 +99,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	private void ResetCall()
 	{
 		ManagersInitializer.Instance.ResetCall();
+		FirebaseManager.LogEvent("Get Reset Data");
 	}
 	#endregion
 
@@ -114,6 +119,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 #else
 		Application.Quit();
 #endif
+				FirebaseManager.LogEvent("Game Close");
 			});
 	}
 	#endregion

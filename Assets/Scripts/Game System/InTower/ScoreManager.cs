@@ -107,6 +107,8 @@ public class ScoreManager : MonoBehaviour, IInitializable
 			TotalScore = total
 		};
 
+		FirebaseManager.LogEvent($"Tower Play Struct : {finalBreakdown}");
+
 		//OnSessionEnded?.Invoke(new FinalBreakdown
 		//{
 		//	DistanceScore = raw.DistanceScore,

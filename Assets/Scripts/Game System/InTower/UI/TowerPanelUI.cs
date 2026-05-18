@@ -105,6 +105,7 @@ public class TowerPanelUI : MonoBehaviour
 		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameEvents.RaiseBattleEnd();
 		RetryGameRoutiune();
+		FirebaseManager.LogEvent("Restart Game in Tower");
 	}
 
 	private void RetryGameRoutiune()
@@ -122,6 +123,8 @@ public class TowerPanelUI : MonoBehaviour
 		// 公利 秦力 饶 溜荤 贸府
 		Player.Instance.SetInvincible(false);
 		Player.Instance.ImmediateDeath();
+
+		FirebaseManager.LogEvent("Exit Game In Tower");
 	}
 
 	public void CloseSettingPanel()

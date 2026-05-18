@@ -170,7 +170,6 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 
 	private void Death()
 	{
-		Debug.Log("Player Death. Game Over");
 		AudioManager.Instance.PlaySound(AudioID.PlayerDeath);
 		GameEvents.RaiseBattleEnd();
 		Ani.SetBool("IsDeath", true);

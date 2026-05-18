@@ -142,7 +142,7 @@ public class EnemyPoolingManager : MonoBehaviour, IInitializable
 	{
 		// Addressables 핸들 해제
 		if (_handles != null)
-		{
+		{ 
 			foreach (var kv in _handles)
 			{
 				if (kv.Value.IsValid()) Addressables.Release(kv.Value);

@@ -86,6 +86,7 @@ public class BootSceneController : MonoBehaviour
 		if(!ValidateConfig(out var reason))
 		{
 			Fail($"Essential Addressables Missing : {reason}");
+			FirebaseManager.LogCrash(reason);
 			yield break;
 		}
 

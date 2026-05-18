@@ -26,7 +26,10 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 	{
 		overlayImage = UIManager.Instance.OverlayImage;
 		if (overlayImage == null)
+		{
 			Debug.LogError("Cannot Find Overlay Image");
+			FirebaseManager.LogCrash("Cannot Find Overlay Image");
+		}
 	}
 
 	private void ApplyDisplayBrightness(float value)
@@ -34,6 +37,7 @@ public class BrightnessManager : MonoBehaviour, IInitializable
 		if (overlayImage == null)
 		{
 			Debug.Log("Overlay Image Null Reference Error");
+			FirebaseManager.LogCrash("Cannot Find Overlay Image");
 			return;
 		}
 

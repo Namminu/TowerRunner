@@ -44,6 +44,7 @@ public class UIManager : MonoBehaviour, IInitializable
 		if(!Enum.TryParse(scene.name, out Scenes sceneEnum))
 		{
 			Debug.LogError($"UI Manager : There's no {scene.name} in Scenes enum");
+			FirebaseManager.LogCrash($"{scene.name} not Founded in Scenes enum");
 			return;
 		}
 		if (_loadingRoutine != null) StopCoroutine(_loadingRoutine);
@@ -85,6 +86,7 @@ public class UIManager : MonoBehaviour, IInitializable
 		if (uiRoot == null)
 		{
 			Debug.LogError($"UIManager : Canvas with tag 'UIRoot' not found.");
+			FirebaseManager.LogCrash($"UIManager : Canvas with tag 'UIRoot' not found");
 			yield break;
 		}
 
@@ -98,6 +100,7 @@ public class UIManager : MonoBehaviour, IInitializable
 		if (handle.Status != AsyncOperationStatus.Succeeded)
 		{
 			Debug.LogError($"UIManager : Failed to Load UI Group : {handle.DebugName} / {handle.OperationException}");
+			FirebaseManager.LogCrash($"{handle.DebugName} UI Load Failed");
 			_hasHandle = false; _currentHandle = default;
 			yield break;
 		}
@@ -108,6 +111,7 @@ public class UIManager : MonoBehaviour, IInitializable
 		if (currentUIGroup == null)
 		{
 			Debug.LogError("UIManager : Handle returned null GameObject");
+			FirebaseManager.LogCrash($"{handle.Result.name} return Null GameObject");
 			yield break;
 		}
 
@@ -117,6 +121,7 @@ public class UIManager : MonoBehaviour, IInitializable
 		if (uiList == null || uiList.Length == 0)
 		{
 			Debug.LogError($"UIManager : No ISceneUI found in {scene}");
+			FirebaseManager.LogCrash($"{scene} Not Founded ISceneUI");
 			yield break;
 		}
 		foreach (var ui in uiList) ui.InitUI();

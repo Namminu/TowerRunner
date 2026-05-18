@@ -30,6 +30,7 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 
 		ManagersInitializer.Instance.SceneLoad(nextSceneName);
+		FirebaseManager.LogEvent("Game Start");
 	}
 
 	private async void LinkExitBtn()
@@ -42,6 +43,7 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 #else
 		Application.Quit();
 #endif
+		FirebaseManager.LogEvent("Game Close");
 	}
 
 	private void OnDisable()
