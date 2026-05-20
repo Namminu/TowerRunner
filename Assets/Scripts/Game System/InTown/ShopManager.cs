@@ -1,3 +1,4 @@
+using Firebase.Analytics;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -116,7 +117,6 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		if (!InvenManager.Instance.HasFreeSlot())
 		{
 			GameEvents.RaiseInvenFull();
-			FirebaseManager.LogEvent($"Item Purchase Failed : not enough slot");
 			return;
 		}
 
@@ -124,7 +124,6 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		if (EconomyService.Gold < item.itemPrice)
 		{
 			GameEvents.RaiseShortageGold();
-			FirebaseManager.LogEvent($"Item Purchase Failed : not enough gold");
 			return;
 		}
 
@@ -132,7 +131,7 @@ public class ShopManager : MonoBehaviour, ISceneUI
 		EconomyService.TrySpendGold(item.itemPrice);
 		slot.MarkPurchased();
 		InvenManager.Instance.TryAddItem(item);
-		FirebaseManager.LogEvent($"Item Purchase : {item.name}");
+		FirebaseManager.LogEvent("item_purchase", new Parameter("item_name", item.name.ToString()));
 	}
 
 	private void PopulateSlots()

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase.Analytics;
 
 public class MainSceneUI : MonoBehaviour, ISceneUI
 {
@@ -23,6 +24,14 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		exitBtn.onClick.AddListener(() => LinkExitBtn());
 
 		//Debug.Log("MainScene UI Inited");
+
+
+		FirebaseManager.LogEvent(
+			"test_event_mainscene",
+			new Parameter("test_value", 1)
+		);
+
+		Debug.Log("Test Event Send");
 	}
 
 	private void LinkStartBtn()
@@ -30,7 +39,7 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 
 		ManagersInitializer.Instance.SceneLoad(nextSceneName);
-		FirebaseManager.LogEvent("Game Start");
+		FirebaseManager.LogEvent("game_start");
 	}
 
 	private async void LinkExitBtn()
@@ -43,7 +52,7 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 #else
 		Application.Quit();
 #endif
-		FirebaseManager.LogEvent("Game Close");
+		FirebaseManager.LogEvent("game_end");
 	}
 
 	private void OnDisable()

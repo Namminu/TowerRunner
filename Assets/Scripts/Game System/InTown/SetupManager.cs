@@ -79,7 +79,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 			onYes: () =>
 			{
 				Application.OpenURL(GamePlayURL);
-				FirebaseManager.LogEvent("Get Review");
+				FirebaseManager.LogEvent("review");
 			}
 			);
 	}
@@ -99,7 +99,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 	private void ResetCall()
 	{
 		ManagersInitializer.Instance.ResetCall();
-		FirebaseManager.LogEvent("Get Reset Data");
+		FirebaseManager.LogEvent("reset_data");
 	}
 	#endregion
 
@@ -119,7 +119,7 @@ public class SetupManager : MonoBehaviour, ISceneUI
 #else
 		Application.Quit();
 #endif
-				FirebaseManager.LogEvent("Game Close");
+				FirebaseManager.LogEvent("game_end");
 			});
 	}
 	#endregion

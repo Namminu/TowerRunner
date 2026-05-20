@@ -24,6 +24,11 @@ public class FirebaseManager : MonoBehaviour
 		}
 	}
 
+	private void Start()
+	{
+		Debug.Log($"Firebase Init : {isInitialized}");
+	}
+
 	private void InitFirebase()
 	{
 		FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
@@ -52,12 +57,12 @@ public class FirebaseManager : MonoBehaviour
 		FirebaseAnalytics.LogEvent(eventName);
 	}
 
-	public static void LogException(System.Exception e)
+	public static void LogEvent(string eventName, params Parameter[] parameters)
 	{
 		if (Instance == null || !Instance.isInitialized)
 			return;
 
-		Crashlytics.LogException(e);
+		FirebaseAnalytics.LogEvent(eventName, parameters);
 	}
 
 	public static void LogCrash(string message)

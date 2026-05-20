@@ -59,5 +59,7 @@ public class PlaneHole : BaseObject
         }
 
         player.ImmediateDeath();
+
+		FirebaseManager.LogEvent("player_inhole");
 	}
 }

@@ -59,7 +59,7 @@ public class TownSceneUI : MonoBehaviour, ISceneUI
 		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 
 		ManagersInitializer.Instance.SceneLoad(nextSceneName);
-		FirebaseManager.LogEvent("Game Start : Tower");
+		FirebaseManager.LogEvent("tower_start");
 	}
 
 	private void ShopUIToggle()

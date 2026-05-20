@@ -1,3 +1,4 @@
+using Firebase.Analytics;
 using System.Collections;
 using UnityEngine;
 
@@ -46,6 +47,8 @@ public class ScoreManager : MonoBehaviour, IInitializable
 	private FinalBreakdown finalBreakdown;
 	public FinalBreakdown FinalBreakDown => finalBreakdown;
 
+	private float playTime;
+
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
@@ -74,6 +77,8 @@ public class ScoreManager : MonoBehaviour, IInitializable
 		GameEvents.RaiseScoreChanged(highScore);
 
 		sessionRoutine = StartCoroutine(SessionTimerTicker());
+
+		playTime = 0f;
 	}
 
 	private void EndSession()
@@ -107,7 +112,7 @@ public class ScoreManager : MonoBehaviour, IInitializable
 			TotalScore = total
 		};
 
-		FirebaseManager.LogEvent($"Tower Play Struct : {finalBreakdown}");
+		FirebaseManager.LogEvent("tower_sessionend", new Parameter("play_time", playTime));
 
 		//OnSessionEnded?.Invoke(new FinalBreakdown
 		//{
@@ -125,6 +130,7 @@ public class ScoreManager : MonoBehaviour, IInitializable
 		while(true)
 		{
 			acc += secondScore * Time.deltaTime * GameSpeedManager.Instance.EnviSpeed;
+			playTime += Time.deltaTime;
 			int delta = Mathf.FloorToInt(acc);
 			if(delta > 0)
 			{

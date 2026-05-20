@@ -105,7 +105,7 @@ public class TowerPanelUI : MonoBehaviour
 		AudioManager.Instance.PlaySound(AudioID.ButtonClick);
 		GameEvents.RaiseBattleEnd();
 		RetryGameRoutiune();
-		FirebaseManager.LogEvent("Restart Game in Tower");
+		FirebaseManager.LogEvent("tower_restart");
 	}
 
 	private void RetryGameRoutiune()
@@ -124,7 +124,7 @@ public class TowerPanelUI : MonoBehaviour
 		Player.Instance.SetInvincible(false);
 		Player.Instance.ImmediateDeath();
 
-		FirebaseManager.LogEvent("Exit Game In Tower");
+		FirebaseManager.LogEvent("tower_exit");
 	}
 
 	public void CloseSettingPanel()

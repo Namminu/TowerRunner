@@ -1,3 +1,4 @@
+using Firebase.Analytics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -79,7 +80,6 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 		if(!EconomyService.TrySpendGold(cost))
 		{
 			warningText.text = "보유 골드가 충분하지 않습니다";
-			FirebaseManager.LogEvent($"Enforce Failed : not enough gold");
 			warningUI.SetActive(true);
 			return;
 		}
@@ -89,7 +89,7 @@ public class EnforceManager : MonoBehaviour, ISceneUI
 
 		float newValue = EnforceService.GetValue(selectedIndex, newLevel);
 		Player.Instance.ApplyUpgrade((EnforceType)selectedIndex, newValue);
-		FirebaseManager.LogEvent($"Enforce : {(EnforceType)selectedIndex} to {newLevel}");
+		FirebaseManager.LogEvent("enforcing", new Parameter($"{(EnforceType)selectedIndex}", newLevel));
 		ShowPage(selectedIndex);	
 	}
 

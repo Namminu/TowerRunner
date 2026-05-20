@@ -1,4 +1,5 @@
 
+using Firebase.Analytics;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,7 +34,6 @@ public class InvenManager : MonoBehaviour, IInitializable
 		}
 		items.Add(item);
 		GameEvents.RaiseInventoryChanged();
-		FirebaseManager.LogEvent($"{item.name} Add to Inven");
 	}
 
 	public void RemoveItem(ItemData item)
@@ -41,7 +41,6 @@ public class InvenManager : MonoBehaviour, IInitializable
 		if (items.Remove(item))
 		{
 			GameEvents.RaiseInventoryChanged();
-			FirebaseManager.LogEvent($"{item.name} Spend from Inven");
 		}
 	}
 
