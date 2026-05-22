@@ -73,7 +73,7 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		}
 	}
 
-	[SerializeField, Tooltip("Player Attack Power"), Range(0, 10)]
+	[SerializeField, Tooltip("Player Attack Power"), Range(0, 30)]
 	private float playerPower = 1f;
 
 	[Header("Attack")]
@@ -154,6 +154,14 @@ public class Player : MonoBehaviour, IDamageable, IDamageDealer
 		_runUnsub = GameBus.Subscribe<RunSignal>(StartAutoDecrease);
 
 		GameEvents.OnBattleEnded += StopAutoDecrease;
+	}
+
+	private void Update()
+	{
+		if (playerPower != 1f)
+		{
+			Debug.Log($"Player Power Change : {playerPower}");
+		}
 	}
 
 	private void ApplySavedPlayerData()

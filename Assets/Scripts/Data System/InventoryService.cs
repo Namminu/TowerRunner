@@ -107,7 +107,10 @@ public static class InventoryService
         SaveService.Current.inventory = snapshot;
 
         try { await SaveService.SaveAllAsync(); }
-        catch (System.Exception exp) { Debug.LogError($"[InventoryService] Save Failed : {exp}"); }
+        catch (System.Exception exp) {
+            Debug.LogError($"[InventoryService] Save Failed : {exp}"); 
+            FirebaseManager.LogCrash($"[InventoryService] Save Failed : {exp}");
+		}
     }
 
     private static void EnsureArraySized(ref int[] arr, int size, int fill)
