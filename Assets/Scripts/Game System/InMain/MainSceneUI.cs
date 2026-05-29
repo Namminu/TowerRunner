@@ -26,12 +26,12 @@ public class MainSceneUI : MonoBehaviour, ISceneUI
 		//Debug.Log("MainScene UI Inited");
 
 
-		FirebaseManager.LogEvent(
-			"test_event_mainscene",
-			new Parameter("test_value", 1)
-		);
+		//FirebaseManager.LogEvent(
+		//	"test_event_mainscene",
+		//	new Parameter("test_value", 1)
+		//);
 
-		Debug.Log("Test Event Send");
+		//Debug.Log("Test Event Send");
 	}
 
 	private void LinkStartBtn()
