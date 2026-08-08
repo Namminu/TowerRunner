@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -10,7 +11,20 @@ public static class SaveService
 	/// </summary>
 	public static async Task InitializeAsync()
     {
-        Current = await SaveSystem.LoadAsync();
+        try
+        {
+            Current = await SaveSystem.LoadAsync();
+            if (Current == null)
+            {
+                Debug.LogWarning("SaveService.InitializeAsync: loaded GameData is null. Using default data.");
+                Current = GameData.CreateDefault();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"SaveService.InitializeAsync failed: {ex}");
+            Current = GameData.CreateDefault();
+        }
     }
 
 	/// <summary>
@@ -19,6 +33,12 @@ public static class SaveService
 	public static async Task SaveAllAsync()
     {
         Prefs.Save();
+
+        if (Current == null)
+        {
+            Debug.LogWarning("SaveService.SaveAllAsync skipped: Current GameData is null.");
+            return;
+        }
 
         await SaveSystem.SaveAsync(Current);
     }

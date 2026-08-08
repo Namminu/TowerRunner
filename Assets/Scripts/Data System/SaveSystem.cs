@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,28 +11,48 @@ public static class SaveSystem
 
     public static async Task<GameData> LoadAsync()
     {
-		if (!File.Exists(FilePath))
+        if (!File.Exists(FilePath))
             return new GameData();
-	
+
         Debug.Log(File.ReadAllText(FilePath));
 
         string cipher = await File.ReadAllTextAsync(FilePath);
         string json = Decrypt(cipher);
-        GameData data = JsonUtility.FromJson<GameData>(json);
 
-        if (data.version < CURRENT_VERSION)
-            data = Migrate(data);
+        try
+        {
+            GameData data = JsonUtility.FromJson<GameData>(json);
+            if (data == null)
+            {
+                Debug.LogWarning("SaveSystem.LoadAsync: parsed GameData is null. Using default data.");
+                return new GameData();
+            }
 
-        return data;
-	}
+            if (data.version < CURRENT_VERSION)
+                data = Migrate(data);
+
+            return data;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"SaveSystem.LoadAsync failed: {ex}");
+            return new GameData();
+        }
+    }
 
     public static async Task SaveAsync(GameData data) 
     {
+        if (data == null)
+        {
+            Debug.LogWarning("SaveSystem.SaveAsync skipped: GameData is null.");
+            return;
+        }
+
         data.version = CURRENT_VERSION;
         string json = JsonUtility.ToJson(data, prettyPrint: true);
         string cipher = Encrypt(json);
         await File.WriteAllTextAsync(FilePath, cipher);
-	}
+    }
 
     public static void Delete() => File.Delete(FilePath);
 

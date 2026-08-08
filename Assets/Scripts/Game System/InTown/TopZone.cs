@@ -9,13 +9,14 @@ public class TopZone : MonoBehaviour, ISceneUI
 	public void InitUI()
 	{
 		int gold = SaveService.Current != null ? SaveService.Current.gold : 0;
+		int bestScore = SaveService.Current != null ? SaveService.Current.bestScore : 0;
 
 		GameEvents.OnHighScoreChanged += ShowHighScore;
 		GameEvents.OnGoldChanged += ShowCurrentPlayerGold;
 
 		ShowCurrentPlayerGold(gold);
 		//ShowHighScore(ScoreManager.Instance.HighScore);
-		ShowHighScore(SaveService.Current.bestScore);
+		ShowHighScore(bestScore);
 	}
 
 	private void ShowHighScore(int highScore)
