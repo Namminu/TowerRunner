@@ -15,8 +15,8 @@ public class FirebaseManager : MonoBehaviour
 
 	private readonly struct FirebaseEvent
 	{
-		public string EventName;
-		public Parameter[] Parameters;
+		public readonly string EventName;
+		public readonly Parameter[] Parameters;
 		public FirebaseEvent(string eventName, Parameter[] parameters)
 		{
 			EventName = eventName;

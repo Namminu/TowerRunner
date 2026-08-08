@@ -30,7 +30,10 @@ public class ManagersInitializer : MonoBehaviour
 	[SerializeField] private SceneConfig sceneConfig;
 
 	private bool _isFirstInit;
+	private bool _isSceneLoading;
 	private GameObject _currentSceneManager;
+	private AsyncOperationHandle<GameObject> _currentSceneManagerHandle;
+	private static int _sceneLoadSeq = 0;
 
 	private void Awake()
 	{
@@ -55,13 +58,28 @@ public class ManagersInitializer : MonoBehaviour
 
 	public void SceneLoad(Scenes nextScene)
 	{
+		if (_isSceneLoading)
+		{
+			Debug.LogWarning($"SceneLoad request blocked: already loading {nextScene}");
+			return;
+		}
+
+		_isSceneLoading = true;
+		_sceneLoadSeq++;
 		StartCoroutine(SceneLoadRoutine(nextScene));
 	}
 
 	private IEnumerator SceneLoadRoutine(Scenes scene)
 	{
-		yield return InitializeSceneManagers(scene);
-		yield return sceneConfig.LoadSceneRoutine(scene);
+		try
+		{
+			yield return InitializeSceneManagers(scene);
+			yield return sceneConfig.LoadSceneRoutine(scene);
+		}
+		finally
+		{
+			_isSceneLoading = false;
+		}
 	}
 
 	private IEnumerator InitializeSceneManagers(Scenes scene)
@@ -91,6 +109,8 @@ public class ManagersInitializer : MonoBehaviour
 		}
 
 		AddressablesTracker.Track(handle, isPersistent: persistent);
+		if (!persistent)
+			AddressablesTracker.TrackSceneManagerHandle(handle);
 
 		var root = handle.Result;
 		if (persistent)
@@ -99,14 +119,18 @@ public class ManagersInitializer : MonoBehaviour
 		{
 			if(_currentSceneManager != null)
 			{
-				Addressables.ReleaseInstance(_currentSceneManager);
+				var previousHandle = _currentSceneManagerHandle;
+				var previousManager = _currentSceneManager;
+				AddressablesTracker.UntrackSceneHandle(previousHandle);
+				Addressables.ReleaseInstance(previousManager);
 				_currentSceneManager = null;
+				_currentSceneManagerHandle = default;
 				yield return null;
 			}
 			_currentSceneManager = root;
+			_currentSceneManagerHandle = handle;
 			root.transform.parent = transform;
 		}
-
 		root.GetComponent<IInitializable>()?.Init();
 	}
 
@@ -120,6 +144,7 @@ public class ManagersInitializer : MonoBehaviour
 		SaveService.ResetSaveData();
 
 		UIManager.Instance.UnLoadCurrentUI();
+
 		AddressablesTracker.ReleaseSceneHandles();
 
 		ScoreManager.Instance.ResetScore();
@@ -127,7 +152,7 @@ public class ManagersInitializer : MonoBehaviour
 
 		yield return null;
 
-		SceneLoad(Scenes.Main); // Main À¸·Î º¯°æ °¡´É ¿©ºÎ Ã¼Å©
+		SceneLoad(Scenes.Main); // Main ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
 	}
 }
 

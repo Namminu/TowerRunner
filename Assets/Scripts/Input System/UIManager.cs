@@ -63,20 +63,20 @@ public class UIManager : MonoBehaviour, IInitializable
 
 	public void OnTap(Vector2 screenPos)
 	{
-		// UI ¿¡¼­ÀÇ Tap Àº µ¿ÀÛÇÏÁö ¾ÊÀ½
+		// UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Tap ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		return;
 	}
 
 	public void OnDrag(Vector2 screenPos)
 	{
-		// UI ¿¡¼­ÀÇ Drag ´Â µ¿ÀÛÇÏÁö ¾ÊÀ½
-		// ¿¹¿Ü·Î »ç¿îµå Á¶ÀÛ¹Ù °°Àº°Ç ÀÖÀ» ¼ö ÀÖÀ»µí?
+		// UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Drag ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½Ü·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
 		return;
 	}
 
 	public void OnDragEnd(Vector2 screenPos)
 	{
-		// UI ¿¡¼­ÀÇ DragEnd ´Â µ¿ÀÛÇÏÁö ¾ÊÀ½
+		// UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ DragEnd ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		return;
 	}
 
@@ -141,15 +141,23 @@ public class UIManager : MonoBehaviour, IInitializable
 		}
 
 		if(_hasHandle && _currentHandle.IsValid())
-		{
+		{ 
 			if(!_currentHandle.IsDone)
 			{
+				AddressablesTracker.UntrackSceneHandle(_currentHandle);
 				var h = _currentHandle;
-				h.Completed += _ => { if (h.IsValid()) Addressables.ReleaseInstance(h); };
+				h.Completed += _ =>
+				{
+					if (h.IsValid())
+					{
+						Addressables.ReleaseInstance(h);
+					}
+				};
 			}
 			else
 			{
-				bool isReleased = Addressables.ReleaseInstance(_currentHandle);
+				AddressablesTracker.UntrackSceneHandle(_currentHandle);
+				Addressables.ReleaseInstance(_currentHandle);
 			}
 		}
 		else

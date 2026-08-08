@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 [CreateAssetMenu(menuName = "Scriptable Objects/SceneConfig")]
 public class SceneConfig : ScriptableObject
@@ -20,6 +21,7 @@ public class SceneConfig : ScriptableObject
 
     public static Scenes CurrentScene { get; private set; }
 
+    private AsyncOperationHandle<SceneInstance> _currentSceneHandle;
 
     /// <param name="scene">scene name in Scenes enum</param>
     /// <returns>Scene loaded in Addressables Assets</returns>
@@ -27,12 +29,12 @@ public class SceneConfig : ScriptableObject
     {
         foreach (var entry in entries)
         {
-            if(entry.scene == scene)
+            if (entry.scene == scene)
                 return entry.sceneRef;
         }
-		Debug.LogError($"There's no {scene} Mapping in SceneConfig");
-		return null;
-	}
+        Debug.LogError($"There's no {scene} Mapping in SceneConfig");
+        return null;
+    }
 
     public IEnumerator LoadSceneRoutine(Scenes scene)
     {
@@ -40,26 +42,22 @@ public class SceneConfig : ScriptableObject
         if (reference == null) yield break;
 
         var handle = reference.LoadSceneAsync();
-		yield return handle;
+        yield return handle;
 
-  //      if(handle.Status == AsyncOperationStatus.Succeeded)
-  //      {
-		//	AddressablesTracker.Track(handle, isPersistent: false);
-		//}
-  //      else Debug.LogError($"Scene Load Failed : {scene}");
-
-		handle.Completed += (op) =>
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            CurrentScene = scene;
+            if (!_currentSceneHandle.Equals(default(AsyncOperationHandle<SceneInstance>)) && !_currentSceneHandle.Equals(handle))
             {
-                if (op.Status == AsyncOperationStatus.Succeeded)
-                {
-                    CurrentScene = scene;
-					AddressablesTracker.Track(handle, isPersistent: false);
-				}
-                else
-                {
-                    Debug.LogError($"Scene Load Failed : {scene}");
-					FirebaseManager.LogCrash($"{handle.DebugName} Load Failed");
-				}
-            };
-	}
+                AddressablesTracker.UntrackSceneHandle(_currentSceneHandle);
+            }
+            _currentSceneHandle = handle;
+            AddressablesTracker.TrackSceneHandle(handle);
+        }
+        else
+        {
+            Debug.LogError($"Scene Load Failed : {scene}");
+            FirebaseManager.LogCrash($"{handle.DebugName} Load Failed");
+        }
+    }
 }
